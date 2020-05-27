@@ -620,9 +620,9 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "jtest.l"
+#line 1 "JavaLexer.l"
 /*test lex file*/
-#line 4 "jtest.l"
+#line 4 "JavaLexer.l"
 	#include <iostream>
 	#include "tokens.h"
 	
@@ -845,7 +845,7 @@ YY_DECL
 		}
 
 	{
-#line 13 "jtest.l"
+#line 13 "JavaLexer.l"
 
 
 #line 852 "lex.yy.c"
@@ -907,498 +907,498 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 15 "jtest.l"
+#line 15 "JavaLexer.l"
 { return TOK_ABSTRACT; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 16 "jtest.l"
+#line 16 "JavaLexer.l"
 { return TOK_CONTINUE; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 17 "jtest.l"
+#line 17 "JavaLexer.l"
 { return TOK_FOR; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 18 "jtest.l"
+#line 18 "JavaLexer.l"
 { return TOK_NEW; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 19 "jtest.l"
+#line 19 "JavaLexer.l"
 { return TOK_SWITCH; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 20 "jtest.l"
+#line 20 "JavaLexer.l"
 { return TOK_ASSERT; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 21 "jtest.l"
+#line 21 "JavaLexer.l"
 { return TOK_DEFAULT; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 22 "jtest.l"
+#line 22 "JavaLexer.l"
 { return TOK_GOTO; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 23 "jtest.l"
+#line 23 "JavaLexer.l"
 { return TOK_PACKAGE; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 24 "jtest.l"
+#line 24 "JavaLexer.l"
 { return TOK_SYNCHRONIZED; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 25 "jtest.l"
+#line 25 "JavaLexer.l"
 { return TOK_BOOLEAN; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 26 "jtest.l"
+#line 26 "JavaLexer.l"
 { return TOK_DO; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 27 "jtest.l"
+#line 27 "JavaLexer.l"
 { return TOK_IF; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 28 "jtest.l"
+#line 28 "JavaLexer.l"
 { return TOK_PRIVATE; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 29 "jtest.l"
+#line 29 "JavaLexer.l"
 { return TOK_THIS; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 30 "jtest.l"
+#line 30 "JavaLexer.l"
 { return TOK_BREAK; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 31 "jtest.l"
+#line 31 "JavaLexer.l"
 { return TOK_DOUBLE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 32 "jtest.l"
+#line 32 "JavaLexer.l"
 { return TOK_IMPLEMENTS; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 33 "jtest.l"
+#line 33 "JavaLexer.l"
 { return TOK_PROTECTED; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 34 "jtest.l"
+#line 34 "JavaLexer.l"
 { return TOK_THROWS; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 35 "jtest.l"
+#line 35 "JavaLexer.l"
 { return TOK_THROW; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 36 "jtest.l"
+#line 36 "JavaLexer.l"
 { return TOK_BYTE; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 37 "jtest.l"
+#line 37 "JavaLexer.l"
 { return TOK_ELSE; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 38 "jtest.l"
+#line 38 "JavaLexer.l"
 { return TOK_IMPORT; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 39 "jtest.l"
-{ printf("found public\n"); return TOK_PUBLIC; }
+#line 39 "JavaLexer.l"
+{ return TOK_PUBLIC; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 40 "jtest.l"
+#line 40 "JavaLexer.l"
 { return TOK_CASE; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 41 "jtest.l"
+#line 41 "JavaLexer.l"
 { return TOK_ENUM; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 42 "jtest.l"
+#line 42 "JavaLexer.l"
 { return TOK_INSTANCEOF; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 43 "jtest.l"
+#line 43 "JavaLexer.l"
 { return TOK_RETURN; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 44 "jtest.l"
+#line 44 "JavaLexer.l"
 { return TOK_TRANSIENT; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 45 "jtest.l"
+#line 45 "JavaLexer.l"
 { return TOK_CATCH; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 46 "jtest.l"
+#line 46 "JavaLexer.l"
 { return TOK_EXTENDS; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 47 "jtest.l"
+#line 47 "JavaLexer.l"
 { return TOK_INT; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 48 "jtest.l"
+#line 48 "JavaLexer.l"
 { return TOK_SHORT; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 49 "jtest.l"
+#line 49 "JavaLexer.l"
 { return TOK_TRY; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 50 "jtest.l"
+#line 50 "JavaLexer.l"
 { return TOK_CHAR; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 51 "jtest.l"
+#line 51 "JavaLexer.l"
 { return TOK_FINAL; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 52 "jtest.l"
+#line 52 "JavaLexer.l"
 { return TOK_INTERFACE; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 53 "jtest.l"
-{ printf("found static\n"); return TOK_STATIC; }
+#line 53 "JavaLexer.l"
+{ return TOK_STATIC; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 54 "jtest.l"
-{ printf("found void\n"); return TOK_VOID; }
+#line 54 "JavaLexer.l"
+{ return TOK_VOID; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 55 "jtest.l"
-{ printf("found class\n");return TOK_CLASS; }
+#line 55 "JavaLexer.l"
+{ return TOK_CLASS; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 56 "jtest.l"
+#line 56 "JavaLexer.l"
 { return TOK_FINALLY; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 57 "jtest.l"
+#line 57 "JavaLexer.l"
 { return TOK_LONG; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 58 "jtest.l"
+#line 58 "JavaLexer.l"
 { return TOK_STRICTFP; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 59 "jtest.l"
+#line 59 "JavaLexer.l"
 { return TOK_VOLATILE; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 60 "jtest.l"
+#line 60 "JavaLexer.l"
 { return TOK_CONST; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 61 "jtest.l"
+#line 61 "JavaLexer.l"
 { return TOK_FLOAT; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 62 "jtest.l"
+#line 62 "JavaLexer.l"
 { return TOK_NATIVE; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 63 "jtest.l"
+#line 63 "JavaLexer.l"
 { return TOK_SUPER; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 64 "jtest.l"
+#line 64 "JavaLexer.l"
 { return TOK_WHILE; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 67 "jtest.l"
+#line 67 "JavaLexer.l"
 { return TOK_LPAREN; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 68 "jtest.l"
+#line 68 "JavaLexer.l"
 { return TOK_RPAREN; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 69 "jtest.l"
+#line 69 "JavaLexer.l"
 { return TOK_LBRACKET; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 70 "jtest.l"
+#line 70 "JavaLexer.l"
 { return TOK_RBRACKET; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 71 "jtest.l"
+#line 71 "JavaLexer.l"
 { return TOK_LBRACE; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 72 "jtest.l"
+#line 72 "JavaLexer.l"
 { return TOK_RBRACE; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 73 "jtest.l"
+#line 73 "JavaLexer.l"
 { return TOK_COMMA; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 74 "jtest.l"
+#line 74 "JavaLexer.l"
 { return TOK_SEMI; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 75 "jtest.l"
+#line 75 "JavaLexer.l"
 { return TOK_DOT; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 76 "jtest.l"
+#line 76 "JavaLexer.l"
 { return TOK_ASSIGN; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 77 "jtest.l"
+#line 77 "JavaLexer.l"
 { return TOK_MODASSIGN; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 78 "jtest.l"
+#line 78 "JavaLexer.l"
 { return TOK_DIVASSIGN; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 79 "jtest.l"
+#line 79 "JavaLexer.l"
 { return TOK_MULASSIGN; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 80 "jtest.l"
+#line 80 "JavaLexer.l"
 { return TOK_ADDASSIGN; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 81 "jtest.l"
+#line 81 "JavaLexer.l"
 { return TOK_SUBASSIGN; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 82 "jtest.l"
+#line 82 "JavaLexer.l"
 { return TOK_COLON; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 83 "jtest.l"
+#line 83 "JavaLexer.l"
 { return TOK_QUESTION; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 84 "jtest.l"
+#line 84 "JavaLexer.l"
 { return TOK_OR; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 85 "jtest.l"
+#line 85 "JavaLexer.l"
 { return TOK_AND; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 86 "jtest.l"
+#line 86 "JavaLexer.l"
 { return TOK_BITOR; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 87 "jtest.l"
+#line 87 "JavaLexer.l"
 { return TOK_BITAND; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 88 "jtest.l"
+#line 88 "JavaLexer.l"
 { return TOK_BITXOR; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 89 "jtest.l"
+#line 89 "JavaLexer.l"
 { return TOK_EQUAL; }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 90 "jtest.l"
+#line 90 "JavaLexer.l"
 { return TOK_NEQUAL; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 91 "jtest.l"
+#line 91 "JavaLexer.l"
 { return TOK_LESS; }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 92 "jtest.l"
+#line 92 "JavaLexer.l"
 { return TOK_GREATER; }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 93 "jtest.l"
+#line 93 "JavaLexer.l"
 { return TOK_LEQUAL; }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 94 "jtest.l"
+#line 94 "JavaLexer.l"
 { return TOK_GEQUAL; }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 95 "jtest.l"
+#line 95 "JavaLexer.l"
 { return TOK_LSHIFT; }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 96 "jtest.l"
+#line 96 "JavaLexer.l"
 { return TOK_RSHIFT; }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 97 "jtest.l"
+#line 97 "JavaLexer.l"
 { return TOK_RSHIFTZ; }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 98 "jtest.l"
+#line 98 "JavaLexer.l"
 { return TOK_ADD; }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 99 "jtest.l"
+#line 99 "JavaLexer.l"
 { return TOK_SUB; }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 100 "jtest.l"
+#line 100 "JavaLexer.l"
 { return TOK_MOD; }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 101 "jtest.l"
+#line 101 "JavaLexer.l"
 { return TOK_DIV; }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 102 "jtest.l"
+#line 102 "JavaLexer.l"
 { return TOK_MUL; }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 103 "jtest.l"
+#line 103 "JavaLexer.l"
 { return TOK_BITNEG; }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 104 "jtest.l"
+#line 104 "JavaLexer.l"
 { return TOK_NEG; }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 105 "jtest.l"
+#line 105 "JavaLexer.l"
 { return TOK_SUBSUB; }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 106 "jtest.l"
+#line 106 "JavaLexer.l"
 { return TOK_ADDADD; }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 108 "jtest.l"
-{ return TOK_INTVAL; }
+#line 108 "JavaLexer.l"
+{ /*needs to return a union value (int)*/ return TOK_INTVAL; }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 109 "jtest.l"
-{ return TOK_FLOATVAL; }
+#line 109 "JavaLexer.l"
+{ /*needs to return a union value (float)*/ return TOK_FLOATVAL; }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 110 "jtest.l"
+#line 110 "JavaLexer.l"
 { return TOK_CHARVAL; }
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 111 "jtest.l"
-{ printf("found string value %s\n", yytext); return TOK_STRINGVAL; }
+#line 111 "JavaLexer.l"
+{ /*needs to return a union value (string)*/ return TOK_STRINGVAL; }
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 112 "jtest.l"
-{ return TOK_BOOLVAL; }
+#line 112 "JavaLexer.l"
+{ /*needs to return a union value (boolean)*/ return TOK_BOOLVAL; }
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 113 "jtest.l"
+#line 113 "JavaLexer.l"
 { return TOK_NULLVAL; }
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 114 "jtest.l"
-{ printf("found identifer %s\n", yytext); return TOK_IDENTIFIER; }
+#line 114 "JavaLexer.l"
+{ /*needs to return a union value (string)*/ return TOK_IDENTIFIER; }
 	YY_BREAK
 case 98:
 /* rule 98 can match eol */
 YY_RULE_SETUP
-#line 116 "jtest.l"
+#line 116 "JavaLexer.l"
 ;/*eat whitespace*/
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 118 "jtest.l"
+#line 118 "JavaLexer.l"
 ECHO;
 	YY_BREAK
 #line 1405 "lex.yy.c"
@@ -2406,12 +2406,13 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 118 "jtest.l"
+#line 118 "JavaLexer.l"
 
 
-
+/* program for testing */
+/*
 int main(int argc, char **argv) {
-	++argv, --argc; /*skip over program name*/
+	++argv, --argc;
 	if(argc > 0){
 		yyin = fopen(argv[0], "r");
 	}else{
@@ -2419,7 +2420,11 @@ int main(int argc, char **argv) {
 	}
 	while(yylex());
 }
-
+*/
+/* 
+temporary yywrap function 
+I don't really know why this has to exist lol
+*/
 int yywrap(void){
 	return 1;
 }

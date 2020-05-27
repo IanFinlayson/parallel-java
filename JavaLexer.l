@@ -36,7 +36,7 @@ ID			[a-zA-Z_$][a-zA-Z_0-9$]*
 "byte"					{ return TOK_BYTE; }
 "else"					{ return TOK_ELSE; }
 "import"				{ return TOK_IMPORT; }
-"public"				{ printf("found public\n"); return TOK_PUBLIC; }
+"public"				{ return TOK_PUBLIC; }
 "case"					{ return TOK_CASE; }
 "enum"					{ return TOK_ENUM; }
 "instanceof"			{ return TOK_INSTANCEOF; }
@@ -50,9 +50,9 @@ ID			[a-zA-Z_$][a-zA-Z_0-9$]*
 "char"					{ return TOK_CHAR; }
 "final"					{ return TOK_FINAL; }
 "interface"				{ return TOK_INTERFACE; }
-"static"				{ printf("found static\n"); return TOK_STATIC; }
-"void"					{ printf("found void\n"); return TOK_VOID; }
-"class"					{ printf("found class\n");return TOK_CLASS; }
+"static"				{ return TOK_STATIC; }
+"void"					{ return TOK_VOID; }
+"class"					{ return TOK_CLASS; }
 "finally"				{ return TOK_FINALLY; }
 "long"					{ return TOK_LONG; }
 "strictfp"				{ return TOK_STRICTFP; }
@@ -105,21 +105,22 @@ ID			[a-zA-Z_$][a-zA-Z_0-9$]*
 "--"					{ return TOK_SUBSUB; }
 "++"					{ return TOK_ADDADD; }
 
-{DIGIT}+				{ return TOK_INTVAL; }
-{DIGIT}+"."{DIGIT}*		{ return TOK_FLOATVAL; }
+{DIGIT}+				{ /*needs to return a union value (int)*/ return TOK_INTVAL; }
+{DIGIT}+"."{DIGIT}*		{ /*needs to return a union value (float)*/ return TOK_FLOATVAL; }
 "\'".?"\'"				{ return TOK_CHARVAL; }
-"\"".*"\""				{ printf("found string value %s\n", yytext); return TOK_STRINGVAL; }
-"true"|"false"			{ return TOK_BOOLVAL; }
+"\"".*"\""				{ /*needs to return a union value (string)*/ return TOK_STRINGVAL; }
+"true"|"false"			{ /*needs to return a union value (boolean)*/ return TOK_BOOLVAL; }
 "null"					{ return TOK_NULLVAL; }
-{ID}					{ printf("found identifer %s\n", yytext); return TOK_IDENTIFIER; }
+{ID}					{ /*needs to return a union value (string)*/ return TOK_IDENTIFIER; }
 
 [ \t\n]+				;/*eat whitespace*/
 
 %%
 
-
+/* program for testing */
+/*
 int main(int argc, char **argv) {
-	++argv, --argc; /*skip over program name*/
+	++argv, --argc;
 	if(argc > 0){
 		yyin = fopen(argv[0], "r");
 	}else{
@@ -127,7 +128,11 @@ int main(int argc, char **argv) {
 	}
 	while(yylex());
 }
-
+*/
+/* 
+temporary yywrap function 
+I don't really know why this has to exist lol
+*/
 int yywrap(void){
 	return 1;
 }
