@@ -2,7 +2,7 @@
 
 %{
 	#include <iostream>
-	#include "tokens.h"
+	#include "JavaGrammar.tab.hh"
 	
 	extern int yylex();
 %}
