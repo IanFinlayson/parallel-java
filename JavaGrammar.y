@@ -7,41 +7,112 @@
 	using namespace std;
 %}
 
-%define api.value.type {variant}
-%token TOK_PUBLIC
-%token <string> TOK_CLASS 
-%token <string> TOK_IDENTIFIER
-%token TOK_LBRACE
-%token TOK_RBRACE
-%token TOK_STATIC
-%token TOK_VOID
-%token TOK_LPAREN
-%token TOK_RPAREN
-%token TOK_LBRACKET
-%token TOK_RBRACKET
-%token TOK_DOT
-%token <string> TOK_STRINGVAL
-%token <int> TOK_INTVAL
-%token TOK_SEMI
-%token <boolean> TOK_BOOLEANVAL
-%token TOK_ADD
-%token TOK_BREAK
-%token TOK_CASE
-%token TOK_COLON
-%token TOK_COMMA
-%token <double>TOK_DOUBLEVAL
-%token TOK_EQUAL
-%token <float>TOK_FLOATVAL
-%token <long>TOK_LONGVAL
-%token TOK_SWITCH
-%token TOK_WHILE
-%token TOK_INT
-%token TOK_STRING
-%token TOK_LONG
-%token TOK_DOUBLE
-%token TOK_BOOLEAN
-%token TOK_FLOAT
+// identifiers and literals
+%token TOK_IDENTIFIER 100
+%token TOK_INTVAL 101
+%token TOK_FLOATVAL 102
+%token TOK_STRINGVAL 103
+%token TOK_BOOLVAL 104
+%token TOK_CHARVAL 105
+%token TOK_NULLVAL 106
+
+// keywords
+%token TOK_ABSTRACT 200
+%token TOK_CONTINUE 201
+%token TOK_FOR 202
+%token TOK_NEW 203
+%token TOK_SWITCH 204
+%token TOK_ASSERT 205
+%token TOK_DEFAULT 206
+%token TOK_GOTO 207
+%token TOK_PACKAGE 208
+%token TOK_SYNCHRONIZED 209
+%token TOK_BOOLEAN 210
+%token TOK_DO 211
+%token TOK_IF 212
+%token TOK_PRIVATE 213
+%token TOK_THIS 214
+%token TOK_BREAK 215
+%token TOK_DOUBLE 216
+%token TOK_IMPLEMENTS 217
+%token TOK_PROTECTED 218
+%token TOK_THROW 219
+%token TOK_BYTE 220
+%token TOK_ELSE 221
+%token TOK_IMPORT 222
+%token TOK_PUBLIC 223
+%token TOK_THROWS 224
+%token TOK_CASE 225
+%token TOK_ENUM 226
+%token TOK_INSTANCEOF 227
+%token TOK_RETURN 228
+%token TOK_TRANSIENT 229
+%token TOK_CATCH 230
+%token TOK_EXTENDS 231
+%token TOK_INT 232
+%token TOK_SHORT 233
+%token TOK_TRY 234
+%token TOK_CHAR 235
+%token TOK_FINAL 236
+%token TOK_INTERFACE 237
+%token TOK_STATIC 238
+%token TOK_VOID 239
+%token TOK_CLASS 240
+%token TOK_FINALLY 241
+%token TOK_LONG 242
+%token TOK_STRICTFP 243
+%token TOK_VOLATILE 244
+%token TOK_CONST 245
+%token TOK_FLOAT 246
+%token TOK_NATIVE 247
+%token TOK_SUPER 248
+%token TOK_WHILE 249
+%token TOK_STRING 250
+
+//punctuation
+%token TOK_LBRACKET 300
+%token TOK_RBRACKET 301
+%token TOK_LPAREN 302
+%token TOK_RPAREN 303
+%token TOK_LBRACE 304
+%token TOK_RBRACE 305
+%token TOK_COMMA 306
+%token TOK_SEMI 307
+%token TOK_DOT 308
+%token TOK_ASSIGN 309
+%token TOK_MODASSIGN 310
+%token TOK_DIVASSIGN 311
+%token TOK_MULASSIGN 312
+%token TOK_ADDASSIGN 313
+%token TOK_SUBASSIGN 314
+%token TOK_COLON 315
+%token TOK_QUESTION 316
+%token TOK_OR 317
+%token TOK_AND 318
+%token TOK_BITOR 319
+%token TOK_BITAND 320
+%token TOK_BITXOR 321
+%token TOK_EQUAL 322
+%token TOK_NEQUAL 323
+%token TOK_LESS 324
+%token TOK_LEQUAL 325
+%token TOK_GREATER 326
+%token TOK_GEQUAL 327
+%token TOK_LSHIFT 328
+%token TOK_RSHIFT 329
+%token TOK_RSHIFTZ 330
+%token TOK_ADD 331
+%token TOK_SUB 332
+%token TOK_MOD 333
+%token TOK_DIV 334
+%token TOK_MUL 335
+%token TOK_BITNEG 336
+%token TOK_NEG 337
+%token TOK_SUBSUB 338
+%token TOK_ADDADD 339
+
 %%
+
 program:
 classdec
 | program classdec

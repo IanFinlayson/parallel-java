@@ -9,3 +9,6 @@ int yylex() {
     return tokens[counter - 1];
 }
 
+int main(){
+	return yylex();
+}

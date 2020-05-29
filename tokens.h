@@ -61,6 +61,7 @@
 #define TOK_NATIVE 247
 #define TOK_SUPER 248
 #define TOK_WHILE 249
+#define TOK_STRING 250
 
 // punctuation
 #define TOK_LBRACKET 300
