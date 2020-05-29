@@ -1,19 +1,19 @@
 %{
 	#include <cstdlib>
-	int yylex();
+	extern int yylex();
 	void yyerror (char const *error);
-	using namespace std;
 %}
 
 %code requires{
 	#include <string>
 	#include <iostream> 
 }
+
 %union {
 //wasn't sure what to call these
 	int iVal;
 	double dVal;
-	string* stVal;
+	std::string* stVal;
 	bool bVal;
 	float fVal;
 	long lVal;
@@ -289,6 +289,6 @@ int main ()
 #include <stdio.h>
 void yyerror (char const *s)
 {
-  cout << *s << endl;
+ std::cout << s << std::endl;
 }
 

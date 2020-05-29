@@ -65,11 +65,10 @@
 #line 1 "JavaGrammar.yy" /* yacc.c:339  */
 
 	#include <cstdlib>
-	int yylex();
+	extern int yylex();
 	void yyerror (char const *error);
-	using namespace std;
 
-#line 73 "JavaGrammar.tab.cc" /* yacc.c:339  */
+#line 72 "JavaGrammar.tab.cc" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -99,12 +98,12 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 8 "JavaGrammar.yy" /* yacc.c:355  */
+#line 7 "JavaGrammar.yy" /* yacc.c:355  */
 
 	#include <string>
 	#include <iostream> 
 
-#line 108 "JavaGrammar.tab.cc" /* yacc.c:355  */
+#line 107 "JavaGrammar.tab.cc" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -225,14 +224,14 @@ union YYSTYPE
 //wasn't sure what to call these
 	int iVal;
 	double dVal;
-	string* stVal;
+	std::string* stVal;
 	bool bVal;
 	float fVal;
 	long lVal;
 	short shVal;
 	char cVal;
 
-#line 236 "JavaGrammar.tab.cc" /* yacc.c:355  */
+#line 235 "JavaGrammar.tab.cc" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -249,7 +248,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 253 "JavaGrammar.tab.cc" /* yacc.c:358  */
+#line 252 "JavaGrammar.tab.cc" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -1448,7 +1447,7 @@ yyreduce:
   switch (yyn)
     {
       
-#line 1452 "JavaGrammar.tab.cc" /* yacc.c:1646  */
+#line 1451 "JavaGrammar.tab.cc" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1687,6 +1686,6 @@ int main ()
 #include <stdio.h>
 void yyerror (char const *s)
 {
-  cout << *s << endl;
+ std::cout << s << std::endl;
 }
 

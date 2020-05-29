@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 8 "JavaGrammar.yy" /* yacc.c:1909  */
+#line 7 "JavaGrammar.yy" /* yacc.c:1909  */
 
 	#include <string>
 	#include <iostream> 
@@ -166,7 +166,7 @@ union YYSTYPE
 //wasn't sure what to call these
 	int iVal;
 	double dVal;
-	string* stVal;
+	std::string* stVal;
 	bool bVal;
 	float fVal;
 	long lVal;
