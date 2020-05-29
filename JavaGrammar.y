@@ -7,14 +7,28 @@
 	using namespace std;
 %}
 
+%union {
+//wasn't sure what to call these
+	int iVal;
+	double dVal;
+	string* stVal;
+	bool bVal;
+	float fVal;
+	long lVal;
+	short shVal;
+	char cVal;
+}
 // identifiers and literals
-%token TOK_IDENTIFIER 100
-%token TOK_INTVAL 101
-%token TOK_FLOATVAL 102
-%token TOK_STRINGVAL 103
-%token TOK_BOOLVAL 104
-%token TOK_CHARVAL 105
-%token TOK_NULLVAL 106
+%token <stVal> TOK_IDENTIFIER 100
+%token <iVal> TOK_INTVAL 101
+%token <fVal> TOK_FLOATVAL 102
+%token <stVal> TOK_STRINGVAL 103
+%token <booVal> TOK_BOOLVAL 104
+%token <cVal> TOK_CHARVAL 105
+%token <dVal> TOK_DOUBLEVAL 106
+%token <lVal> TOK_LONGVAL 107
+%token <shVal> TOK_SHORTVAL 108
+%token TOK_NULLVAL 109
 
 // keywords
 %token TOK_ABSTRACT 200
