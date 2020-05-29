@@ -1,20 +1,36 @@
 %{
 	#include <cstdlib>
-	int yylex();
+	extern int yylex();
 	void yyerror (char const *error);
-	%require "3.2"
-	%language "c++"
-	using namespace std;
 %}
 
+%code requires{
+	#include <string>
+	#include <iostream> 
+}
+
+%union {
+//wasn't sure what to call these
+	int iVal;
+	double dVal;
+	std::string* stVal;
+	bool bVal;
+	float fVal;
+	long lVal;
+	short shVal;
+	char cVal;
+}
 // identifiers and literals
-%token TOK_IDENTIFIER 100
-%token TOK_INTVAL 101
-%token TOK_FLOATVAL 102
-%token TOK_STRINGVAL 103
-%token TOK_BOOLVAL 104
-%token TOK_CHARVAL 105
-%token TOK_NULLVAL 106
+%token <stVal> TOK_IDENTIFIER 100
+%token <iVal> TOK_INTVAL 101
+%token <fVal> TOK_FLOATVAL 102
+%token <stVal> TOK_STRINGVAL 103
+%token <booVal> TOK_BOOLVAL 104
+%token <cVal> TOK_CHARVAL 105
+%token <dVal> TOK_DOUBLEVAL 106
+%token <lVal> TOK_LONGVAL 107
+%token <shVal> TOK_SHORTVAL 108
+%token TOK_NULLVAL 109
 
 // keywords
 %token TOK_ABSTRACT 200
@@ -273,6 +289,6 @@ int main ()
 #include <stdio.h>
 void yyerror (char const *s)
 {
-  cout << *s << endl;
+ std::cout << s << std::endl;
 }
 

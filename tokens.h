@@ -8,7 +8,10 @@
 #define TOK_STRINGVAL 103
 #define TOK_BOOLVAL 104
 #define TOK_CHARVAL 105
-#define TOK_NULLVAL 106
+#define TOK_DOUBLEVAL 106
+#define TOK_LONGVAL 107
+#define TOK_SHORTVAL 108
+#define TOK_NULLVAL 109
 
 // keywords
 #define TOK_ABSTRACT 200

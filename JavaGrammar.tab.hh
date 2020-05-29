@@ -30,8 +30,8 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_JAVAGRAMMAR_TAB_H_INCLUDED
-# define YY_YY_JAVAGRAMMAR_TAB_H_INCLUDED
+#ifndef YY_YY_JAVAGRAMMAR_TAB_HH_INCLUDED
+# define YY_YY_JAVAGRAMMAR_TAB_HH_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -39,6 +39,13 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 7 "JavaGrammar.yy" /* yacc.c:1909  */
+
+	#include <string>
+	#include <iostream> 
+
+#line 49 "JavaGrammar.tab.hh" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -51,7 +58,10 @@ extern int yydebug;
     TOK_STRINGVAL = 103,
     TOK_BOOLVAL = 104,
     TOK_CHARVAL = 105,
-    TOK_NULLVAL = 106,
+    TOK_DOUBLEVAL = 106,
+    TOK_LONGVAL = 107,
+    TOK_SHORTVAL = 108,
+    TOK_NULLVAL = 109,
     TOK_ABSTRACT = 200,
     TOK_CONTINUE = 201,
     TOK_FOR = 202,
@@ -148,7 +158,25 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+
+union YYSTYPE
+{
+#line 12 "JavaGrammar.yy" /* yacc.c:1909  */
+
+//wasn't sure what to call these
+	int iVal;
+	double dVal;
+	std::string* stVal;
+	bool bVal;
+	float fVal;
+	long lVal;
+	short shVal;
+	char cVal;
+
+#line 177 "JavaGrammar.tab.hh" /* yacc.c:1909  */
+};
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -158,4 +186,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_JAVAGRAMMAR_TAB_H_INCLUDED  */
+#endif /* !YY_YY_JAVAGRAMMAR_TAB_HH_INCLUDED  */
