@@ -2,7 +2,8 @@
 
 %{
 	#include <iostream>
-	#include "tokens.h"
+	#include <string.h>
+	#include "JavaGrammar.tab.hh"
 	
 	extern int yylex();
 %}
@@ -105,15 +106,22 @@ ID			[a-zA-Z_$][a-zA-Z_0-9$]*
 "--"					{ return TOK_SUBSUB; }
 "++"					{ return TOK_ADDADD; }
 
-{DIGIT}+				{ /*needs to return a union value (int)*/ return TOK_INTVAL; }
-{DIGIT}+"."{DIGIT}*		{ /*needs to return a union value (float)*/ return TOK_FLOATVAL; }
-"\'".?"\'"				{ return TOK_CHARVAL; }
-"\"".*"\""				{ /*needs to return a union value (string)*/ return TOK_STRINGVAL; }
-"true"|"false"			{ /*needs to return a union value (boolean)*/ return TOK_BOOLVAL; }
+{DIGIT}+				{ yylval.iVal = atoi(yytext); return TOK_INTVAL; }
+{DIGIT}+"."{DIGIT}*		{ yylval.fVal = atof(yytext); return TOK_FLOATVAL; }
+"\'".?"\'"				{ yylval.cVal = yytext[0]; return TOK_CHARVAL; }
+"\"".*"\""				{	std::string _st (yytext);
+							yylval.stVal = &_st; 
+							return TOK_STRINGVAL; }
+"true"|"false"			{ yylval.bVal = strcmp(yytext, "true") == 0; return TOK_BOOLVAL; }
 "null"					{ return TOK_NULLVAL; }
-{ID}					{ /*needs to return a union value (string)*/ return TOK_IDENTIFIER; }
+{ID}					{	std::string _st (yytext);
+							yylval.stVal = &_st; 
+							return TOK_IDENTIFIER; }
 
-[ \t\n]+				;/*eat whitespace*/
+[ \t\n]+				{ ;/*eat whitespace*/ }
+"//".*$					{ ;/*eat one line comments*/ }
+"/*"(.|\n)*"*/"			{ ;/*probably eats multiline comments???*/ }
+
 
 %%
 
