@@ -6,7 +6,7 @@ public class Sample {
 			System.out.println("Hello World!"); 
 		}
 
-		int i = 3 + 3 - k;
+		int i = 3 + 3 - k + 5;
 
 		for(int k = 3 + 3; i < 5; i++){
 			i = 2;
