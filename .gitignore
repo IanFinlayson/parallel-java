@@ -2,3 +2,5 @@
 
 parser
 *.o
+*.tab.cc
+*.tab.yy
