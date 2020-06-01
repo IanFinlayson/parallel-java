@@ -83,7 +83,7 @@
 # undef YYERROR_VERBOSE
 # define YYERROR_VERBOSE 1
 #else
-# define YYERROR_VERBOSE 0
+# define YYERROR_VERBOSE 1
 #endif
 
 /* In a future release of Bison, this section will be replaced
@@ -231,7 +231,8 @@ union YYSTYPE
 	short shVal;
 	char cVal;
 
-#line 235 "JavaGrammar.tab.cc" /* yacc.c:355  */
+
+#line 236 "JavaGrammar.tab.cc" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -248,7 +249,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 252 "JavaGrammar.tab.cc" /* yacc.c:358  */
+#line 253 "JavaGrammar.tab.cc" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -554,16 +555,16 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   133,   133,   134,   139,   143,   147,   148,   152,   153,
-     157,   162,   166,   167,   168,   169,   173,   174,   178,   179,
-     180,   181,   182,   183,   187,   188,   192,   193,   197,   198,
-     199,   200,   204,   208,   212,   216,   217,   229,   233,   234,
-     238,   239,   240,   241,   245,   249,   250,   251,   252,   256,
-     257,   258,   259,   263,   264,   268,   273,   279,   280
+       0,   135,   135,   136,   141,   145,   149,   150,   154,   155,
+     159,   164,   168,   169,   170,   171,   175,   176,   180,   181,
+     182,   183,   184,   185,   189,   190,   194,   195,   199,   200,
+     201,   202,   206,   210,   214,   218,   219,   231,   235,   236,
+     240,   241,   242,   243,   247,   251,   252,   253,   254,   258,
+     259,   260,   261,   265,   266,   270,   275,   281,   282
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 0
+#if YYDEBUG || YYERROR_VERBOSE || 1
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
@@ -1447,7 +1448,7 @@ yyreduce:
   switch (yyn)
     {
       
-#line 1451 "JavaGrammar.tab.cc" /* yacc.c:1646  */
+#line 1452 "JavaGrammar.tab.cc" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1675,7 +1676,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 282 "JavaGrammar.yy" /* yacc.c:1906  */
+#line 284 "JavaGrammar.yy" /* yacc.c:1906  */
 
 
 int main ()

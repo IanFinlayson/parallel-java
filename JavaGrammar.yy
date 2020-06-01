@@ -19,8 +19,11 @@
 	long lVal;
 	short shVal;
 	char cVal;
+
 }
+
 // identifiers and literals
+%error-verbose
 %token <stVal> TOK_IDENTIFIER 100
 %token <iVal> TOK_INTVAL 101
 %token <fVal> TOK_FLOATVAL 102
@@ -83,7 +86,6 @@
 %token TOK_NATIVE 247
 %token TOK_SUPER 248
 %token TOK_WHILE 249
-%token TOK_STRING 250
 
 //punctuation
 %token TOK_LBRACKET 300
@@ -102,6 +104,7 @@
 %token TOK_ADDASSIGN 313
 %token TOK_SUBASSIGN 314
 %token TOK_COLON 315
+
 %token TOK_QUESTION 316
 %token TOK_OR 317
 %token TOK_AND 318
@@ -126,7 +129,6 @@
 %token TOK_NEG 337
 %token TOK_SUBSUB 338
 %token TOK_ADDADD 339
-
 %%
 
 program:
@@ -164,9 +166,7 @@ TOK_LBRACE methodbody TOK_RBRACE
 
 methodbody:
 statement
-|expression
 |methodbody statement
-|methodbody expression
 ;
 
 returntype:
@@ -179,9 +179,8 @@ TOK_LONG
 |TOK_FLOAT
 |TOK_BOOLEAN
 |TOK_INT
-|TOK_STRING
 |TOK_DOUBLE
-;
+
 
 formalparameters:
 datatype TOK_IDENTIFIER
@@ -247,9 +246,7 @@ TOK_WHILE TOK_LPAREN expression TOK_LBRACE loopbody TOK_RBRACE
 
 loopbody:
 statement
-|expression
 |loopbody statement
-|loopbody expression
 ;
 
 expression:

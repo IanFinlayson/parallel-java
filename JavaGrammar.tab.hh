@@ -173,7 +173,8 @@ union YYSTYPE
 	short shVal;
 	char cVal;
 
-#line 177 "JavaGrammar.tab.hh" /* yacc.c:1909  */
+
+#line 178 "JavaGrammar.tab.hh" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
