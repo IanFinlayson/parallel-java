@@ -62,13 +62,13 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "testGrammar.yy" /* yacc.c:339  */
+#line 1 "JavaGrammar.yy" /* yacc.c:339  */
 
 	#include <cstdlib>
 	extern int yylex();
 	void yyerror (char const *error);
 
-#line 72 "testGrammar.tab.cc" /* yacc.c:339  */
+#line 72 "JavaGrammar.tab.cc" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -87,9 +87,9 @@
 #endif
 
 /* In a future release of Bison, this section will be replaced
-   by #include "testGrammar.tab.hh".  */
-#ifndef YY_YY_TESTGRAMMAR_TAB_HH_INCLUDED
-# define YY_YY_TESTGRAMMAR_TAB_HH_INCLUDED
+   by #include "JavaGrammar.tab.hh".  */
+#ifndef YY_YY_JAVAGRAMMAR_TAB_HH_INCLUDED
+# define YY_YY_JAVAGRAMMAR_TAB_HH_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -98,12 +98,12 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 7 "testGrammar.yy" /* yacc.c:355  */
+#line 7 "JavaGrammar.yy" /* yacc.c:355  */
 
 	#include <string>
 	#include <iostream> 
 
-#line 107 "testGrammar.tab.cc" /* yacc.c:355  */
+#line 107 "JavaGrammar.tab.cc" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -218,7 +218,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 12 "testGrammar.yy" /* yacc.c:355  */
+#line 12 "JavaGrammar.yy" /* yacc.c:355  */
 
 //wasn't sure what to call these
 	int iVal;
@@ -231,7 +231,7 @@ union YYSTYPE
 	char cVal;
 
 
-#line 235 "testGrammar.tab.cc" /* yacc.c:355  */
+#line 235 "JavaGrammar.tab.cc" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -244,11 +244,11 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_TESTGRAMMAR_TAB_HH_INCLUDED  */
+#endif /* !YY_YY_JAVAGRAMMAR_TAB_HH_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 252 "testGrammar.tab.cc" /* yacc.c:358  */
+#line 252 "JavaGrammar.tab.cc" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -558,12 +558,12 @@ static const yytype_uint16 yyrline[] =
      153,   157,   161,   165,   169,   170,   174,   175,   179,   180,
      181,   184,   185,   186,   187,   191,   192,   196,   197,   198,
      199,   200,   204,   205,   206,   209,   210,   211,   212,   216,
-     220,   221,   225,   230,   231,   235,   239,   240,   244,   259,
-     260,   261,   262,   263,   266,   267,   268,   269,   270,   271,
-     274,   275,   279,   280,   281,   282,   283,   284,   288,   289,
-     290,   291,   292,   293,   294,   295,   299,   303,   309,   313,
-     314,   318,   319,   323,   324,   328,   329,   333,   334,   338,
-     339
+     220,   221,   225,   231,   232,   236,   241,   242,   246,   261,
+     262,   263,   264,   265,   269,   270,   271,   272,   273,   274,
+     278,   279,   283,   284,   285,   286,   287,   288,   292,   293,
+     294,   295,   296,   297,   298,   299,   303,   307,   313,   317,
+     318,   322,   323,   327,   328,   332,   333,   337,   338,   342,
+     343
 };
 #endif
 
@@ -1501,7 +1501,7 @@ yyreduce:
   switch (yyn)
     {
       
-#line 1505 "testGrammar.tab.cc" /* yacc.c:1646  */
+#line 1505 "JavaGrammar.tab.cc" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1729,7 +1729,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 342 "testGrammar.yy" /* yacc.c:1906  */
+#line 346 "JavaGrammar.yy" /* yacc.c:1906  */
 
 int main ()
 {

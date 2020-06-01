@@ -30,8 +30,8 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_TESTGRAMMAR_TAB_HH_INCLUDED
-# define YY_YY_TESTGRAMMAR_TAB_HH_INCLUDED
+#ifndef YY_YY_JAVAGRAMMAR_TAB_HH_INCLUDED
+# define YY_YY_JAVAGRAMMAR_TAB_HH_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -40,12 +40,12 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 7 "testGrammar.yy" /* yacc.c:1909  */
+#line 7 "JavaGrammar.yy" /* yacc.c:1909  */
 
 	#include <string>
 	#include <iostream> 
 
-#line 49 "testGrammar.tab.hh" /* yacc.c:1909  */
+#line 49 "JavaGrammar.tab.hh" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -160,7 +160,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 12 "testGrammar.yy" /* yacc.c:1909  */
+#line 12 "JavaGrammar.yy" /* yacc.c:1909  */
 
 //wasn't sure what to call these
 	int iVal;
@@ -173,7 +173,7 @@ union YYSTYPE
 	char cVal;
 
 
-#line 177 "testGrammar.tab.hh" /* yacc.c:1909  */
+#line 177 "JavaGrammar.tab.hh" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -186,4 +186,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_TESTGRAMMAR_TAB_HH_INCLUDED  */
+#endif /* !YY_YY_JAVAGRAMMAR_TAB_HH_INCLUDED  */
