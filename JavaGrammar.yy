@@ -19,8 +19,11 @@
 	long lVal;
 	short shVal;
 	char cVal;
+
 }
-// identifiers and literals
+
+/* reorganize */
+%error-verbose 
 %token <stVal> TOK_IDENTIFIER 100
 %token <iVal> TOK_INTVAL 101
 %token <fVal> TOK_FLOATVAL 102
@@ -83,7 +86,6 @@
 %token TOK_NATIVE 247
 %token TOK_SUPER 248
 %token TOK_WHILE 249
-%token TOK_STRING 250
 
 //punctuation
 %token TOK_LBRACKET 300
@@ -95,53 +97,50 @@
 %token TOK_COMMA 306
 %token TOK_SEMI 307
 %token TOK_DOT 308
-%token TOK_ASSIGN 309
-%token TOK_MODASSIGN 310
-%token TOK_DIVASSIGN 311
-%token TOK_MULASSIGN 312
-%token TOK_ADDASSIGN 313
-%token TOK_SUBASSIGN 314
+%right TOK_ASSIGN 309
+%right TOK_MODASSIGN 310
+%right TOK_DIVASSIGN 311
+%right TOK_MULASSIGN 312
+%right TOK_ADDASSIGN 313
+%right TOK_SUBASSIGN 314
 %token TOK_COLON 315
 %token TOK_QUESTION 316
-%token TOK_OR 317
-%token TOK_AND 318
-%token TOK_BITOR 319
-%token TOK_BITAND 320
-%token TOK_BITXOR 321
-%token TOK_EQUAL 322
-%token TOK_NEQUAL 323
-%token TOK_LESS 324
-%token TOK_LEQUAL 325
-%token TOK_GREATER 326
-%token TOK_GEQUAL 327
-%token TOK_LSHIFT 328
-%token TOK_RSHIFT 329
-%token TOK_RSHIFTZ 330
-%token TOK_ADD 331
-%token TOK_SUB 332
-%token TOK_MOD 333
-%token TOK_DIV 334
-%token TOK_MUL 335
+%left TOK_OR 317
+%left TOK_AND 318
+%left TOK_BITOR 319
+%left TOK_BITAND 320
+%left TOK_BITXOR 321
+%nonassoc TOK_EQUAL 322
+%nonassoc TOK_NEQUAL 323
+%nonassoc TOK_LESS 324
+%nonassoc TOK_LEQUAL 325
+%nonassoc TOK_GREATER 326
+%nonassoc TOK_GEQUAL 327
+%left TOK_LSHIFT 328
+%left TOK_RSHIFT 329
+%left TOK_RSHIFTZ 330
+%left TOK_ADD 331
+%left TOK_SUB 332
+%left TOK_MOD 333
+%left TOK_DIV 334
+%left TOK_MUL 335
 %token TOK_BITNEG 336
-%token TOK_NEG 337
+%right TOK_NEG 337
 %token TOK_SUBSUB 338
 %token TOK_ADDADD 339
-
 %%
 
 program:
 classdec
-| program classdec
+|program classdec
 ;
 
 classdec:
-/*define by different types of classes?*/
 accessmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
 ;
 
 accessmod:
 TOK_PUBLIC
-;
 
 classbody:
 method
@@ -149,24 +148,21 @@ method
 ;
 
 method:
-instancemethod
-| staticmethod
+staticmethod
+|main
+|instancemethod
 ;
 
-instancemethod:
-accessmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE 
-methodbody TOK_RBRACE
+main:
+accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
 staticmethod:
-accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN
-TOK_LBRACE methodbody TOK_RBRACE
+accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+;
 
-methodbody:
-statement
-|expression
-|methodbody statement
-|methodbody expression
+instancemethod:
+accessmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
 returntype:
@@ -174,121 +170,187 @@ TOK_VOID
 |datatype
 ;
 
-datatype:
-TOK_LONG
-|TOK_FLOAT
-|TOK_BOOLEAN
-|TOK_INT
-|TOK_STRING
-|TOK_DOUBLE
-;
-
 formalparameters:
 datatype TOK_IDENTIFIER
-|formalparameters TOK_COMMA datatype TOK_IDENTIFIER
+| formalparameters TOK_COMMA datatype TOK_IDENTIFIER
 ;
 
 argument:
-expression
-|TOK_IDENTIFIER
+%empty
+|arithmeticopexpression
+|TOK_STRINGVAL
+
+datatype:
+TOK_IDENTIFIER
+|TOK_INT
+|TOK_BOOLEAN
+|TOK_FLOAT
+;
+
+block:
+statement
+|block statement 
 ;
 
 statement:
-controlflowstate
-|declarationstate
-|initializationstate
-|assignmentstate
+expressionstatement
+|controlflowstatement
+|declarationstatement
+|assignmentstatement
+|initializationstatement
 ;
 
-declarationstate:
+expressionstatement:
+methodinvocation TOK_SEMI
+|postdecrement TOK_SEMI
+|predecrement TOK_SEMI
+
+controlflowstatement:
+whileloop
+|forloop
+|ifstatement
+|ifelsestatement
+;
+
+declarationstatement:
 datatype TOK_IDENTIFIER TOK_SEMI
 ;
 
-assignmentstate:
-TOK_IDENTIFIER TOK_EQUAL expression
+assignmentstatement:
+assignmentopexpression TOK_SEMI
+|TOK_IDENTIFIER TOK_ASSIGN methodinvocation TOK_SEMI
 ;
 
-initializationstate:
-datatype assignmentstate
-;
-
-controlflowstate:
-switchstatement
-|whileloop
-/*|dowhileloop
-|forloop
-|TOK_BREAK
-|returnstatement
-|TOK_CONTINUE
-|ifstatement
-|ifelsestatement
-*/
-;
-
-switchstatement:
-TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_RBRACE
-;
-
-switchbody:
-TOK_CASE expression TOK_COLON casebody
-|switchbody TOK_CASE expression TOK_COLON casebody
-;
-
-casebody:
-statement TOK_BREAK
-|expression TOK_BREAK
-|casebody statement TOK_BREAK
-|casebody expression TOK_BREAK
+initializationstatement:
+datatype assignmentstatement
+/*data structure initialization*/
+/*intializing an object, string*/
 ;
 
 whileloop:
-TOK_WHILE TOK_LPAREN expression TOK_LBRACE loopbody TOK_RBRACE
+TOK_WHILE TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|TOK_WHILE TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
-loopbody:
-statement
-|expression
-|loopbody statement
-|loopbody expression
+forloop:
+TOK_FOR TOK_LPAREN initializationstatement relationalopexpression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
+/*fix*/
+ifstatement:
+TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+
+ifelsestatement:
+ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE
+/*else if{
+
+/*
 expression:
-methodcall
-|TOK_INTVAL
-|TOK_STRINGVAL
-|TOK_INTVAL TOK_ADD TOK_INTVAL
+methodinvocation
+|arithmeticopexpression
+|relationalopexpression
+|logicalopexpression
+|assignmentopexpression
+|postdecrement
+|predecrement
+;
+*/
+arithmeticoperator:
+TOK_ADD
+|TOK_SUB
+|TOK_MOD
+|TOK_DIV
+|TOK_MUL
 ;
 
-methodcall:
-staticmethodcall
+relationaloperator:
+TOK_EQUAL
+|TOK_NEQUAL
+|TOK_GREATER
+|TOK_LESS
+|TOK_GEQUAL
+|TOK_LEQUAL
+;
+
+logicaloperator:
+TOK_AND
+|TOK_OR
+/*TOK_NOT*/
+;
+assignmentoperator:
+TOK_ASSIGN
+|TOK_MODASSIGN
+|TOK_DIVASSIGN
+|TOK_MULASSIGN
+|TOK_ADDASSIGN
+|TOK_SUBASSIGN
+;
+
+arithmeticopexpression:
+TOK_INTVAL
+|TOK_DOUBLEVAL
+|TOK_FLOATVAL
+|TOK_IDENTIFIER
+|arithmeticopexpression arithmeticoperator TOK_INTVAL
+|arithmeticopexpression arithmeticoperator TOK_DOUBLEVAL
+|arithmeticopexpression arithmeticoperator TOK_FLOATVAL
+|arithmeticopexpression arithmeticoperator TOK_IDENTIFIER
+;
+
+relationalopexpression:
+TOK_IDENTIFIER relationaloperator arithmeticopexpression
+;
+
+logicalopexpression:
+relationalopexpression logicaloperator relationalopexpression
+/*handle parenthesis*/
+
+;
+
+assignmentopexpression:
+TOK_IDENTIFIER assignmentoperator arithmeticopexpression
+;
+
+postdecrement:
+TOK_IDENTIFIER TOK_ADDADD
+|TOK_IDENTIFIER TOK_SUBSUB
+;
+
+predecrement:
+TOK_ADDADD TOK_IDENTIFIER
+|TOK_SUBSUB TOK_IDENTIFIER 
+;
+
+methodinvocation:
+methodcall
 |instancemethodcall
 ;
 
-staticmethodcall:
-TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_SEMI
-;
-
 instancemethodcall:
-/*??*/
-TOK_IDENTIFIER methodcallname TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+fieldreference TOK_DOT methodcall
+|TOK_IDENTIFIER TOK_DOT methodcall
 ;
 
-/*rename*/ 
-methodcallname:
-/*??*/
-TOK_DOT TOK_IDENTIFIER
-|methodcall TOK_DOT TOK_IDENTIFIER
+methodcall:
+TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+|methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 ;
+
+fieldreference:
+TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/
+|fieldreference TOK_DOT TOK_IDENTIFIER
+;
+
 %%
-
 int main ()
 {
-  return yyparse();
+	return yyparse();
 }
 
 #include <stdio.h>
 void yyerror (char const *s)
 {
- std::cout << s << std::endl;
+	std::cout << s << std::endl;
 }
-

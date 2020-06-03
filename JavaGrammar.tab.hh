@@ -1,9 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.5.1.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
-   Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,9 +30,6 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Undocumented macros, especially those whose name start with YY_,
-   are private implementation details.  Do not rely on them.  */
-
 #ifndef YY_YY_JAVAGRAMMAR_TAB_HH_INCLUDED
 # define YY_YY_JAVAGRAMMAR_TAB_HH_INCLUDED
 /* Debug traces.  */
@@ -44,12 +40,12 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 7 "JavaGrammar.yy"
+#line 7 "JavaGrammar.yy" /* yacc.c:1909  */
 
 	#include <string>
 	#include <iostream> 
 
-#line 53 "JavaGrammar.tab.hh"
+#line 49 "JavaGrammar.tab.hh" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -116,7 +112,6 @@ extern int yydebug;
     TOK_NATIVE = 247,
     TOK_SUPER = 248,
     TOK_WHILE = 249,
-    TOK_STRING = 250,
     TOK_LBRACKET = 300,
     TOK_RBRACKET = 301,
     TOK_LPAREN = 302,
@@ -162,9 +157,10 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+
 union YYSTYPE
 {
-#line 12 "JavaGrammar.yy"
+#line 12 "JavaGrammar.yy" /* yacc.c:1909  */
 
 //wasn't sure what to call these
 	int iVal;
@@ -176,9 +172,10 @@ union YYSTYPE
 	short shVal;
 	char cVal;
 
-#line 180 "JavaGrammar.tab.hh"
 
+#line 177 "JavaGrammar.tab.hh" /* yacc.c:1909  */
 };
+
 typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
