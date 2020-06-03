@@ -1,0 +1,3689 @@
+Terminals unused in grammar
+
+   TOK_BOOLVAL
+   TOK_CHARVAL
+   TOK_LONGVAL
+   TOK_SHORTVAL
+   TOK_NULLVAL
+   TOK_ABSTRACT
+   TOK_CONTINUE
+   TOK_SWITCH
+   TOK_ASSERT
+   TOK_DEFAULT
+   TOK_GOTO
+   TOK_PACKAGE
+   TOK_SYNCHRONIZED
+   TOK_DO
+   TOK_PRIVATE
+   TOK_THIS
+   TOK_BREAK
+   TOK_DOUBLE
+   TOK_IMPLEMENTS
+   TOK_PROTECTED
+   TOK_THROW
+   TOK_BYTE
+   TOK_IMPORT
+   TOK_THROWS
+   TOK_CASE
+   TOK_ENUM
+   TOK_INSTANCEOF
+   TOK_RETURN
+   TOK_TRANSIENT
+   TOK_CATCH
+   TOK_EXTENDS
+   TOK_SHORT
+   TOK_TRY
+   TOK_CHAR
+   TOK_FINAL
+   TOK_INTERFACE
+   TOK_FINALLY
+   TOK_LONG
+   TOK_STRICTFP
+   TOK_VOLATILE
+   TOK_CONST
+   TOK_NATIVE
+   TOK_SUPER
+   TOK_COLON
+   TOK_QUESTION
+   TOK_BITOR
+   TOK_BITAND
+   TOK_BITXOR
+   TOK_LSHIFT
+   TOK_RSHIFT
+   TOK_RSHIFTZ
+   TOK_BITNEG
+   TOK_NEG
+
+
+State 70 conflicts: 1 shift/reduce
+State 88 conflicts: 1 shift/reduce
+State 151 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: classdec
+    2        | program classdec
+
+    3 classdec: accessmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
+
+    4 accessmod: TOK_PUBLIC
+
+    5 classbody: method
+    6          | classbody method
+
+    7 method: staticmethod
+    8       | main
+    9       | instancemethod
+
+   10 main: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+   11 staticmethod: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+   12 instancemethod: accessmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+   13 returntype: TOK_VOID
+   14           | datatype
+   15           | TOK_IDENTIFIER
+
+   16 formalparameters: datatype TOK_IDENTIFIER TOK_IDENTIFIER TOK_IDENTIFIER
+   17                 | formalparameters TOK_COMMA datatype TOK_IDENTIFIER
+   18                 | formalparameters TOK_COMMA TOK_IDENTIFIER TOK_IDENTIFIER
+
+   19 argument: %empty
+   20         | arithmeticopexpression
+   21         | TOK_STRINGVAL
+   22         | argument TOK_COMMA arithmeticopexpression
+   23         | argument TOK_COMMA TOK_STRINGVAL
+
+   24 datatype: TOK_INT
+   25         | TOK_BOOLEAN
+   26         | TOK_FLOAT
+
+   27 block: statement
+   28      | block statement
+
+   29 statement: expressionstatement
+   30          | controlflowstatement
+   31          | declarationstatement
+   32          | assignmentstatement
+   33          | initializationstatement
+
+   34 expressionstatement: methodinvocation TOK_SEMI
+   35                    | postdecrement TOK_SEMI
+   36                    | predecrement TOK_SEMI
+
+   37 controlflowstatement: whileloop
+   38                     | forloop
+   39                     | ifstatement
+   40                     | ifelsestatement
+
+   41 declarationstatement: datatype TOK_IDENTIFIER TOK_SEMI
+   42                     | TOK_IDENTIFIER TOK_IDENTIFIER TOK_SEMI
+   43                     | TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER TOK_SEMI
+   44                     | TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER TOK_IDENTIFIER TOK_SEMI
+   45                     | TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER TOK_SEMI
+   46                     | datatype TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER TOK_SEMI
+   47                     | TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_SEMI
+   48                     | datatype TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_SEMI
+
+   49 assignmentstatement: numassignment
+   50                    | objectassignment
+   51                    | datastructassignment
+   52                    | methodassignment
+
+   53 numassignment: assignmentopexpression TOK_SEMI
+
+   54 methodassignment: TOK_IDENTIFIER TOK_ASSIGN methodinvocation TOK_SEMI
+
+   55 objectassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_STRINGVAL TOK_SEMI
+   56                 | TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+   57 datastructassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+   58 datastructure: TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER
+   59              | TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER
+   60              | TOK_IDENTIFIER TOK_LESS TOK_GREATER
+
+   61 initializationstatement: numinitialization
+   62                        | objectinitialization
+   63                        | datastructinitialization
+   64                        | methodinitialization
+
+   65 numinitialization: datatype numassignment
+
+   66 objectinitialization: TOK_IDENTIFIER objectassignment
+
+   67 datastructinitialization: TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER datastructassignment
+   68                         | TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER datastructassignment
+
+   69 methodinitialization: datatype methodassignment
+   70                     | TOK_IDENTIFIER methodassignment
+
+   71 whileloop: TOK_WHILE TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   72          | TOK_WHILE TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+   73 forloop: TOK_FOR TOK_LPAREN initializationstatement relationalopexpression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+   74 ifstatement: TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   75            | TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   76            | TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN statement
+   77            | TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN statement
+
+   78 ifelsestatement: ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE
+   79                | ifstatement TOK_ELSE statement
+
+   80 arithmeticoperator: TOK_ADD
+   81                   | TOK_SUB
+   82                   | TOK_MOD
+   83                   | TOK_DIV
+   84                   | TOK_MUL
+
+   85 relationaloperator: TOK_EQUAL
+   86                   | TOK_NEQUAL
+   87                   | TOK_GREATER
+   88                   | TOK_LESS
+   89                   | TOK_GEQUAL
+   90                   | TOK_LEQUAL
+
+   91 logicaloperator: TOK_AND
+   92                | TOK_OR
+
+   93 assignmentoperator: TOK_ASSIGN
+   94                   | TOK_MODASSIGN
+   95                   | TOK_DIVASSIGN
+   96                   | TOK_MULASSIGN
+   97                   | TOK_ADDASSIGN
+   98                   | TOK_SUBASSIGN
+
+   99 arithmeticopexpression: TOK_INTVAL
+  100                       | TOK_DOUBLEVAL
+  101                       | TOK_FLOATVAL
+  102                       | TOK_IDENTIFIER
+  103                       | arithmeticopexpression arithmeticoperator TOK_INTVAL
+  104                       | arithmeticopexpression arithmeticoperator TOK_DOUBLEVAL
+  105                       | arithmeticopexpression arithmeticoperator TOK_FLOATVAL
+  106                       | arithmeticopexpression arithmeticoperator TOK_IDENTIFIER
+
+  107 relationalopexpression: TOK_IDENTIFIER relationaloperator arithmeticopexpression
+  108                       | TOK_LPAREN TOK_IDENTIFIER relationaloperator arithmeticopexpression TOK_RPAREN
+
+  109 logicalopexpression: relationalopexpression logicaloperator relationalopexpression
+  110                    | logicalopexpression logicaloperator relationalopexpression
+  111                    | TOK_LPAREN logicalopexpression TOK_RPAREN logicaloperator relationalopexpression
+
+  112 assignmentopexpression: TOK_IDENTIFIER assignmentoperator arithmeticopexpression
+
+  113 postdecrement: TOK_IDENTIFIER TOK_ADDADD
+  114              | TOK_IDENTIFIER TOK_SUBSUB
+
+  115 predecrement: TOK_ADDADD TOK_IDENTIFIER
+  116             | TOK_SUBSUB TOK_IDENTIFIER
+
+  117 methodinvocation: methodcall
+  118                 | instancemethodcall
+
+  119 instancemethodcall: fieldreference TOK_DOT methodcall
+  120                   | TOK_IDENTIFIER TOK_DOT methodcall
+
+  121 methodcall: TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+  122           | methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+
+  123 fieldreference: TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER
+  124               | fieldreference TOK_DOT TOK_IDENTIFIER
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+TOK_IDENTIFIER (100) 3 10 11 12 15 16 17 18 41 42 43 44 45 46 47 48
+    54 55 56 57 58 59 60 66 67 68 70 102 106 107 108 112 113 114 115
+    116 120 121 122 123 124
+TOK_INTVAL (101) 99 103
+TOK_FLOATVAL (102) 101 105
+TOK_STRINGVAL (103) 21 23 55
+TOK_BOOLVAL (104)
+TOK_CHARVAL (105)
+TOK_DOUBLEVAL (106) 100 104
+TOK_LONGVAL (107)
+TOK_SHORTVAL (108)
+TOK_NULLVAL (109)
+TOK_ABSTRACT (200)
+TOK_CONTINUE (201)
+TOK_FOR (202) 73
+TOK_NEW (203) 56 57
+TOK_SWITCH (204)
+TOK_ASSERT (205)
+TOK_DEFAULT (206)
+TOK_GOTO (207)
+TOK_PACKAGE (208)
+TOK_SYNCHRONIZED (209)
+TOK_BOOLEAN (210) 25
+TOK_DO (211)
+TOK_IF (212) 74 75 76 77
+TOK_PRIVATE (213)
+TOK_THIS (214)
+TOK_BREAK (215)
+TOK_DOUBLE (216)
+TOK_IMPLEMENTS (217)
+TOK_PROTECTED (218)
+TOK_THROW (219)
+TOK_BYTE (220)
+TOK_ELSE (221) 78 79
+TOK_IMPORT (222)
+TOK_PUBLIC (223) 4
+TOK_THROWS (224)
+TOK_CASE (225)
+TOK_ENUM (226)
+TOK_INSTANCEOF (227)
+TOK_RETURN (228)
+TOK_TRANSIENT (229)
+TOK_CATCH (230)
+TOK_EXTENDS (231)
+TOK_INT (232) 24
+TOK_SHORT (233)
+TOK_TRY (234)
+TOK_CHAR (235)
+TOK_FINAL (236)
+TOK_INTERFACE (237)
+TOK_STATIC (238) 10 11
+TOK_VOID (239) 13
+TOK_CLASS (240) 3
+TOK_FINALLY (241)
+TOK_LONG (242)
+TOK_STRICTFP (243)
+TOK_VOLATILE (244)
+TOK_CONST (245)
+TOK_FLOAT (246) 26
+TOK_NATIVE (247)
+TOK_SUPER (248)
+TOK_WHILE (249) 71 72
+error (256)
+TOK_LBRACKET (300) 10
+TOK_RBRACKET (301) 10
+TOK_LPAREN (302) 10 11 12 56 57 71 72 73 74 75 76 77 108 111 121 122
+TOK_RPAREN (303) 10 11 12 56 57 71 72 73 74 75 76 77 108 111 121 122
+TOK_LBRACE (304) 3 10 11 12 45 46 47 48 71 72 73 74 75 78
+TOK_RBRACE (305) 3 10 11 12 45 46 47 48 71 72 73 74 75 78
+TOK_COMMA (306) 17 18 22 23
+TOK_SEMI (307) 34 35 36 41 42 43 44 45 46 47 48 53 54 55 56 57 73
+TOK_DOT (308) 119 120 122 123 124
+TOK_ASSIGN (309) 54 55 56 57 93
+TOK_MODASSIGN (310) 94
+TOK_DIVASSIGN (311) 95
+TOK_MULASSIGN (312) 96
+TOK_ADDASSIGN (313) 97
+TOK_SUBASSIGN (314) 98
+TOK_COLON (315)
+TOK_QUESTION (316)
+TOK_OR (317) 92
+TOK_AND (318) 91
+TOK_BITOR (319)
+TOK_BITAND (320)
+TOK_BITXOR (321)
+TOK_EQUAL (322) 85
+TOK_NEQUAL (323) 86
+TOK_LESS (324) 43 44 58 59 60 67 68 88
+TOK_LEQUAL (325) 90
+TOK_GREATER (326) 43 44 58 59 60 67 68 87
+TOK_GEQUAL (327) 89
+TOK_LSHIFT (328)
+TOK_RSHIFT (329)
+TOK_RSHIFTZ (330)
+TOK_ADD (331) 80
+TOK_SUB (332) 81
+TOK_MOD (333) 82
+TOK_DIV (334) 83
+TOK_MUL (335) 84
+TOK_BITNEG (336)
+TOK_NEG (337)
+TOK_SUBSUB (338) 114 116
+TOK_ADDADD (339) 113 115
+
+
+Nonterminals, with rules where they appear
+
+$accept (103)
+    on left: 0
+program (104)
+    on left: 1 2, on right: 0 2
+classdec (105)
+    on left: 3, on right: 1 2
+accessmod (106)
+    on left: 4, on right: 3 10 11 12
+classbody (107)
+    on left: 5 6, on right: 3 6
+method (108)
+    on left: 7 8 9, on right: 5 6
+main (109)
+    on left: 10, on right: 8
+staticmethod (110)
+    on left: 11, on right: 7
+instancemethod (111)
+    on left: 12, on right: 9
+returntype (112)
+    on left: 13 14 15, on right: 10 11 12
+formalparameters (113)
+    on left: 16 17 18, on right: 11 12 17 18
+argument (114)
+    on left: 19 20 21 22 23, on right: 22 23 56 57 121 122
+datatype (115)
+    on left: 24 25 26, on right: 14 16 17 41 43 46 48 58 65 67 69
+block (116)
+    on left: 27 28, on right: 10 11 12 28 71 72 73 74 75 78
+statement (117)
+    on left: 29 30 31 32 33, on right: 27 28 76 77 79
+expressionstatement (118)
+    on left: 34 35 36, on right: 29
+controlflowstatement (119)
+    on left: 37 38 39 40, on right: 30
+declarationstatement (120)
+    on left: 41 42 43 44 45 46 47 48, on right: 31
+assignmentstatement (121)
+    on left: 49 50 51 52, on right: 32
+numassignment (122)
+    on left: 53, on right: 49 65
+methodassignment (123)
+    on left: 54, on right: 52 69 70
+objectassignment (124)
+    on left: 55 56, on right: 50 66
+datastructassignment (125)
+    on left: 57, on right: 51 67 68
+datastructure (126)
+    on left: 58 59 60, on right: 57
+initializationstatement (127)
+    on left: 61 62 63 64, on right: 33 73
+numinitialization (128)
+    on left: 65, on right: 61
+objectinitialization (129)
+    on left: 66, on right: 62
+datastructinitialization (130)
+    on left: 67 68, on right: 63
+methodinitialization (131)
+    on left: 69 70, on right: 64
+whileloop (132)
+    on left: 71 72, on right: 37
+forloop (133)
+    on left: 73, on right: 38
+ifstatement (134)
+    on left: 74 75 76 77, on right: 39 78 79
+ifelsestatement (135)
+    on left: 78 79, on right: 40
+arithmeticoperator (136)
+    on left: 80 81 82 83 84, on right: 103 104 105 106
+relationaloperator (137)
+    on left: 85 86 87 88 89 90, on right: 107 108
+logicaloperator (138)
+    on left: 91 92, on right: 109 110 111
+assignmentoperator (139)
+    on left: 93 94 95 96 97 98, on right: 112
+arithmeticopexpression (140)
+    on left: 99 100 101 102 103 104 105 106, on right: 20 22 103 104
+    105 106 107 108 112
+relationalopexpression (141)
+    on left: 107 108, on right: 71 73 74 76 109 110 111
+logicalopexpression (142)
+    on left: 109 110 111, on right: 72 75 77 110 111
+assignmentopexpression (143)
+    on left: 112, on right: 53
+postdecrement (144)
+    on left: 113 114, on right: 35 73
+predecrement (145)
+    on left: 115 116, on right: 36
+methodinvocation (146)
+    on left: 117 118, on right: 34 54
+instancemethodcall (147)
+    on left: 119 120, on right: 118
+methodcall (148)
+    on left: 121 122, on right: 117 119 120 122
+fieldreference (149)
+    on left: 123 124, on right: 119 124
+
+
+State 0
+
+    0 $accept: . program $end
+
+    TOK_PUBLIC  shift, and go to state 1
+
+    program    go to state 2
+    classdec   go to state 3
+    accessmod  go to state 4
+
+
+State 1
+
+    4 accessmod: TOK_PUBLIC .
+
+    $default  reduce using rule 4 (accessmod)
+
+
+State 2
+
+    0 $accept: program . $end
+    2 program: program . classdec
+
+    $end        shift, and go to state 5
+    TOK_PUBLIC  shift, and go to state 1
+
+    classdec   go to state 6
+    accessmod  go to state 4
+
+
+State 3
+
+    1 program: classdec .
+
+    $default  reduce using rule 1 (program)
+
+
+State 4
+
+    3 classdec: accessmod . TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
+
+    TOK_CLASS  shift, and go to state 7
+
+
+State 5
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 6
+
+    2 program: program classdec .
+
+    $default  reduce using rule 2 (program)
+
+
+State 7
+
+    3 classdec: accessmod TOK_CLASS . TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 8
+
+
+State 8
+
+    3 classdec: accessmod TOK_CLASS TOK_IDENTIFIER . TOK_LBRACE classbody TOK_RBRACE
+
+    TOK_LBRACE  shift, and go to state 9
+
+
+State 9
+
+    3 classdec: accessmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE . classbody TOK_RBRACE
+
+    TOK_PUBLIC  shift, and go to state 1
+
+    accessmod       go to state 10
+    classbody       go to state 11
+    method          go to state 12
+    main            go to state 13
+    staticmethod    go to state 14
+    instancemethod  go to state 15
+
+
+State 10
+
+   10 main: accessmod . TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   11 staticmethod: accessmod . TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   12 instancemethod: accessmod . returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 16
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_INT         shift, and go to state 18
+    TOK_STATIC      shift, and go to state 19
+    TOK_VOID        shift, and go to state 20
+    TOK_FLOAT       shift, and go to state 21
+
+    returntype  go to state 22
+    datatype    go to state 23
+
+
+State 11
+
+    3 classdec: accessmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody . TOK_RBRACE
+    6 classbody: classbody . method
+
+    TOK_PUBLIC  shift, and go to state 1
+    TOK_RBRACE  shift, and go to state 24
+
+    accessmod       go to state 10
+    method          go to state 25
+    main            go to state 13
+    staticmethod    go to state 14
+    instancemethod  go to state 15
+
+
+State 12
+
+    5 classbody: method .
+
+    $default  reduce using rule 5 (classbody)
+
+
+State 13
+
+    8 method: main .
+
+    $default  reduce using rule 8 (method)
+
+
+State 14
+
+    7 method: staticmethod .
+
+    $default  reduce using rule 7 (method)
+
+
+State 15
+
+    9 method: instancemethod .
+
+    $default  reduce using rule 9 (method)
+
+
+State 16
+
+   15 returntype: TOK_IDENTIFIER .
+
+    $default  reduce using rule 15 (returntype)
+
+
+State 17
+
+   25 datatype: TOK_BOOLEAN .
+
+    $default  reduce using rule 25 (datatype)
+
+
+State 18
+
+   24 datatype: TOK_INT .
+
+    $default  reduce using rule 24 (datatype)
+
+
+State 19
+
+   10 main: accessmod TOK_STATIC . returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   11 staticmethod: accessmod TOK_STATIC . returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 16
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_INT         shift, and go to state 18
+    TOK_VOID        shift, and go to state 20
+    TOK_FLOAT       shift, and go to state 21
+
+    returntype  go to state 26
+    datatype    go to state 23
+
+
+State 20
+
+   13 returntype: TOK_VOID .
+
+    $default  reduce using rule 13 (returntype)
+
+
+State 21
+
+   26 datatype: TOK_FLOAT .
+
+    $default  reduce using rule 26 (datatype)
+
+
+State 22
+
+   12 instancemethod: accessmod returntype . TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 27
+
+
+State 23
+
+   14 returntype: datatype .
+
+    $default  reduce using rule 14 (returntype)
+
+
+State 24
+
+    3 classdec: accessmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE .
+
+    $default  reduce using rule 3 (classdec)
+
+
+State 25
+
+    6 classbody: classbody method .
+
+    $default  reduce using rule 6 (classbody)
+
+
+State 26
+
+   10 main: accessmod TOK_STATIC returntype . TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   11 staticmethod: accessmod TOK_STATIC returntype . TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 28
+
+
+State 27
+
+   12 instancemethod: accessmod returntype TOK_IDENTIFIER . TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_LPAREN  shift, and go to state 29
+
+
+State 28
+
+   10 main: accessmod TOK_STATIC returntype TOK_IDENTIFIER . TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   11 staticmethod: accessmod TOK_STATIC returntype TOK_IDENTIFIER . TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_LPAREN  shift, and go to state 30
+
+
+State 29
+
+   12 instancemethod: accessmod returntype TOK_IDENTIFIER TOK_LPAREN . formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_BOOLEAN  shift, and go to state 17
+    TOK_INT      shift, and go to state 18
+    TOK_FLOAT    shift, and go to state 21
+
+    formalparameters  go to state 31
+    datatype          go to state 32
+
+
+State 30
+
+   10 main: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN . TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   11 staticmethod: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN . formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 33
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+
+    formalparameters  go to state 34
+    datatype          go to state 32
+
+
+State 31
+
+   12 instancemethod: accessmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters . TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   17 formalparameters: formalparameters . TOK_COMMA datatype TOK_IDENTIFIER
+   18                 | formalparameters . TOK_COMMA TOK_IDENTIFIER TOK_IDENTIFIER
+
+    TOK_RPAREN  shift, and go to state 35
+    TOK_COMMA   shift, and go to state 36
+
+
+State 32
+
+   16 formalparameters: datatype . TOK_IDENTIFIER TOK_IDENTIFIER TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 37
+
+
+State 33
+
+   10 main: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER . TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 38
+
+
+State 34
+
+   11 staticmethod: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN formalparameters . TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   17 formalparameters: formalparameters . TOK_COMMA datatype TOK_IDENTIFIER
+   18                 | formalparameters . TOK_COMMA TOK_IDENTIFIER TOK_IDENTIFIER
+
+    TOK_RPAREN  shift, and go to state 39
+    TOK_COMMA   shift, and go to state 36
+
+
+State 35
+
+   12 instancemethod: accessmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN . TOK_LBRACE block TOK_RBRACE
+
+    TOK_LBRACE  shift, and go to state 40
+
+
+State 36
+
+   17 formalparameters: formalparameters TOK_COMMA . datatype TOK_IDENTIFIER
+   18                 | formalparameters TOK_COMMA . TOK_IDENTIFIER TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 41
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+
+    datatype  go to state 42
+
+
+State 37
+
+   16 formalparameters: datatype TOK_IDENTIFIER . TOK_IDENTIFIER TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 43
+
+
+State 38
+
+   10 main: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER . TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_LBRACKET  shift, and go to state 44
+
+
+State 39
+
+   11 staticmethod: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN . TOK_LBRACE block TOK_RBRACE
+
+    TOK_LBRACE  shift, and go to state 45
+
+
+State 40
+
+   12 instancemethod: accessmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE . block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    block                     go to state 53
+    statement                 go to state 54
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 41
+
+   18 formalparameters: formalparameters TOK_COMMA TOK_IDENTIFIER . TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 79
+
+
+State 42
+
+   17 formalparameters: formalparameters TOK_COMMA datatype . TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 80
+
+
+State 43
+
+   16 formalparameters: datatype TOK_IDENTIFIER TOK_IDENTIFIER . TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 81
+
+
+State 44
+
+   10 main: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET . TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_RBRACKET  shift, and go to state 82
+
+
+State 45
+
+   11 staticmethod: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE . block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    block                     go to state 83
+    statement                 go to state 54
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 46
+
+   42 declarationstatement: TOK_IDENTIFIER . TOK_IDENTIFIER TOK_SEMI
+   43                     | TOK_IDENTIFIER . TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER TOK_SEMI
+   44                     | TOK_IDENTIFIER . TOK_LESS TOK_IDENTIFIER TOK_GREATER TOK_IDENTIFIER TOK_SEMI
+   45                     | TOK_IDENTIFIER . TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER TOK_SEMI
+   47                     | TOK_IDENTIFIER . TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_SEMI
+   54 methodassignment: TOK_IDENTIFIER . TOK_ASSIGN methodinvocation TOK_SEMI
+   55 objectassignment: TOK_IDENTIFIER . TOK_ASSIGN TOK_STRINGVAL TOK_SEMI
+   56                 | TOK_IDENTIFIER . TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+   57 datastructassignment: TOK_IDENTIFIER . TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+   66 objectinitialization: TOK_IDENTIFIER . objectassignment
+   67 datastructinitialization: TOK_IDENTIFIER . TOK_LESS datatype TOK_GREATER datastructassignment
+   68                         | TOK_IDENTIFIER . TOK_LESS TOK_IDENTIFIER TOK_GREATER datastructassignment
+   70 methodinitialization: TOK_IDENTIFIER . methodassignment
+  112 assignmentopexpression: TOK_IDENTIFIER . assignmentoperator arithmeticopexpression
+  113 postdecrement: TOK_IDENTIFIER . TOK_ADDADD
+  114              | TOK_IDENTIFIER . TOK_SUBSUB
+  120 instancemethodcall: TOK_IDENTIFIER . TOK_DOT methodcall
+  121 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  123 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 84
+    TOK_LPAREN      shift, and go to state 85
+    TOK_LBRACE      shift, and go to state 86
+    TOK_DOT         shift, and go to state 87
+    TOK_ASSIGN      shift, and go to state 88
+    TOK_MODASSIGN   shift, and go to state 89
+    TOK_DIVASSIGN   shift, and go to state 90
+    TOK_MULASSIGN   shift, and go to state 91
+    TOK_ADDASSIGN   shift, and go to state 92
+    TOK_SUBASSIGN   shift, and go to state 93
+    TOK_LESS        shift, and go to state 94
+    TOK_SUBSUB      shift, and go to state 95
+    TOK_ADDADD      shift, and go to state 96
+
+    methodassignment    go to state 97
+    objectassignment    go to state 98
+    assignmentoperator  go to state 99
+
+
+State 47
+
+   73 forloop: TOK_FOR . TOK_LPAREN initializationstatement relationalopexpression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_LPAREN  shift, and go to state 100
+
+
+State 48
+
+   74 ifstatement: TOK_IF . TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   75            | TOK_IF . TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   76            | TOK_IF . TOK_LPAREN relationalopexpression TOK_RPAREN statement
+   77            | TOK_IF . TOK_LPAREN logicalopexpression TOK_RPAREN statement
+
+    TOK_LPAREN  shift, and go to state 101
+
+
+State 49
+
+   71 whileloop: TOK_WHILE . TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   72          | TOK_WHILE . TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_LPAREN  shift, and go to state 102
+
+
+State 50
+
+  116 predecrement: TOK_SUBSUB . TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 103
+
+
+State 51
+
+  115 predecrement: TOK_ADDADD . TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 104
+
+
+State 52
+
+   41 declarationstatement: datatype . TOK_IDENTIFIER TOK_SEMI
+   46                     | datatype . TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER TOK_SEMI
+   48                     | datatype . TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_SEMI
+   65 numinitialization: datatype . numassignment
+   69 methodinitialization: datatype . methodassignment
+
+    TOK_IDENTIFIER  shift, and go to state 105
+    TOK_LBRACE      shift, and go to state 106
+
+    numassignment           go to state 107
+    methodassignment        go to state 108
+    assignmentopexpression  go to state 72
+
+
+State 53
+
+   12 instancemethod: accessmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
+   28 block: block . statement
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_RBRACE      shift, and go to state 109
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    statement                 go to state 110
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 54
+
+   27 block: statement .
+
+    $default  reduce using rule 27 (block)
+
+
+State 55
+
+   29 statement: expressionstatement .
+
+    $default  reduce using rule 29 (statement)
+
+
+State 56
+
+   30 statement: controlflowstatement .
+
+    $default  reduce using rule 30 (statement)
+
+
+State 57
+
+   31 statement: declarationstatement .
+
+    $default  reduce using rule 31 (statement)
+
+
+State 58
+
+   32 statement: assignmentstatement .
+
+    $default  reduce using rule 32 (statement)
+
+
+State 59
+
+   49 assignmentstatement: numassignment .
+
+    $default  reduce using rule 49 (assignmentstatement)
+
+
+State 60
+
+   52 assignmentstatement: methodassignment .
+
+    $default  reduce using rule 52 (assignmentstatement)
+
+
+State 61
+
+   50 assignmentstatement: objectassignment .
+
+    $default  reduce using rule 50 (assignmentstatement)
+
+
+State 62
+
+   51 assignmentstatement: datastructassignment .
+
+    $default  reduce using rule 51 (assignmentstatement)
+
+
+State 63
+
+   33 statement: initializationstatement .
+
+    $default  reduce using rule 33 (statement)
+
+
+State 64
+
+   61 initializationstatement: numinitialization .
+
+    $default  reduce using rule 61 (initializationstatement)
+
+
+State 65
+
+   62 initializationstatement: objectinitialization .
+
+    $default  reduce using rule 62 (initializationstatement)
+
+
+State 66
+
+   63 initializationstatement: datastructinitialization .
+
+    $default  reduce using rule 63 (initializationstatement)
+
+
+State 67
+
+   64 initializationstatement: methodinitialization .
+
+    $default  reduce using rule 64 (initializationstatement)
+
+
+State 68
+
+   37 controlflowstatement: whileloop .
+
+    $default  reduce using rule 37 (controlflowstatement)
+
+
+State 69
+
+   38 controlflowstatement: forloop .
+
+    $default  reduce using rule 38 (controlflowstatement)
+
+
+State 70
+
+   39 controlflowstatement: ifstatement .
+   78 ifelsestatement: ifstatement . TOK_ELSE TOK_LBRACE block TOK_RBRACE
+   79                | ifstatement . TOK_ELSE statement
+
+    TOK_ELSE  shift, and go to state 111
+
+    TOK_ELSE  [reduce using rule 39 (controlflowstatement)]
+    $default  reduce using rule 39 (controlflowstatement)
+
+
+State 71
+
+   40 controlflowstatement: ifelsestatement .
+
+    $default  reduce using rule 40 (controlflowstatement)
+
+
+State 72
+
+   53 numassignment: assignmentopexpression . TOK_SEMI
+
+    TOK_SEMI  shift, and go to state 112
+
+
+State 73
+
+   35 expressionstatement: postdecrement . TOK_SEMI
+
+    TOK_SEMI  shift, and go to state 113
+
+
+State 74
+
+   36 expressionstatement: predecrement . TOK_SEMI
+
+    TOK_SEMI  shift, and go to state 114
+
+
+State 75
+
+   34 expressionstatement: methodinvocation . TOK_SEMI
+
+    TOK_SEMI  shift, and go to state 115
+
+
+State 76
+
+  118 methodinvocation: instancemethodcall .
+
+    $default  reduce using rule 118 (methodinvocation)
+
+
+State 77
+
+  117 methodinvocation: methodcall .
+  122 methodcall: methodcall . TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+
+    TOK_DOT  shift, and go to state 116
+
+    $default  reduce using rule 117 (methodinvocation)
+
+
+State 78
+
+  119 instancemethodcall: fieldreference . TOK_DOT methodcall
+  124 fieldreference: fieldreference . TOK_DOT TOK_IDENTIFIER
+
+    TOK_DOT  shift, and go to state 117
+
+
+State 79
+
+   18 formalparameters: formalparameters TOK_COMMA TOK_IDENTIFIER TOK_IDENTIFIER .
+
+    $default  reduce using rule 18 (formalparameters)
+
+
+State 80
+
+   17 formalparameters: formalparameters TOK_COMMA datatype TOK_IDENTIFIER .
+
+    $default  reduce using rule 17 (formalparameters)
+
+
+State 81
+
+   16 formalparameters: datatype TOK_IDENTIFIER TOK_IDENTIFIER TOK_IDENTIFIER .
+
+    $default  reduce using rule 16 (formalparameters)
+
+
+State 82
+
+   10 main: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET . TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_RPAREN  shift, and go to state 118
+
+
+State 83
+
+   11 staticmethod: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
+   28 block: block . statement
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_RBRACE      shift, and go to state 119
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    statement                 go to state 110
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 84
+
+   42 declarationstatement: TOK_IDENTIFIER TOK_IDENTIFIER . TOK_SEMI
+   47                     | TOK_IDENTIFIER TOK_IDENTIFIER . TOK_LBRACE TOK_RBRACE TOK_SEMI
+   54 methodassignment: TOK_IDENTIFIER . TOK_ASSIGN methodinvocation TOK_SEMI
+   55 objectassignment: TOK_IDENTIFIER . TOK_ASSIGN TOK_STRINGVAL TOK_SEMI
+   56                 | TOK_IDENTIFIER . TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+    TOK_LBRACE  shift, and go to state 120
+    TOK_SEMI    shift, and go to state 121
+    TOK_ASSIGN  shift, and go to state 122
+
+
+State 85
+
+  121 methodcall: TOK_IDENTIFIER TOK_LPAREN . argument TOK_RPAREN
+
+    TOK_IDENTIFIER  shift, and go to state 123
+    TOK_INTVAL      shift, and go to state 124
+    TOK_FLOATVAL    shift, and go to state 125
+    TOK_STRINGVAL   shift, and go to state 126
+    TOK_DOUBLEVAL   shift, and go to state 127
+
+    $default  reduce using rule 19 (argument)
+
+    argument                go to state 128
+    arithmeticopexpression  go to state 129
+
+
+State 86
+
+   45 declarationstatement: TOK_IDENTIFIER TOK_LBRACE . TOK_RBRACE TOK_IDENTIFIER TOK_SEMI
+
+    TOK_RBRACE  shift, and go to state 130
+
+
+State 87
+
+  120 instancemethodcall: TOK_IDENTIFIER TOK_DOT . methodcall
+  123 fieldreference: TOK_IDENTIFIER TOK_DOT . TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 131
+
+    methodcall  go to state 132
+
+
+State 88
+
+   54 methodassignment: TOK_IDENTIFIER TOK_ASSIGN . methodinvocation TOK_SEMI
+   55 objectassignment: TOK_IDENTIFIER TOK_ASSIGN . TOK_STRINGVAL TOK_SEMI
+   56                 | TOK_IDENTIFIER TOK_ASSIGN . TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+   57 datastructassignment: TOK_IDENTIFIER TOK_ASSIGN . TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+   93 assignmentoperator: TOK_ASSIGN .
+
+    TOK_IDENTIFIER  shift, and go to state 133
+    TOK_STRINGVAL   shift, and go to state 134
+    TOK_NEW         shift, and go to state 135
+
+    TOK_IDENTIFIER  [reduce using rule 93 (assignmentoperator)]
+    $default        reduce using rule 93 (assignmentoperator)
+
+    methodinvocation    go to state 136
+    instancemethodcall  go to state 76
+    methodcall          go to state 77
+    fieldreference      go to state 78
+
+
+State 89
+
+   94 assignmentoperator: TOK_MODASSIGN .
+
+    $default  reduce using rule 94 (assignmentoperator)
+
+
+State 90
+
+   95 assignmentoperator: TOK_DIVASSIGN .
+
+    $default  reduce using rule 95 (assignmentoperator)
+
+
+State 91
+
+   96 assignmentoperator: TOK_MULASSIGN .
+
+    $default  reduce using rule 96 (assignmentoperator)
+
+
+State 92
+
+   97 assignmentoperator: TOK_ADDASSIGN .
+
+    $default  reduce using rule 97 (assignmentoperator)
+
+
+State 93
+
+   98 assignmentoperator: TOK_SUBASSIGN .
+
+    $default  reduce using rule 98 (assignmentoperator)
+
+
+State 94
+
+   43 declarationstatement: TOK_IDENTIFIER TOK_LESS . datatype TOK_GREATER TOK_IDENTIFIER TOK_SEMI
+   44                     | TOK_IDENTIFIER TOK_LESS . TOK_IDENTIFIER TOK_GREATER TOK_IDENTIFIER TOK_SEMI
+   67 datastructinitialization: TOK_IDENTIFIER TOK_LESS . datatype TOK_GREATER datastructassignment
+   68                         | TOK_IDENTIFIER TOK_LESS . TOK_IDENTIFIER TOK_GREATER datastructassignment
+
+    TOK_IDENTIFIER  shift, and go to state 137
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+
+    datatype  go to state 138
+
+
+State 95
+
+  114 postdecrement: TOK_IDENTIFIER TOK_SUBSUB .
+
+    $default  reduce using rule 114 (postdecrement)
+
+
+State 96
+
+  113 postdecrement: TOK_IDENTIFIER TOK_ADDADD .
+
+    $default  reduce using rule 113 (postdecrement)
+
+
+State 97
+
+   70 methodinitialization: TOK_IDENTIFIER methodassignment .
+
+    $default  reduce using rule 70 (methodinitialization)
+
+
+State 98
+
+   66 objectinitialization: TOK_IDENTIFIER objectassignment .
+
+    $default  reduce using rule 66 (objectinitialization)
+
+
+State 99
+
+  112 assignmentopexpression: TOK_IDENTIFIER assignmentoperator . arithmeticopexpression
+
+    TOK_IDENTIFIER  shift, and go to state 123
+    TOK_INTVAL      shift, and go to state 124
+    TOK_FLOATVAL    shift, and go to state 125
+    TOK_DOUBLEVAL   shift, and go to state 127
+
+    arithmeticopexpression  go to state 139
+
+
+State 100
+
+   73 forloop: TOK_FOR TOK_LPAREN . initializationstatement relationalopexpression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 140
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+
+    datatype                  go to state 141
+    initializationstatement   go to state 142
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+
+
+State 101
+
+   74 ifstatement: TOK_IF TOK_LPAREN . relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   75            | TOK_IF TOK_LPAREN . logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   76            | TOK_IF TOK_LPAREN . relationalopexpression TOK_RPAREN statement
+   77            | TOK_IF TOK_LPAREN . logicalopexpression TOK_RPAREN statement
+
+    TOK_IDENTIFIER  shift, and go to state 143
+    TOK_LPAREN      shift, and go to state 144
+
+    relationalopexpression  go to state 145
+    logicalopexpression     go to state 146
+
+
+State 102
+
+   71 whileloop: TOK_WHILE TOK_LPAREN . relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   72          | TOK_WHILE TOK_LPAREN . logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 143
+    TOK_LPAREN      shift, and go to state 144
+
+    relationalopexpression  go to state 147
+    logicalopexpression     go to state 148
+
+
+State 103
+
+  116 predecrement: TOK_SUBSUB TOK_IDENTIFIER .
+
+    $default  reduce using rule 116 (predecrement)
+
+
+State 104
+
+  115 predecrement: TOK_ADDADD TOK_IDENTIFIER .
+
+    $default  reduce using rule 115 (predecrement)
+
+
+State 105
+
+   41 declarationstatement: datatype TOK_IDENTIFIER . TOK_SEMI
+   48                     | datatype TOK_IDENTIFIER . TOK_LBRACE TOK_RBRACE TOK_SEMI
+   54 methodassignment: TOK_IDENTIFIER . TOK_ASSIGN methodinvocation TOK_SEMI
+  112 assignmentopexpression: TOK_IDENTIFIER . assignmentoperator arithmeticopexpression
+
+    TOK_LBRACE     shift, and go to state 149
+    TOK_SEMI       shift, and go to state 150
+    TOK_ASSIGN     shift, and go to state 151
+    TOK_MODASSIGN  shift, and go to state 89
+    TOK_DIVASSIGN  shift, and go to state 90
+    TOK_MULASSIGN  shift, and go to state 91
+    TOK_ADDASSIGN  shift, and go to state 92
+    TOK_SUBASSIGN  shift, and go to state 93
+
+    assignmentoperator  go to state 99
+
+
+State 106
+
+   46 declarationstatement: datatype TOK_LBRACE . TOK_RBRACE TOK_IDENTIFIER TOK_SEMI
+
+    TOK_RBRACE  shift, and go to state 152
+
+
+State 107
+
+   65 numinitialization: datatype numassignment .
+
+    $default  reduce using rule 65 (numinitialization)
+
+
+State 108
+
+   69 methodinitialization: datatype methodassignment .
+
+    $default  reduce using rule 69 (methodinitialization)
+
+
+State 109
+
+   12 instancemethod: accessmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
+
+    $default  reduce using rule 12 (instancemethod)
+
+
+State 110
+
+   28 block: block statement .
+
+    $default  reduce using rule 28 (block)
+
+
+State 111
+
+   78 ifelsestatement: ifstatement TOK_ELSE . TOK_LBRACE block TOK_RBRACE
+   79                | ifstatement TOK_ELSE . statement
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_LBRACE      shift, and go to state 153
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    statement                 go to state 154
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 112
+
+   53 numassignment: assignmentopexpression TOK_SEMI .
+
+    $default  reduce using rule 53 (numassignment)
+
+
+State 113
+
+   35 expressionstatement: postdecrement TOK_SEMI .
+
+    $default  reduce using rule 35 (expressionstatement)
+
+
+State 114
+
+   36 expressionstatement: predecrement TOK_SEMI .
+
+    $default  reduce using rule 36 (expressionstatement)
+
+
+State 115
+
+   34 expressionstatement: methodinvocation TOK_SEMI .
+
+    $default  reduce using rule 34 (expressionstatement)
+
+
+State 116
+
+  122 methodcall: methodcall TOK_DOT . TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+
+    TOK_IDENTIFIER  shift, and go to state 155
+
+
+State 117
+
+  119 instancemethodcall: fieldreference TOK_DOT . methodcall
+  124 fieldreference: fieldreference TOK_DOT . TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 156
+
+    methodcall  go to state 157
+
+
+State 118
+
+   10 main: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN . TOK_LBRACE block TOK_RBRACE
+
+    TOK_LBRACE  shift, and go to state 158
+
+
+State 119
+
+   11 staticmethod: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
+
+    $default  reduce using rule 11 (staticmethod)
+
+
+State 120
+
+   47 declarationstatement: TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACE . TOK_RBRACE TOK_SEMI
+
+    TOK_RBRACE  shift, and go to state 159
+
+
+State 121
+
+   42 declarationstatement: TOK_IDENTIFIER TOK_IDENTIFIER TOK_SEMI .
+
+    $default  reduce using rule 42 (declarationstatement)
+
+
+State 122
+
+   54 methodassignment: TOK_IDENTIFIER TOK_ASSIGN . methodinvocation TOK_SEMI
+   55 objectassignment: TOK_IDENTIFIER TOK_ASSIGN . TOK_STRINGVAL TOK_SEMI
+   56                 | TOK_IDENTIFIER TOK_ASSIGN . TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+    TOK_IDENTIFIER  shift, and go to state 133
+    TOK_STRINGVAL   shift, and go to state 134
+    TOK_NEW         shift, and go to state 160
+
+    methodinvocation    go to state 136
+    instancemethodcall  go to state 76
+    methodcall          go to state 77
+    fieldreference      go to state 78
+
+
+State 123
+
+  102 arithmeticopexpression: TOK_IDENTIFIER .
+
+    $default  reduce using rule 102 (arithmeticopexpression)
+
+
+State 124
+
+   99 arithmeticopexpression: TOK_INTVAL .
+
+    $default  reduce using rule 99 (arithmeticopexpression)
+
+
+State 125
+
+  101 arithmeticopexpression: TOK_FLOATVAL .
+
+    $default  reduce using rule 101 (arithmeticopexpression)
+
+
+State 126
+
+   21 argument: TOK_STRINGVAL .
+
+    $default  reduce using rule 21 (argument)
+
+
+State 127
+
+  100 arithmeticopexpression: TOK_DOUBLEVAL .
+
+    $default  reduce using rule 100 (arithmeticopexpression)
+
+
+State 128
+
+   22 argument: argument . TOK_COMMA arithmeticopexpression
+   23         | argument . TOK_COMMA TOK_STRINGVAL
+  121 methodcall: TOK_IDENTIFIER TOK_LPAREN argument . TOK_RPAREN
+
+    TOK_RPAREN  shift, and go to state 161
+    TOK_COMMA   shift, and go to state 162
+
+
+State 129
+
+   20 argument: arithmeticopexpression .
+  103 arithmeticopexpression: arithmeticopexpression . arithmeticoperator TOK_INTVAL
+  104                       | arithmeticopexpression . arithmeticoperator TOK_DOUBLEVAL
+  105                       | arithmeticopexpression . arithmeticoperator TOK_FLOATVAL
+  106                       | arithmeticopexpression . arithmeticoperator TOK_IDENTIFIER
+
+    TOK_ADD  shift, and go to state 163
+    TOK_SUB  shift, and go to state 164
+    TOK_MOD  shift, and go to state 165
+    TOK_DIV  shift, and go to state 166
+    TOK_MUL  shift, and go to state 167
+
+    $default  reduce using rule 20 (argument)
+
+    arithmeticoperator  go to state 168
+
+
+State 130
+
+   45 declarationstatement: TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE . TOK_IDENTIFIER TOK_SEMI
+
+    TOK_IDENTIFIER  shift, and go to state 169
+
+
+State 131
+
+  121 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  123 fieldreference: TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER .
+
+    TOK_LPAREN  shift, and go to state 85
+
+    $default  reduce using rule 123 (fieldreference)
+
+
+State 132
+
+  120 instancemethodcall: TOK_IDENTIFIER TOK_DOT methodcall .
+  122 methodcall: methodcall . TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+
+    TOK_DOT  shift, and go to state 116
+
+    $default  reduce using rule 120 (instancemethodcall)
+
+
+State 133
+
+  120 instancemethodcall: TOK_IDENTIFIER . TOK_DOT methodcall
+  121 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  123 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
+
+    TOK_LPAREN  shift, and go to state 85
+    TOK_DOT     shift, and go to state 87
+
+
+State 134
+
+   55 objectassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_STRINGVAL . TOK_SEMI
+
+    TOK_SEMI  shift, and go to state 170
+
+
+State 135
+
+   56 objectassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW . TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+   57 datastructassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW . datastructure TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+    TOK_IDENTIFIER  shift, and go to state 171
+
+    datastructure  go to state 172
+
+
+State 136
+
+   54 methodassignment: TOK_IDENTIFIER TOK_ASSIGN methodinvocation . TOK_SEMI
+
+    TOK_SEMI  shift, and go to state 173
+
+
+State 137
+
+   44 declarationstatement: TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER . TOK_GREATER TOK_IDENTIFIER TOK_SEMI
+   68 datastructinitialization: TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER . TOK_GREATER datastructassignment
+
+    TOK_GREATER  shift, and go to state 174
+
+
+State 138
+
+   43 declarationstatement: TOK_IDENTIFIER TOK_LESS datatype . TOK_GREATER TOK_IDENTIFIER TOK_SEMI
+   67 datastructinitialization: TOK_IDENTIFIER TOK_LESS datatype . TOK_GREATER datastructassignment
+
+    TOK_GREATER  shift, and go to state 175
+
+
+State 139
+
+  103 arithmeticopexpression: arithmeticopexpression . arithmeticoperator TOK_INTVAL
+  104                       | arithmeticopexpression . arithmeticoperator TOK_DOUBLEVAL
+  105                       | arithmeticopexpression . arithmeticoperator TOK_FLOATVAL
+  106                       | arithmeticopexpression . arithmeticoperator TOK_IDENTIFIER
+  112 assignmentopexpression: TOK_IDENTIFIER assignmentoperator arithmeticopexpression .
+
+    TOK_ADD  shift, and go to state 163
+    TOK_SUB  shift, and go to state 164
+    TOK_MOD  shift, and go to state 165
+    TOK_DIV  shift, and go to state 166
+    TOK_MUL  shift, and go to state 167
+
+    $default  reduce using rule 112 (assignmentopexpression)
+
+    arithmeticoperator  go to state 168
+
+
+State 140
+
+   66 objectinitialization: TOK_IDENTIFIER . objectassignment
+   67 datastructinitialization: TOK_IDENTIFIER . TOK_LESS datatype TOK_GREATER datastructassignment
+   68                         | TOK_IDENTIFIER . TOK_LESS TOK_IDENTIFIER TOK_GREATER datastructassignment
+   70 methodinitialization: TOK_IDENTIFIER . methodassignment
+
+    TOK_IDENTIFIER  shift, and go to state 176
+    TOK_LESS        shift, and go to state 177
+
+    methodassignment  go to state 97
+    objectassignment  go to state 98
+
+
+State 141
+
+   65 numinitialization: datatype . numassignment
+   69 methodinitialization: datatype . methodassignment
+
+    TOK_IDENTIFIER  shift, and go to state 178
+
+    numassignment           go to state 107
+    methodassignment        go to state 108
+    assignmentopexpression  go to state 72
+
+
+State 142
+
+   73 forloop: TOK_FOR TOK_LPAREN initializationstatement . relationalopexpression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 143
+    TOK_LPAREN      shift, and go to state 179
+
+    relationalopexpression  go to state 180
+
+
+State 143
+
+  107 relationalopexpression: TOK_IDENTIFIER . relationaloperator arithmeticopexpression
+
+    TOK_EQUAL    shift, and go to state 181
+    TOK_NEQUAL   shift, and go to state 182
+    TOK_LESS     shift, and go to state 183
+    TOK_LEQUAL   shift, and go to state 184
+    TOK_GREATER  shift, and go to state 185
+    TOK_GEQUAL   shift, and go to state 186
+
+    relationaloperator  go to state 187
+
+
+State 144
+
+  108 relationalopexpression: TOK_LPAREN . TOK_IDENTIFIER relationaloperator arithmeticopexpression TOK_RPAREN
+  111 logicalopexpression: TOK_LPAREN . logicalopexpression TOK_RPAREN logicaloperator relationalopexpression
+
+    TOK_IDENTIFIER  shift, and go to state 188
+    TOK_LPAREN      shift, and go to state 144
+
+    relationalopexpression  go to state 189
+    logicalopexpression     go to state 190
+
+
+State 145
+
+   74 ifstatement: TOK_IF TOK_LPAREN relationalopexpression . TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   76            | TOK_IF TOK_LPAREN relationalopexpression . TOK_RPAREN statement
+  109 logicalopexpression: relationalopexpression . logicaloperator relationalopexpression
+
+    TOK_RPAREN  shift, and go to state 191
+    TOK_OR      shift, and go to state 192
+    TOK_AND     shift, and go to state 193
+
+    logicaloperator  go to state 194
+
+
+State 146
+
+   75 ifstatement: TOK_IF TOK_LPAREN logicalopexpression . TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+   77            | TOK_IF TOK_LPAREN logicalopexpression . TOK_RPAREN statement
+  110 logicalopexpression: logicalopexpression . logicaloperator relationalopexpression
+
+    TOK_RPAREN  shift, and go to state 195
+    TOK_OR      shift, and go to state 192
+    TOK_AND     shift, and go to state 193
+
+    logicaloperator  go to state 196
+
+
+State 147
+
+   71 whileloop: TOK_WHILE TOK_LPAREN relationalopexpression . TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+  109 logicalopexpression: relationalopexpression . logicaloperator relationalopexpression
+
+    TOK_RPAREN  shift, and go to state 197
+    TOK_OR      shift, and go to state 192
+    TOK_AND     shift, and go to state 193
+
+    logicaloperator  go to state 194
+
+
+State 148
+
+   72 whileloop: TOK_WHILE TOK_LPAREN logicalopexpression . TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+  110 logicalopexpression: logicalopexpression . logicaloperator relationalopexpression
+
+    TOK_RPAREN  shift, and go to state 198
+    TOK_OR      shift, and go to state 192
+    TOK_AND     shift, and go to state 193
+
+    logicaloperator  go to state 196
+
+
+State 149
+
+   48 declarationstatement: datatype TOK_IDENTIFIER TOK_LBRACE . TOK_RBRACE TOK_SEMI
+
+    TOK_RBRACE  shift, and go to state 199
+
+
+State 150
+
+   41 declarationstatement: datatype TOK_IDENTIFIER TOK_SEMI .
+
+    $default  reduce using rule 41 (declarationstatement)
+
+
+State 151
+
+   54 methodassignment: TOK_IDENTIFIER TOK_ASSIGN . methodinvocation TOK_SEMI
+   93 assignmentoperator: TOK_ASSIGN .
+
+    TOK_IDENTIFIER  shift, and go to state 133
+
+    TOK_IDENTIFIER  [reduce using rule 93 (assignmentoperator)]
+    $default        reduce using rule 93 (assignmentoperator)
+
+    methodinvocation    go to state 136
+    instancemethodcall  go to state 76
+    methodcall          go to state 77
+    fieldreference      go to state 78
+
+
+State 152
+
+   46 declarationstatement: datatype TOK_LBRACE TOK_RBRACE . TOK_IDENTIFIER TOK_SEMI
+
+    TOK_IDENTIFIER  shift, and go to state 200
+
+
+State 153
+
+   78 ifelsestatement: ifstatement TOK_ELSE TOK_LBRACE . block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    block                     go to state 201
+    statement                 go to state 54
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 154
+
+   79 ifelsestatement: ifstatement TOK_ELSE statement .
+
+    $default  reduce using rule 79 (ifelsestatement)
+
+
+State 155
+
+  122 methodcall: methodcall TOK_DOT TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+
+    TOK_LPAREN  shift, and go to state 202
+
+
+State 156
+
+  121 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  124 fieldreference: fieldreference TOK_DOT TOK_IDENTIFIER .
+
+    TOK_LPAREN  shift, and go to state 85
+
+    $default  reduce using rule 124 (fieldreference)
+
+
+State 157
+
+  119 instancemethodcall: fieldreference TOK_DOT methodcall .
+  122 methodcall: methodcall . TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+
+    TOK_DOT  shift, and go to state 116
+
+    $default  reduce using rule 119 (instancemethodcall)
+
+
+State 158
+
+   10 main: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE . block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    block                     go to state 203
+    statement                 go to state 54
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 159
+
+   47 declarationstatement: TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE . TOK_SEMI
+
+    TOK_SEMI  shift, and go to state 204
+
+
+State 160
+
+   56 objectassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW . TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+    TOK_IDENTIFIER  shift, and go to state 205
+
+
+State 161
+
+  121 methodcall: TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN .
+
+    $default  reduce using rule 121 (methodcall)
+
+
+State 162
+
+   22 argument: argument TOK_COMMA . arithmeticopexpression
+   23         | argument TOK_COMMA . TOK_STRINGVAL
+
+    TOK_IDENTIFIER  shift, and go to state 123
+    TOK_INTVAL      shift, and go to state 124
+    TOK_FLOATVAL    shift, and go to state 125
+    TOK_STRINGVAL   shift, and go to state 206
+    TOK_DOUBLEVAL   shift, and go to state 127
+
+    arithmeticopexpression  go to state 207
+
+
+State 163
+
+   80 arithmeticoperator: TOK_ADD .
+
+    $default  reduce using rule 80 (arithmeticoperator)
+
+
+State 164
+
+   81 arithmeticoperator: TOK_SUB .
+
+    $default  reduce using rule 81 (arithmeticoperator)
+
+
+State 165
+
+   82 arithmeticoperator: TOK_MOD .
+
+    $default  reduce using rule 82 (arithmeticoperator)
+
+
+State 166
+
+   83 arithmeticoperator: TOK_DIV .
+
+    $default  reduce using rule 83 (arithmeticoperator)
+
+
+State 167
+
+   84 arithmeticoperator: TOK_MUL .
+
+    $default  reduce using rule 84 (arithmeticoperator)
+
+
+State 168
+
+  103 arithmeticopexpression: arithmeticopexpression arithmeticoperator . TOK_INTVAL
+  104                       | arithmeticopexpression arithmeticoperator . TOK_DOUBLEVAL
+  105                       | arithmeticopexpression arithmeticoperator . TOK_FLOATVAL
+  106                       | arithmeticopexpression arithmeticoperator . TOK_IDENTIFIER
+
+    TOK_IDENTIFIER  shift, and go to state 208
+    TOK_INTVAL      shift, and go to state 209
+    TOK_FLOATVAL    shift, and go to state 210
+    TOK_DOUBLEVAL   shift, and go to state 211
+
+
+State 169
+
+   45 declarationstatement: TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER . TOK_SEMI
+
+    TOK_SEMI  shift, and go to state 212
+
+
+State 170
+
+   55 objectassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_STRINGVAL TOK_SEMI .
+
+    $default  reduce using rule 55 (objectassignment)
+
+
+State 171
+
+   56 objectassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+   58 datastructure: TOK_IDENTIFIER . TOK_LESS datatype TOK_GREATER
+   59              | TOK_IDENTIFIER . TOK_LESS TOK_IDENTIFIER TOK_GREATER
+   60              | TOK_IDENTIFIER . TOK_LESS TOK_GREATER
+
+    TOK_LPAREN  shift, and go to state 213
+    TOK_LESS    shift, and go to state 214
+
+
+State 172
+
+   57 datastructassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure . TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+    TOK_LPAREN  shift, and go to state 215
+
+
+State 173
+
+   54 methodassignment: TOK_IDENTIFIER TOK_ASSIGN methodinvocation TOK_SEMI .
+
+    $default  reduce using rule 54 (methodassignment)
+
+
+State 174
+
+   44 declarationstatement: TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER . TOK_IDENTIFIER TOK_SEMI
+   68 datastructinitialization: TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER . datastructassignment
+
+    TOK_IDENTIFIER  shift, and go to state 216
+
+    datastructassignment  go to state 217
+
+
+State 175
+
+   43 declarationstatement: TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER . TOK_IDENTIFIER TOK_SEMI
+   67 datastructinitialization: TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER . datastructassignment
+
+    TOK_IDENTIFIER  shift, and go to state 218
+
+    datastructassignment  go to state 219
+
+
+State 176
+
+   54 methodassignment: TOK_IDENTIFIER . TOK_ASSIGN methodinvocation TOK_SEMI
+   55 objectassignment: TOK_IDENTIFIER . TOK_ASSIGN TOK_STRINGVAL TOK_SEMI
+   56                 | TOK_IDENTIFIER . TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+    TOK_ASSIGN  shift, and go to state 122
+
+
+State 177
+
+   67 datastructinitialization: TOK_IDENTIFIER TOK_LESS . datatype TOK_GREATER datastructassignment
+   68                         | TOK_IDENTIFIER TOK_LESS . TOK_IDENTIFIER TOK_GREATER datastructassignment
+
+    TOK_IDENTIFIER  shift, and go to state 220
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+
+    datatype  go to state 221
+
+
+State 178
+
+   54 methodassignment: TOK_IDENTIFIER . TOK_ASSIGN methodinvocation TOK_SEMI
+  112 assignmentopexpression: TOK_IDENTIFIER . assignmentoperator arithmeticopexpression
+
+    TOK_ASSIGN     shift, and go to state 151
+    TOK_MODASSIGN  shift, and go to state 89
+    TOK_DIVASSIGN  shift, and go to state 90
+    TOK_MULASSIGN  shift, and go to state 91
+    TOK_ADDASSIGN  shift, and go to state 92
+    TOK_SUBASSIGN  shift, and go to state 93
+
+    assignmentoperator  go to state 99
+
+
+State 179
+
+  108 relationalopexpression: TOK_LPAREN . TOK_IDENTIFIER relationaloperator arithmeticopexpression TOK_RPAREN
+
+    TOK_IDENTIFIER  shift, and go to state 222
+
+
+State 180
+
+   73 forloop: TOK_FOR TOK_LPAREN initializationstatement relationalopexpression . TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_SEMI  shift, and go to state 223
+
+
+State 181
+
+   85 relationaloperator: TOK_EQUAL .
+
+    $default  reduce using rule 85 (relationaloperator)
+
+
+State 182
+
+   86 relationaloperator: TOK_NEQUAL .
+
+    $default  reduce using rule 86 (relationaloperator)
+
+
+State 183
+
+   88 relationaloperator: TOK_LESS .
+
+    $default  reduce using rule 88 (relationaloperator)
+
+
+State 184
+
+   90 relationaloperator: TOK_LEQUAL .
+
+    $default  reduce using rule 90 (relationaloperator)
+
+
+State 185
+
+   87 relationaloperator: TOK_GREATER .
+
+    $default  reduce using rule 87 (relationaloperator)
+
+
+State 186
+
+   89 relationaloperator: TOK_GEQUAL .
+
+    $default  reduce using rule 89 (relationaloperator)
+
+
+State 187
+
+  107 relationalopexpression: TOK_IDENTIFIER relationaloperator . arithmeticopexpression
+
+    TOK_IDENTIFIER  shift, and go to state 123
+    TOK_INTVAL      shift, and go to state 124
+    TOK_FLOATVAL    shift, and go to state 125
+    TOK_DOUBLEVAL   shift, and go to state 127
+
+    arithmeticopexpression  go to state 224
+
+
+State 188
+
+  107 relationalopexpression: TOK_IDENTIFIER . relationaloperator arithmeticopexpression
+  108                       | TOK_LPAREN TOK_IDENTIFIER . relationaloperator arithmeticopexpression TOK_RPAREN
+
+    TOK_EQUAL    shift, and go to state 181
+    TOK_NEQUAL   shift, and go to state 182
+    TOK_LESS     shift, and go to state 183
+    TOK_LEQUAL   shift, and go to state 184
+    TOK_GREATER  shift, and go to state 185
+    TOK_GEQUAL   shift, and go to state 186
+
+    relationaloperator  go to state 225
+
+
+State 189
+
+  109 logicalopexpression: relationalopexpression . logicaloperator relationalopexpression
+
+    TOK_OR   shift, and go to state 192
+    TOK_AND  shift, and go to state 193
+
+    logicaloperator  go to state 194
+
+
+State 190
+
+  110 logicalopexpression: logicalopexpression . logicaloperator relationalopexpression
+  111                    | TOK_LPAREN logicalopexpression . TOK_RPAREN logicaloperator relationalopexpression
+
+    TOK_RPAREN  shift, and go to state 226
+    TOK_OR      shift, and go to state 192
+    TOK_AND     shift, and go to state 193
+
+    logicaloperator  go to state 196
+
+
+State 191
+
+   74 ifstatement: TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN . TOK_LBRACE block TOK_RBRACE
+   76            | TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN . statement
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_LBRACE      shift, and go to state 227
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    statement                 go to state 228
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 192
+
+   92 logicaloperator: TOK_OR .
+
+    $default  reduce using rule 92 (logicaloperator)
+
+
+State 193
+
+   91 logicaloperator: TOK_AND .
+
+    $default  reduce using rule 91 (logicaloperator)
+
+
+State 194
+
+  109 logicalopexpression: relationalopexpression logicaloperator . relationalopexpression
+
+    TOK_IDENTIFIER  shift, and go to state 143
+    TOK_LPAREN      shift, and go to state 179
+
+    relationalopexpression  go to state 229
+
+
+State 195
+
+   75 ifstatement: TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN . TOK_LBRACE block TOK_RBRACE
+   77            | TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN . statement
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_LBRACE      shift, and go to state 230
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    statement                 go to state 231
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 196
+
+  110 logicalopexpression: logicalopexpression logicaloperator . relationalopexpression
+
+    TOK_IDENTIFIER  shift, and go to state 143
+    TOK_LPAREN      shift, and go to state 179
+
+    relationalopexpression  go to state 232
+
+
+State 197
+
+   71 whileloop: TOK_WHILE TOK_LPAREN relationalopexpression TOK_RPAREN . TOK_LBRACE block TOK_RBRACE
+
+    TOK_LBRACE  shift, and go to state 233
+
+
+State 198
+
+   72 whileloop: TOK_WHILE TOK_LPAREN logicalopexpression TOK_RPAREN . TOK_LBRACE block TOK_RBRACE
+
+    TOK_LBRACE  shift, and go to state 234
+
+
+State 199
+
+   48 declarationstatement: datatype TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE . TOK_SEMI
+
+    TOK_SEMI  shift, and go to state 235
+
+
+State 200
+
+   46 declarationstatement: datatype TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER . TOK_SEMI
+
+    TOK_SEMI  shift, and go to state 236
+
+
+State 201
+
+   28 block: block . statement
+   78 ifelsestatement: ifstatement TOK_ELSE TOK_LBRACE block . TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_RBRACE      shift, and go to state 237
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    statement                 go to state 110
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 202
+
+  122 methodcall: methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN . argument TOK_RPAREN
+
+    TOK_IDENTIFIER  shift, and go to state 123
+    TOK_INTVAL      shift, and go to state 124
+    TOK_FLOATVAL    shift, and go to state 125
+    TOK_STRINGVAL   shift, and go to state 126
+    TOK_DOUBLEVAL   shift, and go to state 127
+
+    $default  reduce using rule 19 (argument)
+
+    argument                go to state 238
+    arithmeticopexpression  go to state 129
+
+
+State 203
+
+   10 main: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
+   28 block: block . statement
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_RBRACE      shift, and go to state 239
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    statement                 go to state 110
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 204
+
+   47 declarationstatement: TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_SEMI .
+
+    $default  reduce using rule 47 (declarationstatement)
+
+
+State 205
+
+   56 objectassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+    TOK_LPAREN  shift, and go to state 213
+
+
+State 206
+
+   23 argument: argument TOK_COMMA TOK_STRINGVAL .
+
+    $default  reduce using rule 23 (argument)
+
+
+State 207
+
+   22 argument: argument TOK_COMMA arithmeticopexpression .
+  103 arithmeticopexpression: arithmeticopexpression . arithmeticoperator TOK_INTVAL
+  104                       | arithmeticopexpression . arithmeticoperator TOK_DOUBLEVAL
+  105                       | arithmeticopexpression . arithmeticoperator TOK_FLOATVAL
+  106                       | arithmeticopexpression . arithmeticoperator TOK_IDENTIFIER
+
+    TOK_ADD  shift, and go to state 163
+    TOK_SUB  shift, and go to state 164
+    TOK_MOD  shift, and go to state 165
+    TOK_DIV  shift, and go to state 166
+    TOK_MUL  shift, and go to state 167
+
+    $default  reduce using rule 22 (argument)
+
+    arithmeticoperator  go to state 168
+
+
+State 208
+
+  106 arithmeticopexpression: arithmeticopexpression arithmeticoperator TOK_IDENTIFIER .
+
+    $default  reduce using rule 106 (arithmeticopexpression)
+
+
+State 209
+
+  103 arithmeticopexpression: arithmeticopexpression arithmeticoperator TOK_INTVAL .
+
+    $default  reduce using rule 103 (arithmeticopexpression)
+
+
+State 210
+
+  105 arithmeticopexpression: arithmeticopexpression arithmeticoperator TOK_FLOATVAL .
+
+    $default  reduce using rule 105 (arithmeticopexpression)
+
+
+State 211
+
+  104 arithmeticopexpression: arithmeticopexpression arithmeticoperator TOK_DOUBLEVAL .
+
+    $default  reduce using rule 104 (arithmeticopexpression)
+
+
+State 212
+
+   45 declarationstatement: TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER TOK_SEMI .
+
+    $default  reduce using rule 45 (declarationstatement)
+
+
+State 213
+
+   56 objectassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN . argument TOK_RPAREN TOK_SEMI
+
+    TOK_IDENTIFIER  shift, and go to state 123
+    TOK_INTVAL      shift, and go to state 124
+    TOK_FLOATVAL    shift, and go to state 125
+    TOK_STRINGVAL   shift, and go to state 126
+    TOK_DOUBLEVAL   shift, and go to state 127
+
+    $default  reduce using rule 19 (argument)
+
+    argument                go to state 240
+    arithmeticopexpression  go to state 129
+
+
+State 214
+
+   58 datastructure: TOK_IDENTIFIER TOK_LESS . datatype TOK_GREATER
+   59              | TOK_IDENTIFIER TOK_LESS . TOK_IDENTIFIER TOK_GREATER
+   60              | TOK_IDENTIFIER TOK_LESS . TOK_GREATER
+
+    TOK_IDENTIFIER  shift, and go to state 241
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_GREATER     shift, and go to state 242
+
+    datatype  go to state 243
+
+
+State 215
+
+   57 datastructassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN . argument TOK_RPAREN TOK_SEMI
+
+    TOK_IDENTIFIER  shift, and go to state 123
+    TOK_INTVAL      shift, and go to state 124
+    TOK_FLOATVAL    shift, and go to state 125
+    TOK_STRINGVAL   shift, and go to state 126
+    TOK_DOUBLEVAL   shift, and go to state 127
+
+    $default  reduce using rule 19 (argument)
+
+    argument                go to state 244
+    arithmeticopexpression  go to state 129
+
+
+State 216
+
+   44 declarationstatement: TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER TOK_IDENTIFIER . TOK_SEMI
+   57 datastructassignment: TOK_IDENTIFIER . TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+    TOK_SEMI    shift, and go to state 245
+    TOK_ASSIGN  shift, and go to state 246
+
+
+State 217
+
+   68 datastructinitialization: TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER datastructassignment .
+
+    $default  reduce using rule 68 (datastructinitialization)
+
+
+State 218
+
+   43 declarationstatement: TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER . TOK_SEMI
+   57 datastructassignment: TOK_IDENTIFIER . TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+    TOK_SEMI    shift, and go to state 247
+    TOK_ASSIGN  shift, and go to state 246
+
+
+State 219
+
+   67 datastructinitialization: TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER datastructassignment .
+
+    $default  reduce using rule 67 (datastructinitialization)
+
+
+State 220
+
+   68 datastructinitialization: TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER . TOK_GREATER datastructassignment
+
+    TOK_GREATER  shift, and go to state 248
+
+
+State 221
+
+   67 datastructinitialization: TOK_IDENTIFIER TOK_LESS datatype . TOK_GREATER datastructassignment
+
+    TOK_GREATER  shift, and go to state 249
+
+
+State 222
+
+  108 relationalopexpression: TOK_LPAREN TOK_IDENTIFIER . relationaloperator arithmeticopexpression TOK_RPAREN
+
+    TOK_EQUAL    shift, and go to state 181
+    TOK_NEQUAL   shift, and go to state 182
+    TOK_LESS     shift, and go to state 183
+    TOK_LEQUAL   shift, and go to state 184
+    TOK_GREATER  shift, and go to state 185
+    TOK_GEQUAL   shift, and go to state 186
+
+    relationaloperator  go to state 250
+
+
+State 223
+
+   73 forloop: TOK_FOR TOK_LPAREN initializationstatement relationalopexpression TOK_SEMI . postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 251
+
+    postdecrement  go to state 252
+
+
+State 224
+
+  103 arithmeticopexpression: arithmeticopexpression . arithmeticoperator TOK_INTVAL
+  104                       | arithmeticopexpression . arithmeticoperator TOK_DOUBLEVAL
+  105                       | arithmeticopexpression . arithmeticoperator TOK_FLOATVAL
+  106                       | arithmeticopexpression . arithmeticoperator TOK_IDENTIFIER
+  107 relationalopexpression: TOK_IDENTIFIER relationaloperator arithmeticopexpression .
+
+    TOK_ADD  shift, and go to state 163
+    TOK_SUB  shift, and go to state 164
+    TOK_MOD  shift, and go to state 165
+    TOK_DIV  shift, and go to state 166
+    TOK_MUL  shift, and go to state 167
+
+    $default  reduce using rule 107 (relationalopexpression)
+
+    arithmeticoperator  go to state 168
+
+
+State 225
+
+  107 relationalopexpression: TOK_IDENTIFIER relationaloperator . arithmeticopexpression
+  108                       | TOK_LPAREN TOK_IDENTIFIER relationaloperator . arithmeticopexpression TOK_RPAREN
+
+    TOK_IDENTIFIER  shift, and go to state 123
+    TOK_INTVAL      shift, and go to state 124
+    TOK_FLOATVAL    shift, and go to state 125
+    TOK_DOUBLEVAL   shift, and go to state 127
+
+    arithmeticopexpression  go to state 253
+
+
+State 226
+
+  111 logicalopexpression: TOK_LPAREN logicalopexpression TOK_RPAREN . logicaloperator relationalopexpression
+
+    TOK_OR   shift, and go to state 192
+    TOK_AND  shift, and go to state 193
+
+    logicaloperator  go to state 254
+
+
+State 227
+
+   74 ifstatement: TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE . block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    block                     go to state 255
+    statement                 go to state 54
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 228
+
+   76 ifstatement: TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN statement .
+
+    $default  reduce using rule 76 (ifstatement)
+
+
+State 229
+
+  109 logicalopexpression: relationalopexpression logicaloperator relationalopexpression .
+
+    $default  reduce using rule 109 (logicalopexpression)
+
+
+State 230
+
+   75 ifstatement: TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE . block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    block                     go to state 256
+    statement                 go to state 54
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 231
+
+   77 ifstatement: TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN statement .
+
+    $default  reduce using rule 77 (ifstatement)
+
+
+State 232
+
+  110 logicalopexpression: logicalopexpression logicaloperator relationalopexpression .
+
+    $default  reduce using rule 110 (logicalopexpression)
+
+
+State 233
+
+   71 whileloop: TOK_WHILE TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE . block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    block                     go to state 257
+    statement                 go to state 54
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 234
+
+   72 whileloop: TOK_WHILE TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE . block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    block                     go to state 258
+    statement                 go to state 54
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 235
+
+   48 declarationstatement: datatype TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_SEMI .
+
+    $default  reduce using rule 48 (declarationstatement)
+
+
+State 236
+
+   46 declarationstatement: datatype TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER TOK_SEMI .
+
+    $default  reduce using rule 46 (declarationstatement)
+
+
+State 237
+
+   78 ifelsestatement: ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE .
+
+    $default  reduce using rule 78 (ifelsestatement)
+
+
+State 238
+
+   22 argument: argument . TOK_COMMA arithmeticopexpression
+   23         | argument . TOK_COMMA TOK_STRINGVAL
+  122 methodcall: methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument . TOK_RPAREN
+
+    TOK_RPAREN  shift, and go to state 259
+    TOK_COMMA   shift, and go to state 162
+
+
+State 239
+
+   10 main: accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
+
+    $default  reduce using rule 10 (main)
+
+
+State 240
+
+   22 argument: argument . TOK_COMMA arithmeticopexpression
+   23         | argument . TOK_COMMA TOK_STRINGVAL
+   56 objectassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument . TOK_RPAREN TOK_SEMI
+
+    TOK_RPAREN  shift, and go to state 260
+    TOK_COMMA   shift, and go to state 162
+
+
+State 241
+
+   59 datastructure: TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER . TOK_GREATER
+
+    TOK_GREATER  shift, and go to state 261
+
+
+State 242
+
+   60 datastructure: TOK_IDENTIFIER TOK_LESS TOK_GREATER .
+
+    $default  reduce using rule 60 (datastructure)
+
+
+State 243
+
+   58 datastructure: TOK_IDENTIFIER TOK_LESS datatype . TOK_GREATER
+
+    TOK_GREATER  shift, and go to state 262
+
+
+State 244
+
+   22 argument: argument . TOK_COMMA arithmeticopexpression
+   23         | argument . TOK_COMMA TOK_STRINGVAL
+   57 datastructassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN argument . TOK_RPAREN TOK_SEMI
+
+    TOK_RPAREN  shift, and go to state 263
+    TOK_COMMA   shift, and go to state 162
+
+
+State 245
+
+   44 declarationstatement: TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER TOK_IDENTIFIER TOK_SEMI .
+
+    $default  reduce using rule 44 (declarationstatement)
+
+
+State 246
+
+   57 datastructassignment: TOK_IDENTIFIER TOK_ASSIGN . TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+    TOK_NEW  shift, and go to state 264
+
+
+State 247
+
+   43 declarationstatement: TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER TOK_SEMI .
+
+    $default  reduce using rule 43 (declarationstatement)
+
+
+State 248
+
+   68 datastructinitialization: TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER . datastructassignment
+
+    TOK_IDENTIFIER  shift, and go to state 265
+
+    datastructassignment  go to state 217
+
+
+State 249
+
+   67 datastructinitialization: TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER . datastructassignment
+
+    TOK_IDENTIFIER  shift, and go to state 265
+
+    datastructassignment  go to state 219
+
+
+State 250
+
+  108 relationalopexpression: TOK_LPAREN TOK_IDENTIFIER relationaloperator . arithmeticopexpression TOK_RPAREN
+
+    TOK_IDENTIFIER  shift, and go to state 123
+    TOK_INTVAL      shift, and go to state 124
+    TOK_FLOATVAL    shift, and go to state 125
+    TOK_DOUBLEVAL   shift, and go to state 127
+
+    arithmeticopexpression  go to state 266
+
+
+State 251
+
+  113 postdecrement: TOK_IDENTIFIER . TOK_ADDADD
+  114              | TOK_IDENTIFIER . TOK_SUBSUB
+
+    TOK_SUBSUB  shift, and go to state 95
+    TOK_ADDADD  shift, and go to state 96
+
+
+State 252
+
+   73 forloop: TOK_FOR TOK_LPAREN initializationstatement relationalopexpression TOK_SEMI postdecrement . TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+
+    TOK_RPAREN  shift, and go to state 267
+
+
+State 253
+
+  103 arithmeticopexpression: arithmeticopexpression . arithmeticoperator TOK_INTVAL
+  104                       | arithmeticopexpression . arithmeticoperator TOK_DOUBLEVAL
+  105                       | arithmeticopexpression . arithmeticoperator TOK_FLOATVAL
+  106                       | arithmeticopexpression . arithmeticoperator TOK_IDENTIFIER
+  107 relationalopexpression: TOK_IDENTIFIER relationaloperator arithmeticopexpression .
+  108                       | TOK_LPAREN TOK_IDENTIFIER relationaloperator arithmeticopexpression . TOK_RPAREN
+
+    TOK_RPAREN  shift, and go to state 268
+    TOK_ADD     shift, and go to state 163
+    TOK_SUB     shift, and go to state 164
+    TOK_MOD     shift, and go to state 165
+    TOK_DIV     shift, and go to state 166
+    TOK_MUL     shift, and go to state 167
+
+    $default  reduce using rule 107 (relationalopexpression)
+
+    arithmeticoperator  go to state 168
+
+
+State 254
+
+  111 logicalopexpression: TOK_LPAREN logicalopexpression TOK_RPAREN logicaloperator . relationalopexpression
+
+    TOK_IDENTIFIER  shift, and go to state 143
+    TOK_LPAREN      shift, and go to state 179
+
+    relationalopexpression  go to state 269
+
+
+State 255
+
+   28 block: block . statement
+   74 ifstatement: TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_RBRACE      shift, and go to state 270
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    statement                 go to state 110
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 256
+
+   28 block: block . statement
+   75 ifstatement: TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_RBRACE      shift, and go to state 271
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    statement                 go to state 110
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 257
+
+   28 block: block . statement
+   71 whileloop: TOK_WHILE TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_RBRACE      shift, and go to state 272
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    statement                 go to state 110
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 258
+
+   28 block: block . statement
+   72 whileloop: TOK_WHILE TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_RBRACE      shift, and go to state 273
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    statement                 go to state 110
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 259
+
+  122 methodcall: methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN .
+
+    $default  reduce using rule 122 (methodcall)
+
+
+State 260
+
+   56 objectassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN . TOK_SEMI
+
+    TOK_SEMI  shift, and go to state 274
+
+
+State 261
+
+   59 datastructure: TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER .
+
+    $default  reduce using rule 59 (datastructure)
+
+
+State 262
+
+   58 datastructure: TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER .
+
+    $default  reduce using rule 58 (datastructure)
+
+
+State 263
+
+   57 datastructassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN . TOK_SEMI
+
+    TOK_SEMI  shift, and go to state 275
+
+
+State 264
+
+   57 datastructassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW . datastructure TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+    TOK_IDENTIFIER  shift, and go to state 276
+
+    datastructure  go to state 172
+
+
+State 265
+
+   57 datastructassignment: TOK_IDENTIFIER . TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+
+    TOK_ASSIGN  shift, and go to state 246
+
+
+State 266
+
+  103 arithmeticopexpression: arithmeticopexpression . arithmeticoperator TOK_INTVAL
+  104                       | arithmeticopexpression . arithmeticoperator TOK_DOUBLEVAL
+  105                       | arithmeticopexpression . arithmeticoperator TOK_FLOATVAL
+  106                       | arithmeticopexpression . arithmeticoperator TOK_IDENTIFIER
+  108 relationalopexpression: TOK_LPAREN TOK_IDENTIFIER relationaloperator arithmeticopexpression . TOK_RPAREN
+
+    TOK_RPAREN  shift, and go to state 268
+    TOK_ADD     shift, and go to state 163
+    TOK_SUB     shift, and go to state 164
+    TOK_MOD     shift, and go to state 165
+    TOK_DIV     shift, and go to state 166
+    TOK_MUL     shift, and go to state 167
+
+    arithmeticoperator  go to state 168
+
+
+State 267
+
+   73 forloop: TOK_FOR TOK_LPAREN initializationstatement relationalopexpression TOK_SEMI postdecrement TOK_RPAREN . TOK_LBRACE block TOK_RBRACE
+
+    TOK_LBRACE  shift, and go to state 277
+
+
+State 268
+
+  108 relationalopexpression: TOK_LPAREN TOK_IDENTIFIER relationaloperator arithmeticopexpression TOK_RPAREN .
+
+    $default  reduce using rule 108 (relationalopexpression)
+
+
+State 269
+
+  111 logicalopexpression: TOK_LPAREN logicalopexpression TOK_RPAREN logicaloperator relationalopexpression .
+
+    $default  reduce using rule 111 (logicalopexpression)
+
+
+State 270
+
+   74 ifstatement: TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
+
+    $default  reduce using rule 74 (ifstatement)
+
+
+State 271
+
+   75 ifstatement: TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
+
+    $default  reduce using rule 75 (ifstatement)
+
+
+State 272
+
+   71 whileloop: TOK_WHILE TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
+
+    $default  reduce using rule 71 (whileloop)
+
+
+State 273
+
+   72 whileloop: TOK_WHILE TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
+
+    $default  reduce using rule 72 (whileloop)
+
+
+State 274
+
+   56 objectassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_SEMI .
+
+    $default  reduce using rule 56 (objectassignment)
+
+
+State 275
+
+   57 datastructassignment: TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN TOK_SEMI .
+
+    $default  reduce using rule 57 (datastructassignment)
+
+
+State 276
+
+   58 datastructure: TOK_IDENTIFIER . TOK_LESS datatype TOK_GREATER
+   59              | TOK_IDENTIFIER . TOK_LESS TOK_IDENTIFIER TOK_GREATER
+   60              | TOK_IDENTIFIER . TOK_LESS TOK_GREATER
+
+    TOK_LESS  shift, and go to state 214
+
+
+State 277
+
+   73 forloop: TOK_FOR TOK_LPAREN initializationstatement relationalopexpression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE . block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    block                     go to state 278
+    statement                 go to state 54
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 278
+
+   28 block: block . statement
+   73 forloop: TOK_FOR TOK_LPAREN initializationstatement relationalopexpression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 46
+    TOK_FOR         shift, and go to state 47
+    TOK_BOOLEAN     shift, and go to state 17
+    TOK_IF          shift, and go to state 48
+    TOK_INT         shift, and go to state 18
+    TOK_FLOAT       shift, and go to state 21
+    TOK_WHILE       shift, and go to state 49
+    TOK_RBRACE      shift, and go to state 279
+    TOK_SUBSUB      shift, and go to state 50
+    TOK_ADDADD      shift, and go to state 51
+
+    datatype                  go to state 52
+    statement                 go to state 110
+    expressionstatement       go to state 55
+    controlflowstatement      go to state 56
+    declarationstatement      go to state 57
+    assignmentstatement       go to state 58
+    numassignment             go to state 59
+    methodassignment          go to state 60
+    objectassignment          go to state 61
+    datastructassignment      go to state 62
+    initializationstatement   go to state 63
+    numinitialization         go to state 64
+    objectinitialization      go to state 65
+    datastructinitialization  go to state 66
+    methodinitialization      go to state 67
+    whileloop                 go to state 68
+    forloop                   go to state 69
+    ifstatement               go to state 70
+    ifelsestatement           go to state 71
+    assignmentopexpression    go to state 72
+    postdecrement             go to state 73
+    predecrement              go to state 74
+    methodinvocation          go to state 75
+    instancemethodcall        go to state 76
+    methodcall                go to state 77
+    fieldreference            go to state 78
+
+
+State 279
+
+   73 forloop: TOK_FOR TOK_LPAREN initializationstatement relationalopexpression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
+
+    $default  reduce using rule 73 (forloop)

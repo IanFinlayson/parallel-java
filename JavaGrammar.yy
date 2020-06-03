@@ -154,7 +154,7 @@ staticmethod
 ;
 
 main:
-accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
 staticmethod:
@@ -168,21 +168,27 @@ accessmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_L
 returntype:
 TOK_VOID
 |datatype
+|TOK_IDENTIFIER
 ;
 
 formalparameters:
 datatype TOK_IDENTIFIER
+TOK_IDENTIFIER TOK_IDENTIFIER
 | formalparameters TOK_COMMA datatype TOK_IDENTIFIER
+|formalparameters TOK_COMMA TOK_IDENTIFIER TOK_IDENTIFIER
 ;
 
+/*seperate into string and num argument */
 argument:
 %empty
 |arithmeticopexpression
 |TOK_STRINGVAL
+|argument TOK_COMMA arithmeticopexpression
+|argument TOK_COMMA TOK_STRINGVAL
+;
 
 datatype:
-TOK_IDENTIFIER
-|TOK_INT
+TOK_INT
 |TOK_BOOLEAN
 |TOK_FLOAT
 ;
@@ -214,17 +220,93 @@ whileloop
 
 declarationstatement:
 datatype TOK_IDENTIFIER TOK_SEMI
+|TOK_IDENTIFIER TOK_IDENTIFIER TOK_SEMI
+|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER TOK_SEMI
+|TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER TOK_IDENTIFIER TOK_SEMI
+|TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER TOK_SEMI
+/*seperate into array declaration > String/object array declaration*/
+|datatype TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER TOK_SEMI
+|TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_SEMI
+|datatype TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_SEMI
 ;
 
 assignmentstatement:
+numassignment
+/*
+|booleanassignment
+*/
+|objectassignment
+|datastructassignment
+|methodassignment
+/*
+|arrayassignment
+*/
+;
+
+numassignment:
 assignmentopexpression TOK_SEMI
-|TOK_IDENTIFIER TOK_ASSIGN methodinvocation TOK_SEMI
+;
+
+methodassignment:
+TOK_IDENTIFIER TOK_ASSIGN methodinvocation TOK_SEMI
+;
+
+/*
+booleanassignment:
+TOK_IDENTIFIER TOK_ASSIGN 
+*/
+objectassignment:
+TOK_IDENTIFIER TOK_ASSIGN TOK_STRINGVAL TOK_SEMI
+|TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+;
+
+datastructassignment:
+TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN TOK_SEMI
+;
+
+/*have to seperate into num and string/object arrays*/
+/*
+arrayassignment:
+TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LBRACE TOK_INTVAL TOK_RBRACE TOK_SEMI
+|TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACE TOK_INTVAL TOK_RBACE TOK_SEMI
+|TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACE TOK_RBRACE TOK_LBRACKET argument TOK_RBRACKET TOK_SEMI
+|TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_LBRACKET argument TOK_RBRACKET TOK_SEMI
+*/
+;
+
+datastructure:
+TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER
+|TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER
+|TOK_IDENTIFIER TOK_LESS TOK_GREATER 
 ;
 
 initializationstatement:
-datatype assignmentstatement
-/*data structure initialization*/
-/*intializing an object, string*/
+numinitialization
+|objectinitialization
+|datastructinitialization
+|methodinitialization
+/*
+|arrayinitialization
+*/
+;
+
+numinitialization:
+datatype numassignment 
+;
+
+objectinitialization:
+TOK_IDENTIFIER objectassignment
+;
+
+/*type can also be another data structure?*/ 
+datastructinitialization:
+TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER datastructassignment
+|TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER datastructassignment
+;
+
+methodinitialization:
+datatype methodassignment
+|TOK_IDENTIFIER methodassignment
 ;
 
 whileloop:
@@ -236,15 +318,15 @@ forloop:
 TOK_FOR TOK_LPAREN initializationstatement relationalopexpression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
-/*fix*/
 ifstatement:
 TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 |TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-
+|TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN statement 
+|TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN statement
 
 ifelsestatement:
 ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE
-/*else if{
+|ifstatement TOK_ELSE statement 
 
 /*
 expression:
@@ -301,11 +383,14 @@ TOK_INTVAL
 
 relationalopexpression:
 TOK_IDENTIFIER relationaloperator arithmeticopexpression
+|TOK_LPAREN TOK_IDENTIFIER relationaloperator arithmeticopexpression TOK_RPAREN
 ;
 
 logicalopexpression:
 relationalopexpression logicaloperator relationalopexpression
-/*handle parenthesis*/
+|logicalopexpression logicaloperator relationalopexpression
+|TOK_LPAREN logicalopexpression TOK_RPAREN logicaloperator relationalopexpression
+/*finish handling parenthesis*/
 
 ;
 
