@@ -4,27 +4,34 @@
 
 class Node{
 	private:
-		int type;
-		double value;
-		std::string id;
+		int type;				//token val
+		int value_int;			//an integer value... for integers...
+		double value_double;	//a uh double value
+		std::string id;			//string representing an identifier or characters or strings
 		
-		int num_children = 0;
-		Node* children[MAX_CHILDREN];
+		int num_children = 0;			//current number of children this node has
+		Node* children[MAX_CHILDREN];	//array holding immediate children
 
 	public:
-		Node(int);
-		Node(int, double);
-		Node(int, double, std::string);
-		~Node();
+		Node(int);								//constructor for those tokens that are just a token
+		Node(int, int, double, std::string);	//constructor for any other token
+		~Node();								//destructor
 
-		int get_type();
-		double get_value();
-		std::string get_id();
-		int get_num_children();
-		Node& get_child(int);
-		Node* get_children();
-		std::string get_tree_string(int);
+		int get_type();						//returns type
+		int get_value_int();				//returns value_int
+		double get_value_double();			//returns value_double
+		std::string get_id();				//returns id
+		int get_num_children();				//returns current number of children
+		Node& get_child(int);				//returns a reference to the left, middle, or right (0, 1, or 2) child
+		Node* get_children();				//returns a pointer to the children array
+		std::string get_tree_string(int);	//returns a string the represents the entire tree rooted at this node
+												//always input 0
+												//format:
+												//[T: type, VI: value_int, VD: value_double, ID: id]
+												//.  1[left child information]
+												//.  .  1[left child information]
+												//.  2[middle child information]
 
-		void attach_child(Node&);
+		void attach_child(Node&);			//attach a new child (from left to right)
 
 };

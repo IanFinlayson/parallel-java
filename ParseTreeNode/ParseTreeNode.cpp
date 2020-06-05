@@ -8,14 +8,10 @@ Node::Node(int type){
 	this->type = type;
 }
 
-Node::Node(int type, double value){
+Node::Node(int type, int value_int, double value_double, std::string id){
 	this->type = type;
-	this->value = value;
-}
-
-Node::Node(int type, double value, std::string id){
-	this->type = type;
-	this->value = value;
+	this->value_int = value_int;
+	this->value_double = value_double;
 	this->id = id;
 }
 
@@ -29,8 +25,12 @@ int Node::get_type(){
 	return type;
 }
 
-double Node::get_value(){
-	return value;
+int Node::get_value_int(){
+	return value_int;
+}
+
+double Node::get_value_double(){
+	return value_double;
 }
 
 std::string Node::get_id(){
@@ -54,10 +54,11 @@ Node* Node::get_children(){
 //Makes a string that represents the tree rooted at this node
 std::string Node::get_tree_string(int numTabs){
 	std::string s_type = "[T: " + std::to_string(get_type()) + ", ";
-	std::string s_value = "V: " + std::to_string(get_value()) + ", ";
-	std::string s_id = "I: " + get_id() + "]";
+	std::string s_value_i = "VI: " + std::to_string(get_value_int()) + ", ";
+	std::string s_value_d = "VD: " + std::to_string(get_value_double()) + ", ";
+	std::string s_id = "ID: " + get_id() + "]";
 	std::string s = "";
-	s += s_type + s_value + s_id + "\n";
+	s += s_type + s_value_i + s_value_d + s_id + "\n";
 	for(int i = 0; i < get_num_children(); i++){
 		for(int j = 0; j <= numTabs; j++){
 			s+= ".  ";
