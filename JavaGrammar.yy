@@ -141,6 +141,7 @@ accessmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
 
 accessmod:
 TOK_PUBLIC
+;
 
 classbody:
 method
@@ -148,8 +149,10 @@ method
 ;
 
 method:
+/*
 staticmethod
-|main
+*/
+main
 |instancemethod
 ;
 
@@ -157,10 +160,11 @@ main:
 accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
+/*fix once add arrays
 staticmethod:
 accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
-
+*/
 instancemethod:
 accessmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
@@ -168,29 +172,26 @@ accessmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_L
 returntype:
 TOK_VOID
 |datatype
-|TOK_IDENTIFIER
 ;
 
 formalparameters:
 datatype TOK_IDENTIFIER
-TOK_IDENTIFIER TOK_IDENTIFIER
-| formalparameters TOK_COMMA datatype TOK_IDENTIFIER
-|formalparameters TOK_COMMA TOK_IDENTIFIER TOK_IDENTIFIER
+|datastructure TOK_IDENTIFIER
+|formalparameters TOK_COMMA datatype TOK_IDENTIFIER
+|formalparameters TOK_COMMA datastructure TOK_IDENTIFIER
 ;
 
-/*seperate into string and num argument */
 argument:
 %empty
-|arithmeticopexpression
-|TOK_STRINGVAL
-|argument TOK_COMMA arithmeticopexpression
-|argument TOK_COMMA TOK_STRINGVAL
+|expression
+|argument TOK_COMMA expression
 ;
 
 datatype:
 TOK_INT
 |TOK_BOOLEAN
 |TOK_FLOAT
+|TOK_IDENTIFIER
 ;
 
 block:
@@ -199,17 +200,44 @@ statement
 ;
 
 statement:
-expressionstatement
-|controlflowstatement
-|declarationstatement
-|assignmentstatement
-|initializationstatement
+expression TOK_SEMI
+|controlflowstatement 
+|declarationstatement TOK_SEMI
+|initializationstatement TOK_SEMI
 ;
 
-expressionstatement:
-methodinvocation TOK_SEMI
-|postdecrement TOK_SEMI
-|predecrement TOK_SEMI
+expression:
+TOK_INTVAL
+|TOK_FLOATVAL
+|TOK_STRINGVAL
+|TOK_IDENTIFIER
+|instancemethodcall
+|methodcall
+|object
+|datastructure
+|TOK_IDENTIFIER TOK_ASSIGN datastructure TOK_LPAREN argument TOK_RPAREN
+|TOK_IDENTIFIER TOK_ASSIGN expression
+|TOK_IDENTIFIER TOK_MODASSIGN expression
+|TOK_IDENTIFIER TOK_DIVASSIGN expression
+|TOK_IDENTIFIER TOK_MULASSIGN expression
+|TOK_IDENTIFIER TOK_ADDASSIGN expression
+|TOK_IDENTIFIER TOK_SUBASSIGN expression
+|expression TOK_ADD expression
+|expression TOK_SUB expression
+|expression TOK_MOD expression
+|expression TOK_DIV expression
+|expression TOK_MUL expression
+|expression TOK_EQUAL expression
+|expression TOK_NEQUAL expression
+|expression TOK_GREATER expression
+|expression TOK_LESS expression
+|expression TOK_GEQUAL expression
+|expression TOK_LEQUAL expression
+|expression TOK_AND expression
+|expression TOK_OR expression
+|postdecrement 
+|predecrement
+;
 
 controlflowstatement:
 whileloop
@@ -219,183 +247,41 @@ whileloop
 ;
 
 declarationstatement:
-datatype TOK_IDENTIFIER TOK_SEMI
-|TOK_IDENTIFIER TOK_IDENTIFIER TOK_SEMI
-|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER TOK_SEMI
-|TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER TOK_IDENTIFIER TOK_SEMI
-|TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER TOK_SEMI
-/*seperate into array declaration > String/object array declaration*/
-|datatype TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER TOK_SEMI
-|TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_SEMI
-|datatype TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_SEMI
-;
-
-assignmentstatement:
-numassignment
-/*
-|booleanassignment
-*/
-|objectassignment
-|datastructassignment
-|methodassignment
-/*
-|arrayassignment
-*/
-;
-
-numassignment:
-assignmentopexpression TOK_SEMI
-;
-
-methodassignment:
-TOK_IDENTIFIER TOK_ASSIGN methodinvocation TOK_SEMI
-;
-
-/*
-booleanassignment:
-TOK_IDENTIFIER TOK_ASSIGN 
-*/
-objectassignment:
-TOK_IDENTIFIER TOK_ASSIGN TOK_STRINGVAL TOK_SEMI
-|TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_SEMI
-;
-
-datastructassignment:
-TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN TOK_SEMI
-;
-
-/*have to seperate into num and string/object arrays*/
-/*
-arrayassignment:
-TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LBRACE TOK_INTVAL TOK_RBRACE TOK_SEMI
-|TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACE TOK_INTVAL TOK_RBACE TOK_SEMI
-|TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACE TOK_RBRACE TOK_LBRACKET argument TOK_RBRACKET TOK_SEMI
-|TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE TOK_LBRACKET argument TOK_RBRACKET TOK_SEMI
-*/
-;
-
-datastructure:
-TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER
-|TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER
-|TOK_IDENTIFIER TOK_LESS TOK_GREATER 
+datatype TOK_IDENTIFIER 
+|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER 
+|datatype TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER 
+|datatype TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE 
 ;
 
 initializationstatement:
-numinitialization
-|objectinitialization
-|datastructinitialization
-|methodinitialization
-/*
-|arrayinitialization
-*/
+declarationstatement TOK_ASSIGN expression
 ;
 
-numinitialization:
-datatype numassignment 
+object:
+TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN 
 ;
 
-objectinitialization:
-TOK_IDENTIFIER objectassignment
-;
-
-/*type can also be another data structure?*/ 
-datastructinitialization:
-TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER datastructassignment
-|TOK_IDENTIFIER TOK_LESS TOK_IDENTIFIER TOK_GREATER datastructassignment
-;
-
-methodinitialization:
-datatype methodassignment
-|TOK_IDENTIFIER methodassignment
+datastructure:
+TOK_NEW TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_LPAREN TOK_RPAREN 
+|TOK_NEW TOK_IDENTIFIER TOK_LESS TOK_GREATER TOK_LPAREN TOK_RPAREN
 ;
 
 whileloop:
-TOK_WHILE TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|TOK_WHILE TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
 forloop:
-TOK_FOR TOK_LPAREN initializationstatement relationalopexpression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+TOK_FOR TOK_LPAREN initializationstatement TOK_SEMI expression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
 ifstatement:
-TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|TOK_IF TOK_LPAREN relationalopexpression TOK_RPAREN statement 
-|TOK_IF TOK_LPAREN logicalopexpression TOK_RPAREN statement
+TOK_IF TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|TOK_IF TOK_LPAREN expression TOK_RPAREN statement 
+;
 
 ifelsestatement:
 ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE
 |ifstatement TOK_ELSE statement 
-
-/*
-expression:
-methodinvocation
-|arithmeticopexpression
-|relationalopexpression
-|logicalopexpression
-|assignmentopexpression
-|postdecrement
-|predecrement
-;
-*/
-arithmeticoperator:
-TOK_ADD
-|TOK_SUB
-|TOK_MOD
-|TOK_DIV
-|TOK_MUL
-;
-
-relationaloperator:
-TOK_EQUAL
-|TOK_NEQUAL
-|TOK_GREATER
-|TOK_LESS
-|TOK_GEQUAL
-|TOK_LEQUAL
-;
-
-logicaloperator:
-TOK_AND
-|TOK_OR
-/*TOK_NOT*/
-;
-assignmentoperator:
-TOK_ASSIGN
-|TOK_MODASSIGN
-|TOK_DIVASSIGN
-|TOK_MULASSIGN
-|TOK_ADDASSIGN
-|TOK_SUBASSIGN
-;
-
-arithmeticopexpression:
-TOK_INTVAL
-|TOK_DOUBLEVAL
-|TOK_FLOATVAL
-|TOK_IDENTIFIER
-|arithmeticopexpression arithmeticoperator TOK_INTVAL
-|arithmeticopexpression arithmeticoperator TOK_DOUBLEVAL
-|arithmeticopexpression arithmeticoperator TOK_FLOATVAL
-|arithmeticopexpression arithmeticoperator TOK_IDENTIFIER
-;
-
-relationalopexpression:
-TOK_IDENTIFIER relationaloperator arithmeticopexpression
-|TOK_LPAREN TOK_IDENTIFIER relationaloperator arithmeticopexpression TOK_RPAREN
-;
-
-logicalopexpression:
-relationalopexpression logicaloperator relationalopexpression
-|logicalopexpression logicaloperator relationalopexpression
-|TOK_LPAREN logicalopexpression TOK_RPAREN logicaloperator relationalopexpression
-/*finish handling parenthesis*/
-
-;
-
-assignmentopexpression:
-TOK_IDENTIFIER assignmentoperator arithmeticopexpression
 ;
 
 postdecrement:
@@ -406,11 +292,6 @@ TOK_IDENTIFIER TOK_ADDADD
 predecrement:
 TOK_ADDADD TOK_IDENTIFIER
 |TOK_SUBSUB TOK_IDENTIFIER 
-;
-
-methodinvocation:
-methodcall
-|instancemethodcall
 ;
 
 instancemethodcall:
