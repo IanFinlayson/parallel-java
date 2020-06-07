@@ -27,11 +27,25 @@ public class Sample {
 			System.out.println("rr");
 		}
 
-		if(x < 5 && y < 3){
+		if(x < 5){
 			f--;
+		}else if (f < 3){
+			x++;
 		}else{
-			f++;
+			r++;
 		}
-    }
+		
+		int x = 3;
+		int j = test.get();
+		String j = test.get();
+		String f = "hello";
+		f = "hello";
+		Graph<String> h = new Graph<>();
+		Graph<String> h = new Graph<String>();
+		h = new Graph<String>();
+		Object o = new Object(3,4,5);
+		Object o = new Object("DD");
+  
+	}
 }
 
