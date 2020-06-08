@@ -1,6 +1,6 @@
 #include <string>
 
-#include "ParseTreeNode.hpp"
+#include "Node.hpp"
 
 
 //Constructors
