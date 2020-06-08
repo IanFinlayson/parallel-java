@@ -45,6 +45,14 @@ public class Sample {
 		h = new Graph<String>();
 		Object o = new Object(3,4,5);
 		Object o = new Object("DD");
+		int[] x = new int[5];
+		int x[] = new int[5];
+		int x[];
+		String[] x;
+		x = new int[]{1,2,3};
+		x = new int[5];
+		int[] x = new int[]{1,2,3};
+		String x[] = new String[]{1,2,3};
   
 	}
 }
