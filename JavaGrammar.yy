@@ -22,7 +22,6 @@
 
 }
 
-/* reorganize */
 %error-verbose 
 %token <stVal> TOK_IDENTIFIER 100
 %token <iVal> TOK_INTVAL 101
@@ -130,43 +129,59 @@
 %token TOK_ADDADD 339
 %%
 
+
+/*interfaces*/
 program:
 classdec
 |program classdec
 ;
 
 classdec:
-accessmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
+classaccessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
+;
+
+nestedclassdec:
+accessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
+;
+
+classaccessmod:
+%empty
+|TOK_PUBLIC
 ;
 
 accessmod:
-TOK_PUBLIC
+%empty
+|TOK_PUBLIC
+|TOK_PRIVATE
+|TOK_PROTECTED
+;
+
+/*rename*/
+classmod:
+%empty
+|TOK_FINAL
+|TOK_ABSTRACT
+;
+
+methodmod:
+%empty
+|TOK_FINAL
+|TOK_STATIC
+|TOK_ABSTRACT
+|TOK_TRANSIENT
+|TOK_SYNCHRONIZED
+|TOK_VOLATILE
 ;
 
 classbody:
 method
+|nestedclassdec
 |classbody method
+|classbody nestedclassdec
 ;
 
 method:
-/*
-staticmethod
-*/
-main
-|instancemethod
-;
-
-main:
-accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN TOK_IDENTIFIER TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-;
-
-/*fix once add arrays
-staticmethod:
-accessmod TOK_STATIC returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-;
-*/
-instancemethod:
-accessmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+accessmod methodmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
 returntype:
@@ -175,16 +190,16 @@ TOK_VOID
 ;
 
 formalparameters:
-datatype TOK_IDENTIFIER
-|datastructure TOK_IDENTIFIER
-|formalparameters TOK_COMMA datatype TOK_IDENTIFIER
-|formalparameters TOK_COMMA datastructure TOK_IDENTIFIER
+declarationstatement
+|formalparameters TOK_COMMA declarationstatement
 ;
 
 argument:
 %empty
 |expression
+|expressionstatement
 |argument TOK_COMMA expression
+|argument TOK_COMMA expressionstatement
 ;
 
 datatype:
@@ -200,10 +215,18 @@ statement
 ;
 
 statement:
-expression TOK_SEMI
+expressionstatement TOK_SEMI
 |controlflowstatement 
 |declarationstatement TOK_SEMI
 |initializationstatement TOK_SEMI
+;
+
+expressionstatement:
+instancemethodcall
+|methodcall
+|postdecrement
+|predecrement
+|assignmentstatement
 ;
 
 expression:
@@ -211,16 +234,6 @@ TOK_INTVAL
 |TOK_FLOATVAL
 |TOK_STRINGVAL
 |TOK_IDENTIFIER
-|instancemethodcall
-|methodcall
-|object
-|TOK_NEW datastructure TOK_LPAREN TOK_RPAREN
-|TOK_IDENTIFIER TOK_ASSIGN expression
-|TOK_IDENTIFIER TOK_MODASSIGN expression
-|TOK_IDENTIFIER TOK_DIVASSIGN expression
-|TOK_IDENTIFIER TOK_MULASSIGN expression
-|TOK_IDENTIFIER TOK_ADDASSIGN expression
-|TOK_IDENTIFIER TOK_SUBASSIGN expression
 |expression TOK_ADD expression
 |expression TOK_SUB expression
 |expression TOK_MOD expression
@@ -234,8 +247,21 @@ TOK_INTVAL
 |expression TOK_LEQUAL expression
 |expression TOK_AND expression
 |expression TOK_OR expression
-|postdecrement 
-|predecrement
+;
+
+assignmentstatement:
+TOK_IDENTIFIER TOK_ASSIGN expression
+|TOK_IDENTIFIER TOK_MODASSIGN expression
+|TOK_IDENTIFIER TOK_DIVASSIGN expression
+|TOK_IDENTIFIER TOK_MULASSIGN expression
+|TOK_IDENTIFIER TOK_ADDASSIGN expression
+|TOK_IDENTIFIER TOK_SUBASSIGN expression
+|TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN TOK_RPAREN 
+|TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+|TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE
+|TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
+|TOK_IDENTIFIER TOK_ASSIGN methodcall
+|TOK_IDENTIFIER TOK_ASSIGN instancemethodcall
 ;
 
 controlflowstatement:
@@ -248,22 +274,31 @@ whileloop
 declarationstatement:
 datatype TOK_IDENTIFIER 
 |TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER 
-|datatype TOK_LBRACE TOK_RBRACE TOK_IDENTIFIER 
-|datatype TOK_IDENTIFIER TOK_LBRACE TOK_RBRACE 
+|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER 
+|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET 
 ;
 
 initializationstatement:
-declarationstatement TOK_ASSIGN expression
+datatype TOK_IDENTIFIER TOK_ASSIGN expression
+|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
+|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
+|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN  TOK_LBRACE argument TOK_RBRACE 
+|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN TOK_LBRACE argument TOK_RBRACE
+|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE
+|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE
+|datatype TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+|datatype TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN TOK_RPAREN
+|datatype TOK_IDENTIFIER TOK_ASSIGN methodcall
+|datatype TOK_IDENTIFIER TOK_ASSIGN instancemethodcall
+|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN
 ;
 
-object:
-TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN 
-;
-
+/*might be able to remove*/
 datastructure:
 TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER
-| TOK_IDENTIFIER TOK_LESS TOK_GREATER 
+|TOK_IDENTIFIER TOK_LESS TOK_GREATER 
 ;
+
 
 whileloop:
 TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
