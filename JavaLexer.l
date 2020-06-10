@@ -109,13 +109,11 @@ ID			[a-zA-Z_$][a-zA-Z_0-9$]*
 {DIGIT}+				{ yylval.iVal = atoi(yytext); return TOK_INTVAL; }
 {DIGIT}+"."{DIGIT}*		{ yylval.fVal = atof(yytext); return TOK_FLOATVAL; }
 "\'".?"\'"				{ yylval.cVal = yytext[0]; return TOK_CHARVAL; }
-"\"".*"\""				{	std::string _st (yytext);
-							yylval.stVal = &_st; 
+"\"".*"\""				{	strcpy(yylval.stVal, yytext);
 							return TOK_STRINGVAL; }
 "true"|"false"			{ yylval.bVal = strcmp(yytext, "true") == 0; return TOK_BOOLVAL; }
 "null"					{ return TOK_NULLVAL; }
-{ID}					{	std::string _st (yytext);
-							yylval.stVal = &_st; 
+{ID}					{	strcpy(yylval.stVal, yytext);
 							return TOK_IDENTIFIER; }
 
 [ \t\n]+				{ ;/*eat whitespace*/ }

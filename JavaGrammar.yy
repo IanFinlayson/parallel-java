@@ -3,6 +3,8 @@
 	#include "Node/Node.cpp"
 	extern int yylex();
 	void yyerror (char const *error);
+	
+	Node* root;
 %}
 
 %code requires{
@@ -14,7 +16,7 @@
 //wasn't sure what to call these
 	int iVal;
 	double dVal;
-	std::string* stVal;
+	char stVal[100];
 	bool bVal;
 	float fVal;
 	long lVal;
@@ -130,24 +132,31 @@
 %token TOK_SUBSUB 338
 %token TOK_ADDADD 339
 
-%type <node> classdec
+%type <node> classdec classdecs 
 
 %%
 
 
 /*interfaces*/
 program:
-classdec {
-	Node root = Node(0, 0, 0, "");
-	root.attach_child(*$1);
-	printf("%s\n", root.get_tree_string(0).data());
+classdecs {
+	root = $1;
 }
-|program classdec
+;
+
+classdecs:
+classdec classdecs {
+	$1->attach_child(*$2);
+	$$ = $1;
+}
+|classdec{
+	$$ = $1;
+}
 ;
 
 classdec:
 classaccessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
-	$$ = new Node(TOK_CLASS, 0, 0, $4->data());
+	$$ = new Node(TOK_CLASS, 0, 0, $4);
 }
 ;
 
@@ -355,9 +364,16 @@ TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/
 ;
 
 %%
+
+//Node* root;
+
 int main ()
 {
-	return yyparse();
+	//root = new Node(0, 0, 0, "k");
+	//printf("%s\n", root->get_tree_string(0).data());
+	yyparse();
+	root->print();
+	return 0;
 }
 
 #include <stdio.h>

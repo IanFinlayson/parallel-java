@@ -29,6 +29,7 @@ class Node{
 												//.  1[left child information]
 												//.  .  1[left child information]
 												//.  2[middle child information]
+		void print();						//prints the string created from get_tree_string()
 
 		void attach_child(Node&);			//attach a new child (from left to right)
 

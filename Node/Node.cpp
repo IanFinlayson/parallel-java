@@ -17,7 +17,7 @@ Node::Node(int type, int value_int, double value_double, std::string id){
 
 //Destructor
 Node::~Node(){
-	//printf("node gone\n");
+	printf("node gone\n");
 }
 
 //Getters
@@ -67,6 +67,11 @@ std::string Node::get_tree_string(int numTabs){
 		s += std::to_string(i+1) + get_child(i).get_tree_string(numTabs+1);
 	}
 	return s;
+}
+
+//Prints tree string
+void Node::print(){
+	printf("%s\n", this->get_tree_string(0).data());
 }
 
 //Children management
