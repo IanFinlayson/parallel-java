@@ -1,5 +1,6 @@
 %{
 	#include <cstdlib>
+	#include "Node/Node.cpp"
 	extern int yylex();
 	void yyerror (char const *error);
 %}
@@ -19,6 +20,7 @@
 	long lVal;
 	short shVal;
 	char cVal;
+	struct Node* node;
 
 }
 
@@ -127,17 +129,26 @@
 %right TOK_NEG 337
 %token TOK_SUBSUB 338
 %token TOK_ADDADD 339
+
+%type <node> classdec
+
 %%
 
 
 /*interfaces*/
 program:
-classdec
+classdec {
+	Node root = Node(0, 0, 0, "");
+	root.attach_child(*$1);
+	printf("%s\n", root.get_tree_string(0).data());
+}
 |program classdec
 ;
 
 classdec:
-classaccessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
+classaccessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
+	$$ = new Node(TOK_CLASS, 0, 0, $4->data());
+}
 ;
 
 nestedclassdec:

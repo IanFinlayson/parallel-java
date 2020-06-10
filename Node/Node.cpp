@@ -38,17 +38,18 @@ std::string Node::get_id(){
 }
 
 int Node::get_num_children(){
-	return num_children;
+	return children.size();
 }
 
 Node& Node::get_child(int index){
-	if(index >= 0 && index < num_children){
-		return *children[index];
+	if(index >= 0 && index < children.size()){
+		return *children.at(index);
 	}
+	//return null or something here lol
 }
 
-Node* Node::get_children(){
-	return *children;
+std::vector<Node*>* Node::get_children(){
+	return &children;
 }
 
 //Makes a string that represents the tree rooted at this node
@@ -59,7 +60,7 @@ std::string Node::get_tree_string(int numTabs){
 	std::string s_id = "ID: " + get_id() + "]";
 	std::string s = "";
 	s += s_type + s_value_i + s_value_d + s_id + "\n";
-	for(int i = 0; i < get_num_children(); i++){
+	for(int i = 0; i < children.size(); i++){
 		for(int j = 0; j <= numTabs; j++){
 			s+= ".  ";
 		}
@@ -70,18 +71,16 @@ std::string Node::get_tree_string(int numTabs){
 
 //Children management
 void Node::attach_child(Node& child){
-	if(num_children >= 3) return;
-	children[num_children] = &child;
-	num_children++;
+	children.push_back(&child);
 }
 
 
 /* left over main from testing
 int main(){
-	Node n1 = Node(3, 54.2, "cool dude");
-	Node n2 = Node(4, 34.3, "not cool dude");
-	Node n3 = Node(1, 84.5, "very cool dude");
-	Node n4 = Node(7, 48.2, "so cool dude");
+	Node n1 = Node(3, 3, 54.2, "cool dude");
+	Node n2 = Node(4, 5, 34.3, "not cool dude");
+	Node n3 = Node(1, 6, 84.5, "very cool dude");
+	Node n4 = Node(7, 1, 48.2, "so cool dude");
 	n1.attach_child(n2);
 	n1.attach_child(n3);
 	n2.attach_child(n4);
