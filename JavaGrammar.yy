@@ -132,7 +132,7 @@
 %token TOK_SUBSUB 338
 %token TOK_ADDADD 339
 
-%type <node> classdec classdecs 
+%type <node> classdec classdecs classbody
 
 %%
 
@@ -157,6 +157,7 @@ classdec classdecs {
 classdec:
 classaccessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
 	$$ = new Node(TOK_CLASS, 0, 0, $4);
+	//$$->attach_child(*$6);
 }
 ;
 
