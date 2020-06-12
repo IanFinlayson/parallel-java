@@ -55,7 +55,37 @@ public class Sample {
 		String x[] = new String[]{1,2,3};
 		Strng h = h;
 		h = h;
-  
+
+		switch (num) {
+			case 0:
+				for (int i = 0; i < 3; i--){
+					int x = 0;
+				}
+				break;
+			case 1:
+				x = 1;
+				break;
+			case 2:
+				break;
+			default:
+				x = 2;
+		}
+
+		
+	  	try{
+			File file = args[0];
+		}	
+		catch(FILENOTFOUNDEXCEPTION e){
+		}
+		finally {
+			x=1;
+		}	
+
+		do{
+			x++;
+		}while( x < 3);
+
+			
 	}
 }
 

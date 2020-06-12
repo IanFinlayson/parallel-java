@@ -194,9 +194,20 @@ methodmod:
 |TOK_VOLATILE
 ;
 
+fieldmod:
+TOK_STATIC
+|TOK_FINAL
+|TOK_TRANSIENT
+|TOK_VOLATILE
+;
+
+
 classbody:
-method
-|nestedclassdec
+%empty
+/*
+|classbody declarationstatement TOK_SEMI
+|classbody initializationstatement TOK_SEMI
+*/
 |classbody method
 |classbody nestedclassdec
 ;
@@ -231,7 +242,7 @@ TOK_INT
 ;
 
 block:
-statement
+%empty
 |block statement 
 ;
 
@@ -240,6 +251,7 @@ expressionstatement TOK_SEMI
 |controlflowstatement 
 |declarationstatement TOK_SEMI
 |initializationstatement TOK_SEMI
+|trycatchblock
 ;
 
 expressionstatement:
@@ -255,6 +267,7 @@ TOK_INTVAL
 |TOK_FLOATVAL
 |TOK_STRINGVAL
 |TOK_IDENTIFIER
+|TOK_IDENTIFIER TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
 |expression TOK_ADD expression
 |expression TOK_SUB expression
 |expression TOK_MOD expression
@@ -287,9 +300,14 @@ TOK_IDENTIFIER TOK_ASSIGN expression
 
 controlflowstatement:
 whileloop
+|dowhileloop
 |forloop
 |ifstatement
 |ifelsestatement
+|switchstatement
+|TOK_BREAK TOK_SEMI
+|TOK_CONTINUE TOK_SEMI
+|TOK_RETURN TOK_SEMI
 ;
 
 declarationstatement:
@@ -325,6 +343,10 @@ whileloop:
 TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
+dowhileloop:
+TOK_DO TOK_LBRACE block TOK_RBRACE TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_SEMI
+;
+
 forloop:
 TOK_FOR TOK_LPAREN initializationstatement TOK_SEMI expression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
@@ -337,6 +359,22 @@ TOK_IF TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ifelsestatement:
 ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE
 |ifstatement TOK_ELSE statement 
+;
+
+switchstatement:
+TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_RBRACE
+|TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_DEFAULT TOK_COLON block TOK_RBRACE
+;
+
+switchbody:
+TOK_CASE expression TOK_COLON block
+|switchbody TOK_CASE expression TOK_COLON block 
+;
+
+trycatchblock:
+TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN 
+TOK_LBRACE block TOK_RBRACE
+|TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 ;
 
 postdecrement:
