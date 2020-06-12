@@ -1,6 +1,7 @@
 # compiled files
 
 parser
+*.gch
 *.o
 *.tab.cc
 *.tab.yy

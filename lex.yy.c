@@ -1378,31 +1378,29 @@ YY_RULE_SETUP
 case 94:
 YY_RULE_SETUP
 #line 112 "JavaLexer.l"
-{	std::string _st (yytext);
-							yylval.stVal = &_st; 
+{	strcpy(yylval.stVal, yytext);
 							return TOK_STRINGVAL; }
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 115 "JavaLexer.l"
+#line 114 "JavaLexer.l"
 { yylval.bVal = strcmp(yytext, "true") == 0; return TOK_BOOLVAL; }
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 116 "JavaLexer.l"
+#line 115 "JavaLexer.l"
 { return TOK_NULLVAL; }
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 117 "JavaLexer.l"
-{	std::string _st (yytext);
-							yylval.stVal = &_st; 
+#line 116 "JavaLexer.l"
+{	strcpy(yylval.stVal, yytext);
 							return TOK_IDENTIFIER; }
 	YY_BREAK
 case 98:
 /* rule 98 can match eol */
 YY_RULE_SETUP
-#line 121 "JavaLexer.l"
+#line 119 "JavaLexer.l"
 { ;/*eat whitespace*/ }
 	YY_BREAK
 case 99:
@@ -1410,21 +1408,21 @@ case 99:
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 122 "JavaLexer.l"
+#line 120 "JavaLexer.l"
 { ;/*eat one line comments*/ }
 	YY_BREAK
 case 100:
 /* rule 100 can match eol */
 YY_RULE_SETUP
-#line 123 "JavaLexer.l"
+#line 121 "JavaLexer.l"
 { ;/*probably eats multiline comments???*/ }
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 126 "JavaLexer.l"
+#line 124 "JavaLexer.l"
 ECHO;
 	YY_BREAK
-#line 1428 "lex.yy.c"
+#line 1426 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2429,7 +2427,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 126 "JavaLexer.l"
+#line 124 "JavaLexer.l"
 
 
 /* program for testing */

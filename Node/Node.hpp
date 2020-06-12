@@ -1,6 +1,5 @@
 #include <string>
-
-#define MAX_CHILDREN 3
+#include <vector>
 
 class Node{
 	private:
@@ -9,8 +8,7 @@ class Node{
 		double value_double;	//a uh double value
 		std::string id;			//string representing an identifier or characters or strings
 		
-		int num_children = 0;			//current number of children this node has
-		Node* children[MAX_CHILDREN];	//array holding immediate children
+		std::vector<Node*> children;	//vector holding immediate children
 
 	public:
 		Node(int);								//constructor for those tokens that are just a token
@@ -23,7 +21,7 @@ class Node{
 		std::string get_id();				//returns id
 		int get_num_children();				//returns current number of children
 		Node& get_child(int);				//returns a reference to the left, middle, or right (0, 1, or 2) child
-		Node* get_children();				//returns a pointer to the children array
+		std::vector<Node*>* get_children();	//returns a pointer to the children vector
 		std::string get_tree_string(int);	//returns a string the represents the entire tree rooted at this node
 												//always input 0
 												//format:
@@ -31,6 +29,7 @@ class Node{
 												//.  1[left child information]
 												//.  .  1[left child information]
 												//.  2[middle child information]
+		void print();						//prints the string created from get_tree_string()
 
 		void attach_child(Node&);			//attach a new child (from left to right)
 

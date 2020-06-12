@@ -1,7 +1,10 @@
 %{
 	#include <cstdlib>
+	#include "Node/Node.cpp"
 	extern int yylex();
 	void yyerror (char const *error);
+	
+	Node* root;
 %}
 
 %code requires{
@@ -13,12 +16,13 @@
 //wasn't sure what to call these
 	int iVal;
 	double dVal;
-	std::string* stVal;
+	char stVal[100];
 	bool bVal;
 	float fVal;
 	long lVal;
 	short shVal;
 	char cVal;
+	struct Node* node;
 
 }
 
@@ -127,17 +131,34 @@
 %right TOK_NEG 337
 %token TOK_SUBSUB 338
 %token TOK_ADDADD 339
+
+%type <node> classdec classdecs classbody
+
 %%
 
 
 /*interfaces*/
 program:
-classdec
-|program classdec
+classdecs {
+	root = $1;
+}
+;
+
+classdecs:
+classdec classdecs {
+	$1->attach_child(*$2);
+	$$ = $1;
+}
+|classdec{
+	$$ = $1;
+}
 ;
 
 classdec:
-classaccessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
+classaccessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
+	$$ = new Node(TOK_CLASS, 0, 0, $4);
+	//$$->attach_child(*$6);
+}
 ;
 
 nestedclassdec:
@@ -344,9 +365,16 @@ TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/
 ;
 
 %%
+
+//Node* root;
+
 int main ()
 {
-	return yyparse();
+	//root = new Node(0, 0, 0, "k");
+	//printf("%s\n", root->get_tree_string(0).data());
+	yyparse();
+	root->print();
+	return 0;
 }
 
 #include <stdio.h>
