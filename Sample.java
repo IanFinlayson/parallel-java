@@ -53,6 +53,8 @@ public class Sample {
 		x = new int[5];
 		int[] x = new int[]{1,2,3};
 		String x[] = new String[]{1,2,3};
+		Strng h = h;
+		h = h;
   
 	}
 }
