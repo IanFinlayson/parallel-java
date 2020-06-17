@@ -196,16 +196,17 @@ mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE bl
 ;
 
 formalparameters:
-declarationstatement
-|formalparameters TOK_COMMA declarationstatement
+%empty
+|declarationstatement
+|declarationstatement TOK_COMMA formalparameters
 ;
 
 argument:
 %empty
 |expression
 |expressionstatement
-|argument TOK_COMMA expression
-|argument TOK_COMMA expressionstatement
+|expression TOK_COMMA argument
+|expressionstatement TOK_COMMA argument
 ;
 
 datatype:
@@ -342,7 +343,7 @@ TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_RBRACE
 
 switchbody:
 TOK_CASE expression TOK_COLON block
-|switchbody TOK_CASE expression TOK_COLON block 
+|TOK_CASE expression TOK_COLON block switchbody
 ;
 
 trycatchblock:
@@ -373,7 +374,7 @@ TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 
 fieldreference:
 TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/
-|fieldreference TOK_DOT TOK_IDENTIFIER
+|fieldreference TOK_DOT TOK_IDENTIFIER TOK_DOT
 ;
 
 %%
