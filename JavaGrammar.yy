@@ -183,10 +183,10 @@ mod:
 
 classbody:
 %empty
-|classbody mod declarationstatement TOK_SEMI
-|classbody mod initializationstatement TOK_SEMI
-|classbody method
-|classbody nestedclassdec
+|mod declarationstatement TOK_SEMI classbody
+|mod initializationstatement TOK_SEMI classbody
+|method classbody
+|nestedclassdec classbody
 ;
 
 method:
@@ -217,7 +217,7 @@ TOK_INT
 
 block:
 %empty
-|block statement 
+|statement block
 ;
 
 statement:
