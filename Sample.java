@@ -87,5 +87,9 @@ public class Sample {
 
 			
 	}
+
+	public static void coolMethod(int a){
+		System.out.println("woah dude");
+	}
 }
 

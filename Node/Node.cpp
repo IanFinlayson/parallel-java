@@ -79,7 +79,6 @@ void Node::attach_child(Node& child){
 	children.push_back(&child);
 }
 
-
 /* left over main from testing
 int main(){
 	Node n1 = Node(3, 3, 54.2, "cool dude");
