@@ -182,20 +182,22 @@ classmod:
 %empty
 |TOK_FINAL
 |TOK_ABSTRACT
+|TOK_STRICTFP
+|TOK_STATIC
 ;
 
 methodmod:
 %empty
 |TOK_FINAL
 |TOK_STATIC
-|TOK_ABSTRACT
-|TOK_TRANSIENT
+|TOK_NATIVE
 |TOK_SYNCHRONIZED
-|TOK_VOLATILE
+|TOK_STRICTFP
 ;
 
 fieldmod:
-TOK_STATIC
+%empty
+|TOK_STATIC
 |TOK_FINAL
 |TOK_TRANSIENT
 |TOK_VOLATILE
@@ -204,10 +206,8 @@ TOK_STATIC
 
 classbody:
 %empty
-/*
 |classbody declarationstatement TOK_SEMI
 |classbody initializationstatement TOK_SEMI
-*/
 |classbody method
 |classbody nestedclassdec
 ;

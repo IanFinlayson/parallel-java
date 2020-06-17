@@ -35,7 +35,7 @@ public class Sample {
 			r++;
 		}
 		
-		int x = 3;
+		int x = 3.543;
 		int j = test.get();
 		String j = test.get();
 		String f = "hello";
