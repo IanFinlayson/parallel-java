@@ -155,70 +155,44 @@ classdec classdecs {
 ;
 
 classdec:
-classaccessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
+mod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE /*{
 	$$ = new Node(TOK_CLASS, 0, 0, $4);
 	//$$->attach_child(*$6);
-}
+}*/
 ;
 
 nestedclassdec:
-accessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
-;
-
-classaccessmod:
-%empty
-|TOK_PUBLIC
-;
-
-accessmod:
-%empty
-|TOK_PUBLIC
-|TOK_PRIVATE
-|TOK_PROTECTED
+mod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
 ;
 
 /*rename*/
-classmod:
+mod:
 %empty
-|TOK_FINAL
-|TOK_ABSTRACT
-|TOK_STRICTFP
-|TOK_STATIC
+|TOK_FINAL mod
+|TOK_ABSTRACT mod
+|TOK_STRICTFP mod
+|TOK_STATIC mod
+|TOK_NATIVE mod
+|TOK_SYNCHRONIZED mod
+|TOK_TRANSIENT mod
+|TOK_VOLATILE mod
+|TOK_PUBLIC mod
+|TOK_PRIVATE mod
+|TOK_PROTECTED mod
 ;
-
-methodmod:
-%empty
-|TOK_FINAL
-|TOK_STATIC
-|TOK_NATIVE
-|TOK_SYNCHRONIZED
-|TOK_STRICTFP
-;
-
-fieldmod:
-%empty
-|TOK_STATIC
-|TOK_FINAL
-|TOK_TRANSIENT
-|TOK_VOLATILE
-;
-
 
 classbody:
 %empty
-|classbody declarationstatement TOK_SEMI
-|classbody initializationstatement TOK_SEMI
+|classbody mod declarationstatement TOK_SEMI
+|classbody mod initializationstatement TOK_SEMI
 |classbody method
 |classbody nestedclassdec
 ;
 
 method:
-accessmod methodmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-;
-
-returntype:
-TOK_VOID
-|datatype
+mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|mod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|mod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
 formalparameters:
@@ -307,7 +281,7 @@ whileloop
 |switchstatement
 |TOK_BREAK TOK_SEMI
 |TOK_CONTINUE TOK_SEMI
-|TOK_RETURN TOK_SEMI
+|TOK_RETURN TOK_IDENTIFIER TOK_SEMI
 ;
 
 declarationstatement:
