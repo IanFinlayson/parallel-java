@@ -132,16 +132,16 @@
 %token TOK_SUBSUB 338
 %token TOK_ADDADD 339
 
-/*%type <node> classdec classdecs classbody
-*/
+%type <node> classdec classdecs classbody
+
 %%
 
 
 /*interfaces*/
 program:
-packagedec importstatements typedec/* {
+packagedec importstatements typedec {
 	root = $1;
-}*/
+}
 ;
 
 packagedec:
@@ -171,7 +171,7 @@ interfacedec
 |interfacedec typedec
 ;
 
-/*
+/*changed the grammar so this might not be needed anymore. Just didnt want to delete the actions*/
 classdecs:
 classdec classdecs{
 	$1->attach_child(*$2);
@@ -181,17 +181,17 @@ classdec classdecs{
 	$$ = $1;
 }
 ;
-*/
+
 
 interfacedec:
 classmod TOK_INTERFACE TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE
 ;
 
 classdec:
-classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE /*{
+classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
 	$$ = new Node(TOK_CLASS, 0, 0, $4);
 	//$$->attach_child(*$6);
-}*/
+}
 ;
 
 /*rename*/
