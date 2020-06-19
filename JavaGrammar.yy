@@ -132,68 +132,131 @@
 %token TOK_SUBSUB 338
 %token TOK_ADDADD 339
 
-%type <node> classdec classdecs classbody
-
+/*%type <node> classdec classdecs classbody
+*/
 %%
 
 
 /*interfaces*/
 program:
-classdecs {
+packagedec importstatements typedec/* {
 	root = $1;
-}
+}*/
 ;
 
+packagedec:
+%empty
+|TOK_PACKAGE packagename TOK_SEMI
+;
+
+importstatements:
+%empty
+|importstatement importstatements
+;
+
+importstatement:
+TOK_IMPORT packagename TOK_SEMI
+|TOK_IMPORT packagename TOK_DOT TOK_MUL TOK_SEMI
+;
+
+packagename:
+TOK_IDENTIFIER 
+|packagename TOK_DOT TOK_IDENTIFIER 
+;
+
+typedec:
+interfacedec
+|classdec
+|classdec typedec
+|interfacedec typedec
+;
+
+/*
 classdecs:
-classdec classdecs {
+classdec classdecs{
 	$1->attach_child(*$2);
 	$$ = $1;
 }
-|classdec{
+|classdec {
 	$$ = $1;
 }
 ;
+*/
+
+interfacedec:
+classmod TOK_INTERFACE TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE
+;
 
 classdec:
-mod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE /*{
+classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE /*{
 	$$ = new Node(TOK_CLASS, 0, 0, $4);
 	//$$->attach_child(*$6);
 }*/
 ;
 
-nestedclassdec:
-mod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
+/*rename*/
+classmod:
+%empty
+|TOK_FINAL classmod
+|TOK_ABSTRACT classmod
+|TOK_STRICTFP classmod
+|TOK_STATIC classmod
+|TOK_NATIVE classmod
+|TOK_SYNCHRONIZED classmod
+|TOK_TRANSIENT classmod
+|TOK_VOLATILE classmod
+|TOK_PUBLIC classmod
+|TOK_PRIVATE classmod
+|TOK_PROTECTED classmod
 ;
 
-/*rename*/
-mod:
+
+interfacemod:
 %empty
-|TOK_FINAL mod
-|TOK_ABSTRACT mod
-|TOK_STRICTFP mod
-|TOK_STATIC mod
-|TOK_NATIVE mod
-|TOK_SYNCHRONIZED mod
-|TOK_TRANSIENT mod
-|TOK_VOLATILE mod
-|TOK_PUBLIC mod
-|TOK_PRIVATE mod
-|TOK_PROTECTED mod
+|TOK_PRIVATE interfacemod
+|TOK_PUBLIC interfacemod
+|TOK_DEFAULT interfacemod
+|TOK_STATIC interfacemod
+|TOK_STRICTFP interfacemod
+|TOK_FINAL interfacemod
+|TOK_ABSTRACT interfacemod
 ;
 
 classbody:
 %empty
-|mod declarationstatement TOK_SEMI classbody
-|mod initializationstatement TOK_SEMI classbody
-|method classbody
-|nestedclassdec classbody
+|classmod declarationstatement TOK_SEMI classbody
+|classmod initializationstatement TOK_SEMI classbody
+|classmethod classbody
+|classdec classbody
+|interfacedec classbody
 ;
 
-method:
-mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|mod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|mod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+interfacebody:
+%empty
+|interfacemod initializationstatement TOK_SEMI interfacebody
+|interfacemethod interfacebody
+|classdec interfacebody
+|interfacedec interfacebody
 ;
+
+interfacemethod:
+interfacemod abstractmethod
+|interfacemod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|interfacemod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+;
+
+abstractmethod:
+datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
+|TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
+;
+
+classmethod:
+classmod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|classmod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|classmod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|classmod abstractmethod
+;
+
 
 formalparameters:
 %empty
@@ -373,8 +436,8 @@ TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 ;
 
 fieldreference:
-TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/
-|fieldreference TOK_DOT TOK_IDENTIFIER TOK_DOT
+TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER
+|fieldreference TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/
 ;
 
 %%
@@ -386,7 +449,7 @@ int main ()
 	//root = new Node(0, 0, 0, "k");
 	//printf("%s\n", root->get_tree_string(0).data());
 	yyparse();
-	root->print();
+//	root->print();
 	return 0;
 }
 
