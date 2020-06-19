@@ -139,88 +139,137 @@
 
 /*interfaces*/
 program:
-classdecs {
+packagedec importstatements typedec {
 	root = $1;
 }
 ;
 
+packagedec:
+%empty
+|TOK_PACKAGE packagename TOK_SEMI
+;
+
+importstatements:
+%empty
+|importstatement importstatements
+;
+
+importstatement:
+TOK_IMPORT packagename TOK_SEMI
+|TOK_IMPORT packagename TOK_DOT TOK_MUL TOK_SEMI
+;
+
+packagename:
+TOK_IDENTIFIER 
+|packagename TOK_DOT TOK_IDENTIFIER 
+;
+
+typedec:
+interfacedec
+|classdec
+|classdec typedec
+|interfacedec typedec
+;
+
+/*changed the grammar so this might not be needed anymore. Just didnt want to delete the actions*/
 classdecs:
-classdec classdecs {
+classdec classdecs{
 	$1->attach_child(*$2);
 	$$ = $1;
 }
-|classdec{
+|classdec {
 	$$ = $1;
 }
 ;
 
+
+interfacedec:
+classmod TOK_INTERFACE TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE
+;
+
 classdec:
-classaccessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
+classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
 	$$ = new Node(TOK_CLASS, 0, 0, $4);
 	//$$->attach_child(*$6);
 }
 ;
 
-nestedclassdec:
-accessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
-;
-
-classaccessmod:
-%empty
-|TOK_PUBLIC
-;
-
-accessmod:
-%empty
-|TOK_PUBLIC
-|TOK_PRIVATE
-|TOK_PROTECTED
-;
-
 /*rename*/
 classmod:
 %empty
-|TOK_FINAL
-|TOK_ABSTRACT
+|TOK_FINAL classmod
+|TOK_ABSTRACT classmod
+|TOK_STRICTFP classmod
+|TOK_STATIC classmod
+|TOK_NATIVE classmod
+|TOK_SYNCHRONIZED classmod
+|TOK_TRANSIENT classmod
+|TOK_VOLATILE classmod
+|TOK_PUBLIC classmod
+|TOK_PRIVATE classmod
+|TOK_PROTECTED classmod
 ;
 
-methodmod:
+
+interfacemod:
 %empty
-|TOK_FINAL
-|TOK_STATIC
-|TOK_ABSTRACT
-|TOK_TRANSIENT
-|TOK_SYNCHRONIZED
-|TOK_VOLATILE
+|TOK_PRIVATE interfacemod
+|TOK_PUBLIC interfacemod
+|TOK_DEFAULT interfacemod
+|TOK_STATIC interfacemod
+|TOK_STRICTFP interfacemod
+|TOK_FINAL interfacemod
+|TOK_ABSTRACT interfacemod
 ;
 
 classbody:
-method
-|nestedclassdec
-|classbody method
-|classbody nestedclassdec
+%empty
+|classmod declarationstatement TOK_SEMI classbody
+|classmod initializationstatement TOK_SEMI classbody
+|classmethod classbody
+|classdec classbody
+|interfacedec classbody
 ;
 
-method:
-accessmod methodmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+interfacebody:
+%empty
+|interfacemod initializationstatement TOK_SEMI interfacebody
+|interfacemethod interfacebody
+|classdec interfacebody
+|interfacedec interfacebody
 ;
 
-returntype:
-TOK_VOID
-|datatype
+interfacemethod:
+interfacemod abstractmethod
+|interfacemod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|interfacemod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
+
+abstractmethod:
+datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
+|TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
+;
+
+classmethod:
+classmod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|classmod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|classmod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|classmod abstractmethod
+;
+
 
 formalparameters:
-declarationstatement
-|formalparameters TOK_COMMA declarationstatement
+%empty
+|declarationstatement
+|declarationstatement TOK_COMMA formalparameters
 ;
 
 argument:
 %empty
 |expression
 |expressionstatement
-|argument TOK_COMMA expression
-|argument TOK_COMMA expressionstatement
+|expression TOK_COMMA argument
+|expressionstatement TOK_COMMA argument
 ;
 
 datatype:
@@ -231,8 +280,8 @@ TOK_INT
 ;
 
 block:
-statement
-|block statement 
+%empty
+|statement block
 ;
 
 statement:
@@ -240,6 +289,7 @@ expressionstatement TOK_SEMI
 |controlflowstatement 
 |declarationstatement TOK_SEMI
 |initializationstatement TOK_SEMI
+|trycatchblock
 ;
 
 expressionstatement:
@@ -255,6 +305,7 @@ TOK_INTVAL
 |TOK_FLOATVAL
 |TOK_STRINGVAL
 |TOK_IDENTIFIER
+|TOK_IDENTIFIER TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
 |expression TOK_ADD expression
 |expression TOK_SUB expression
 |expression TOK_MOD expression
@@ -287,9 +338,14 @@ TOK_IDENTIFIER TOK_ASSIGN expression
 
 controlflowstatement:
 whileloop
+|dowhileloop
 |forloop
 |ifstatement
 |ifelsestatement
+|switchstatement
+|TOK_BREAK TOK_SEMI
+|TOK_CONTINUE TOK_SEMI
+|TOK_RETURN TOK_IDENTIFIER TOK_SEMI
 ;
 
 declarationstatement:
@@ -325,6 +381,10 @@ whileloop:
 TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
 
+dowhileloop:
+TOK_DO TOK_LBRACE block TOK_RBRACE TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_SEMI
+;
+
 forloop:
 TOK_FOR TOK_LPAREN initializationstatement TOK_SEMI expression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
@@ -337,6 +397,22 @@ TOK_IF TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ifelsestatement:
 ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE
 |ifstatement TOK_ELSE statement 
+;
+
+switchstatement:
+TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_RBRACE
+|TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_DEFAULT TOK_COLON block TOK_RBRACE
+;
+
+switchbody:
+TOK_CASE expression TOK_COLON block
+|TOK_CASE expression TOK_COLON block switchbody
+;
+
+trycatchblock:
+TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN 
+TOK_LBRACE block TOK_RBRACE
+|TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 ;
 
 postdecrement:
@@ -360,8 +436,8 @@ TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 ;
 
 fieldreference:
-TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/
-|fieldreference TOK_DOT TOK_IDENTIFIER
+TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER
+|fieldreference TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/
 ;
 
 %%
@@ -373,7 +449,7 @@ int main ()
 	//root = new Node(0, 0, 0, "k");
 	//printf("%s\n", root->get_tree_string(0).data());
 	yyparse();
-	root->print();
+//	root->print();
 	return 0;
 }
 
