@@ -168,195 +168,138 @@ Node* root;
 %token TOK_SUBSUB 338
 %token TOK_ADDADD 339
 
-%type <node> classdec classdecs classbody classaccessmod classmod method datatype returntype methodmod accessmod formalparameters declarationstatement block
-
 %%
 
 
 /*interfaces*/
 program:
-classdecs {
-	root = $1;
-}
+packagedec importstatements typedec 
 ;
 
-classdecs:
-classdec classdecs {
-	$$ = new Node(ptClassContainer, 0, 0, "");
-	$$->attach_child(*$1);
-	$$->attach_child(*$2);
-}
-|classdec{
-	$$ = new Node(ptClassContainer, 0, 0, "");
-	$$->attach_child(*$1);
-}
+packagedec:
+%empty
+|TOK_PACKAGE packagename TOK_SEMI
+;
+
+importstatements:
+%empty
+|importstatement importstatements
+;
+
+importstatement:
+TOK_IMPORT packagename TOK_SEMI
+|TOK_IMPORT packagename TOK_DOT TOK_MUL TOK_SEMI
+;
+
+packagename:
+TOK_IDENTIFIER 
+|packagename TOK_DOT TOK_IDENTIFIER 
+;
+
+typedec:
+interfacedec
+|classdec
+|classdec typedec
+|interfacedec typedec
+;
+
+
+interfacedec:
+classmod TOK_INTERFACE TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE
 ;
 
 classdec:
-classaccessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
-	$$ = new Node(ptClass, 0, 0, $4);
-	$$->attach_child(*$1); //left branch of class node starts with access modifier
-	$1->attach_child(*$2); //left branch class modifier
-	//have to add extends
-	//have to add implements
-	if($6->get_type() != ptEmpty){
-		$$->attach_child(*$6); //right branch of class node is the class body tree
-	}
-}
-;
-
-nestedclassdec:
-accessmod classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
-;
-
-classaccessmod:
-%empty {
-	$$ = new Node(ptClassAccessMod, 0, 0, "default");
-}
-|TOK_PUBLIC {
-	$$ = new Node(ptClassAccessMod, 0, 0, "public");
-}
-;
-
-accessmod:
-%empty {
-	$$ = new Node(ptAccessMod, 0, 0, "default");
-}
-|TOK_PUBLIC {
-	$$ = new Node(ptAccessMod, 0, 0, "pulic");
-}
-|TOK_PRIVATE {
-	$$ = new Node(ptAccessMod, 0, 0, "private");
-}
-|TOK_PROTECTED {
-	$$ = new Node(ptAccessMod, 0, 0, "protected");
-}
+classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE 
 ;
 
 /*rename*/
 classmod:
-%empty {
-	$$ = new Node(ptClassMod, 0, 0, "default");
-}
-|TOK_FINAL {
-	$$ = new Node(ptClassMod, 0, 0, "final");
-}
-|TOK_ABSTRACT {
-	$$ = new Node(ptClassMod, 0, 0, "abstract");
-}
+%empty
+|TOK_FINAL classmod
+|TOK_ABSTRACT classmod
+|TOK_STRICTFP classmod
+|TOK_STATIC classmod
+|TOK_NATIVE classmod
+|TOK_SYNCHRONIZED classmod
+|TOK_TRANSIENT classmod
+|TOK_VOLATILE classmod
+|TOK_PUBLIC classmod
+|TOK_PRIVATE classmod
+|TOK_PROTECTED classmod
 ;
 
-methodmod:
-%empty {
-	$$ = new Node(ptMethodMod, 0, 0, "default");
-}
-|TOK_FINAL {
-	$$ = new Node(ptMethodMod, 0, 0, "final");
-}
-|TOK_STATIC {
-	$$ = new Node(ptMethodMod, 0, 0, "static");
-}
-|TOK_ABSTRACT {
-	$$ = new Node(ptMethodMod, 0, 0, "abstract");
-}
-|TOK_TRANSIENT {
-	$$ = new Node(ptMethodMod, 0, 0, "transient");
-}
-|TOK_SYNCHRONIZED {
-	$$ = new Node(ptMethodMod, 0, 0, "synchronized");
-}
-|TOK_VOLATILE {
-	$$ = new Node(ptMethodMod, 0, 0, "volatile");
-}
-;
 
-fieldmod:
-TOK_STATIC
-|TOK_FINAL
-|TOK_TRANSIENT
-|TOK_VOLATILE
+interfacemod:
+%empty
+|TOK_PRIVATE interfacemod
+|TOK_PUBLIC interfacemod
+|TOK_DEFAULT interfacemod
+|TOK_STATIC interfacemod
+|TOK_STRICTFP interfacemod
+|TOK_FINAL interfacemod
+|TOK_ABSTRACT interfacemod
 ;
-
 
 classbody:
-%empty {
-	$$ = new Node(ptEmpty, 0, 0, "");
-}
-/*
-|classbody declarationstatement TOK_SEMI
-|classbody initializationstatement TOK_SEMI
-*/
-|method classbody{
-	$$ = new Node(ptMethodContainer, 0, 0, "");
-	$$->attach_child(*$1);
-	if($2->get_type() != ptEmpty){
-		$$->attach_child(*$2);
-	}
-}
-|nestedclassdec classbody {
-	$$ = new Node(ptNestedClassContainer, 0, 0, "a nested class");	
-}
+%empty
+|classmod declarationstatement TOK_SEMI classbody
+|classmod initializationstatement TOK_SEMI classbody
+|classmethod classbody
+|classdec classbody
+|interfacedec classbody
 ;
 
-method:
-accessmod methodmod returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
-	$$ = new Node(ptMethod, 0, 0, $4);
-	//method info
-	$$->attach_child(*$1);
-	$1->attach_child(*$2);
-	$2->attach_child(*$3);
-	//method parameters
-	$3->attach_child(*$6);
-	//method body
-	//$$->attach_child(*$9);
-}
+interfacebody:
+%empty
+|interfacemod initializationstatement TOK_SEMI interfacebody
+|interfacemethod interfacebody
+|classdec interfacebody
+|interfacedec interfacebody
 ;
 
-returntype:
-TOK_VOID {
-	$$ = new Node(ptMethodReturnVoid, 0, 0, "");
-}
-|datatype {
-	$$ = $1;
-}
+interfacemethod:
+interfacemod abstractmethod
+|interfacemod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|interfacemod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
+
+abstractmethod:
+datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
+|TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
+;
+
+classmethod:
+classmod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|classmod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|classmod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|classmod abstractmethod
+;
+
 
 formalparameters:
-declarationstatement {
-	$$ = $1;
-}
-|formalparameters TOK_COMMA declarationstatement {
-	$$ = $3;
-	$$->attach_child(*$1);
-}
+%empty
+|declarationstatement
+|declarationstatement TOK_COMMA formalparameters
 ;
 
 argument:
 %empty
 |expression
 |expressionstatement
-|argument TOK_COMMA expression
-|argument TOK_COMMA expressionstatement
+|expression TOK_COMMA argument
+|expressionstatement TOK_COMMA argument
 ;
 
 datatype:
-TOK_INT {
-	$$ = new Node(ptDataType, 0, 0, "int");
-}
-|TOK_BOOLEAN {
-	$$ = new Node(ptDataType, 0, 0, "boolean");
-}
-|TOK_FLOAT {
-	$$ = new Node(ptDataType, 0, 0, "float");
-}
-|TOK_IDENTIFIER {
-	$$ = new Node(ptInstanceType, 0, 0, $1);
-}
+TOK_INT 
+|TOK_BOOLEAN 
+|TOK_FLOAT 
+|TOK_IDENTIFIER 
 ;
 
 block:
 %empty
-|block statement 
+|statement block
 ;
 
 statement:
@@ -420,28 +363,14 @@ whileloop
 |switchstatement
 |TOK_BREAK TOK_SEMI
 |TOK_CONTINUE TOK_SEMI
-|TOK_RETURN TOK_SEMI
+|TOK_RETURN TOK_IDENTIFIER TOK_SEMI
 ;
 
 declarationstatement:
-datatype TOK_IDENTIFIER {
-	$$ = new Node(ptDeclaration, 0, 0, $2);
-	$$->attach_child(*$1);
-}
-|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER {
-	$$ = new Node(ptDeclaration, 0, 0, $5);
-	Node* _n = new Node(ptInstanceType, 0, 0, $1);
-	_n->attach_child(*$3);
-	$$->attach_child(*_n);
-}
-|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER {
-	$$ = new Node(ptArrayDeclaration, 0, 0, $4);
-	$$->attach_child(*$1);
-}
-|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET {
-	$$ = new Node(ptArrayDeclaration, 0, 0, $2);
-	$$->attach_child(*$1);
-}
+datatype TOK_IDENTIFIER 
+|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER 
+|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER 
+|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET 
 ;
 
 initializationstatement:
@@ -495,7 +424,7 @@ TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_RBRACE
 
 switchbody:
 TOK_CASE expression TOK_COLON block
-|switchbody TOK_CASE expression TOK_COLON block 
+|TOK_CASE expression TOK_COLON block switchbody
 ;
 
 trycatchblock:
@@ -525,8 +454,8 @@ TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 ;
 
 fieldreference:
-TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/
-|fieldreference TOK_DOT TOK_IDENTIFIER
+TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER
+|fieldreference TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/
 ;
 
 %%
@@ -538,7 +467,7 @@ int main ()
 	//root = new Node(0, 0, 0, "k");
 	//printf("%s\n", root->get_tree_string(0).data());
 	yyparse();
-	root->print();
+//	root->print();
 	return 0;
 }
 
