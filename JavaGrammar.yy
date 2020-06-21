@@ -3,13 +3,15 @@
 #include "Node/Node.cpp"
 
 enum ParseTreeNode{
+	ptPackageContainer,
 	ptPackage,
-	ptPackageId,
+	ptImports,
+	ptImportContainer,
 	ptImport,
-	ptImportId,
+	ptInterfaceContainer,
+	ptInterface,
 	ptClassContainer,
 	ptClass,
-	ptClassAccessMod,
 	ptClassMod,
 	ptExtends,
 	ptImplements,
@@ -32,7 +34,7 @@ enum ParseTreeNode{
 	ptCaseDefault,
 	ptFor,
 	ptWhile,
-	ptDoWhile
+	ptDoWhile,
 };
 
 
@@ -168,22 +170,49 @@ Node* root;
 %token TOK_SUBSUB 338
 %token TOK_ADDADD 339
 
+%type<node> packagedec importstatements typedec
+%type<node> interfacedec classdec
+%type<node> classmod
+
 %%
 
 
 /*interfaces*/
 program:
-packagedec importstatements typedec 
+packagedec importstatements typedec {
+	if($1->get_type() != ptEmpty){
+		root = $1;
+		if($2->get_type() != ptEmpty){
+			root->attach_child(*$2);
+			$2->attach_child(*$3);
+		}else{
+			root->attach_child(*$3);
+		}
+	}else if($2->get_type() != ptEmpty){
+		root = $2;
+		root->attach_child(*$3);
+	}else{
+		root = $3;
+	}
+}
 ;
 
 packagedec:
-%empty
-|TOK_PACKAGE packagename TOK_SEMI
+%empty {
+	$$ = new Node(ptEmpty, 0, 0, "");
+}
+|TOK_PACKAGE packagename TOK_SEMI {
+	$$ = new Node(ptPackageContainer, 0, 0, "this is a package");
+}
 ;
 
 importstatements:
-%empty
-|importstatement importstatements
+%empty {
+	$$ = new Node(ptEmpty, 0, 0, "");
+}
+|importstatement importstatements {
+	$$ = new Node(ptImports, 0, 0, "these are imports");
+}
 ;
 
 importstatement:
@@ -197,35 +226,114 @@ TOK_IDENTIFIER
 ;
 
 typedec:
-interfacedec
-|classdec
-|classdec typedec
-|interfacedec typedec
+interfacedec {
+	$$ = new Node(ptInterfaceContainer, 0, 0, "");
+	$$->attach_child(*(new Node(ptEmpty, 0, 0, "temp node")));
+}
+|classdec {
+	$$ = new Node(ptClassContainer, 0, 0, "");
+	$$->attach_child(*$1);
+}
+|classdec typedec {
+	$$ = new Node(ptClassContainer, 0, 0, "");
+	$$->attach_child(*$1);
+	$$->attach_child(*$2);
+}
+|interfacedec typedec {
+	$$ = new Node(ptInterfaceContainer, 0, 0, "");
+	$$->attach_child(*(new Node(ptEmpty, 0, 0, "temp node")));
+	$$->attach_child(*$2);
+}
 ;
 
 
 interfacedec:
-classmod TOK_INTERFACE TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE
+classmod TOK_INTERFACE TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE {
+	$$ = new Node(ptInterface, 0, 0, $3);
+	$$->attach_child(*$1);
+	//$$->attach_child(*$5);
+}
 ;
 
 classdec:
-classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE 
+classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
+	$$ = new Node(ptClass, 0, 0, $3);
+	$$->attach_child(*$1);
+	//$$->attach_child(*$5);
+}
 ;
 
 /*rename*/
 classmod:
-%empty
-|TOK_FINAL classmod
-|TOK_ABSTRACT classmod
-|TOK_STRICTFP classmod
-|TOK_STATIC classmod
-|TOK_NATIVE classmod
-|TOK_SYNCHRONIZED classmod
-|TOK_TRANSIENT classmod
-|TOK_VOLATILE classmod
-|TOK_PUBLIC classmod
-|TOK_PRIVATE classmod
-|TOK_PROTECTED classmod
+%empty {
+	$$ = new Node(ptClassMod, 0, 0, "default");
+}
+|TOK_FINAL classmod {
+	$$ = new Node(ptClassMod, 0, 0, "final");
+	if($2->get_id().compare("default") != 0){
+		$$->attach_child(*$2);
+	}
+}
+|TOK_ABSTRACT classmod {
+	$$ = new Node(ptClassMod, 0, 0, "abstract");
+	if($2->get_id().compare("default") != 0){
+		$$->attach_child(*$2);
+	}
+}
+|TOK_STRICTFP classmod {
+	$$ = new Node(ptClassMod, 0, 0, "strictfp");
+	if($2->get_id().compare("default") != 0){
+		$$->attach_child(*$2);
+	}
+}
+|TOK_STATIC classmod {
+	$$ = new Node(ptClassMod, 0, 0, "static");
+	if($2->get_id().compare("default") != 0){
+		$$->attach_child(*$2);
+	}
+}
+|TOK_NATIVE classmod {
+	$$ = new Node(ptClassMod, 0, 0, "native");
+	if($2->get_id().compare("default") != 0){
+		$$->attach_child(*$2);
+	}
+}
+|TOK_SYNCHRONIZED classmod {
+	$$ = new Node(ptClassMod, 0, 0, "synchronized");
+	if($2->get_id().compare("default") != 0){
+		$$->attach_child(*$2);
+	}
+}
+|TOK_TRANSIENT classmod {
+	$$ = new Node(ptClassMod, 0, 0, "transient");
+	if($2->get_id().compare("default") != 0){
+		$$->attach_child(*$2);
+	}
+}
+|TOK_VOLATILE classmod {
+	$$ = new Node(ptClassMod, 0, 0, "volatile");
+	if($2->get_id().compare("default") != 0){
+		$$->attach_child(*$2);
+	}
+}
+|TOK_PUBLIC classmod {
+	$$ = new Node(ptClassMod, 0, 0, "public");
+	if($2->get_id().compare("default") != 0){
+		$$->attach_child(*$2);
+	}
+}
+|TOK_PRIVATE classmod {
+	$$ = new Node(ptClassMod, 0, 0, "private");
+	if($2->get_id().compare("default") != 0){
+		$$->attach_child(*$2);
+	}
+}
+|TOK_PROTECTED classmod {
+	$$ = new Node(ptClassMod, 0, 0, "protected");
+	if($2->get_id().compare("default") != 0){
+		$$->attach_child(*$2);
+	}
+}
 ;
 
 
@@ -467,7 +575,7 @@ int main ()
 	//root = new Node(0, 0, 0, "k");
 	//printf("%s\n", root->get_tree_string(0).data());
 	yyparse();
-//	root->print();
+	root->print();
 	return 0;
 }
 
