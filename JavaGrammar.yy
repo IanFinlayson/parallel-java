@@ -171,8 +171,8 @@ Node* root;
 %token TOK_ADDADD 339
 
 %type<node> packagedec importstatements typedec
-%type<node> interfacedec classdec
-%type<node> classmod
+%type<node> interfacedec classdec classmod
+%type<node> importstatement packagename
 
 %%
 
@@ -202,7 +202,8 @@ packagedec:
 	$$ = new Node(ptEmpty, 0, 0, "");
 }
 |TOK_PACKAGE packagename TOK_SEMI {
-	$$ = new Node(ptPackageContainer, 0, 0, "this is a package");
+	$$ = new Node(ptPackageContainer, 0, 0, "");
+	$$->attach_child(*$2);
 }
 ;
 
@@ -211,18 +212,32 @@ importstatements:
 	$$ = new Node(ptEmpty, 0, 0, "");
 }
 |importstatement importstatements {
-	$$ = new Node(ptImports, 0, 0, "these are imports");
+	$$ = new Node(ptImportContainer, 0, 0, "");
+	$$->attach_child(*$1);
+	if($2->get_type() != ptEmpty){
+		$$->attach_child(*$2);
+	}
 }
 ;
 
 importstatement:
-TOK_IMPORT packagename TOK_SEMI
-|TOK_IMPORT packagename TOK_DOT TOK_MUL TOK_SEMI
+TOK_IMPORT packagename TOK_SEMI {
+	$$ = $2;
+}
+|TOK_IMPORT packagename TOK_DOT TOK_MUL TOK_SEMI {
+	$$ = $2;
+	$$->attach_child(*(new Node(TOK_MUL, 0, 0, "")));
+}
 ;
 
 packagename:
-TOK_IDENTIFIER 
-|packagename TOK_DOT TOK_IDENTIFIER 
+TOK_IDENTIFIER {
+	$$ = new Node(ptPackage, 0, 0, $1);
+}
+|TOK_IDENTIFIER TOK_DOT packagename {
+	$$ = new Node(ptPackage, 0, 0, $1);
+	$$->attach_child(*$3);
+}
 ;
 
 typedec:
@@ -349,8 +364,12 @@ interfacemod:
 ;
 
 classbody:
-%empty
-|classmod declarationstatement TOK_SEMI classbody
+%empty {
+	//$$ = new Node(ptEmpty, 0, 0, "");
+}
+|classmod declarationstatement TOK_SEMI classbody {
+	
+}
 |classmod initializationstatement TOK_SEMI classbody
 |classmethod classbody
 |classdec classbody
