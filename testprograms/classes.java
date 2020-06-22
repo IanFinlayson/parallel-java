@@ -1,16 +1,16 @@
-public class classes{
+public class classes extends Identifier implements Identifier, Identifier{
 	private static void main (String[] args){	
 	
 	}
 }
 
 
-strictfp class class2{
+strictfp class class2 extends Identifier{
 	protected static class class6{
 	}
 }
 
-class class3{
+class class3 implements Identifier{
 
 }
 

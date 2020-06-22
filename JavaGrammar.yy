@@ -13,11 +13,11 @@
 }
 
 %union {
-//wasn't sure what to call these
 	int iVal;
 	double dVal;
 	char stVal[100];
 	bool bVal;
+	//still return float for everything?
 	float fVal;
 	long lVal;
 	short shVal;
@@ -132,16 +132,17 @@
 %token TOK_SUBSUB 338
 %token TOK_ADDADD 339
 
+/*
 %type <node> classdec classdecs classbody
-
+*/
 %%
 
 
 /*interfaces*/
 program:
-packagedec importstatements typedec {
+packagedec importstatements typedec /*{
 	root = $1;
-}
+}*/
 ;
 
 packagedec:
@@ -171,46 +172,61 @@ interfacedec
 |interfacedec typedec
 ;
 
-/*changed the grammar so this might not be needed anymore. Just didnt want to delete the actions*/
+/*changed the grammar so this might not be needed anymore. Just didnt want to delete the actions
 classdecs:
-classdec classdecs{
+classdec classdecs {
 	$1->attach_child(*$2);
 	$$ = $1;
 }
-|classdec {
+|classdec /*{
 	$$ = $1;
-}
+}*/
 ;
 
 
 interfacedec:
-classmod TOK_INTERFACE TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE
+mod TOK_INTERFACE TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE
+|mod TOK_INTERFACE TOK_IDENTIFIER TOK_EXTENDS TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE
 ;
 
 classdec:
-classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
+mod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE /*{
 	$$ = new Node(TOK_CLASS, 0, 0, $4);
 	//$$->attach_child(*$6);
-}
+}*/
+|mod TOK_CLASS TOK_IDENTIFIER extendsorimplements TOK_LBRACE classbody TOK_RBRACE 
+;
+
+extendsorimplements:
+TOK_EXTENDS TOK_IDENTIFIER 
+|TOK_IMPLEMENTS implements
+|TOK_EXTENDS TOK_IDENTIFIER TOK_IMPLEMENTS implements
+;
+
+/*better way?*/
+implements:
+TOK_IDENTIFIER
+|TOK_IDENTIFIER TOK_COMMA implements
 ;
 
 /*rename*/
-classmod:
+mod:
 %empty
-|TOK_FINAL classmod
-|TOK_ABSTRACT classmod
-|TOK_STRICTFP classmod
-|TOK_STATIC classmod
-|TOK_NATIVE classmod
-|TOK_SYNCHRONIZED classmod
-|TOK_TRANSIENT classmod
-|TOK_VOLATILE classmod
-|TOK_PUBLIC classmod
-|TOK_PRIVATE classmod
-|TOK_PROTECTED classmod
+|TOK_FINAL mod
+|TOK_ABSTRACT mod
+|TOK_STRICTFP mod
+|TOK_STATIC mod
+|TOK_NATIVE mod
+|TOK_SYNCHRONIZED mod
+|TOK_TRANSIENT mod
+|TOK_VOLATILE mod
+|TOK_PUBLIC mod
+|TOK_PRIVATE mod
+|TOK_PROTECTED mod
+|TOK_DEFAULT mod
 ;
 
-
+/*
 interfacemod:
 %empty
 |TOK_PRIVATE interfacemod
@@ -221,40 +237,43 @@ interfacemod:
 |TOK_FINAL interfacemod
 |TOK_ABSTRACT interfacemod
 ;
+*/
 
 classbody:
 %empty
-|classmod declarationstatement TOK_SEMI classbody
-|classmod initializationstatement TOK_SEMI classbody
-|classmethod classbody
+|mod declarationstatement TOK_SEMI classbody
+|mod initializationstatement TOK_SEMI classbody
+|method classbody
 |classdec classbody
 |interfacedec classbody
 ;
 
 interfacebody:
 %empty
-|interfacemod initializationstatement TOK_SEMI interfacebody
-|interfacemethod interfacebody
+|mod initializationstatement TOK_SEMI interfacebody
+|method interfacebody
 |classdec interfacebody
 |interfacedec interfacebody
 ;
 
+/*
 interfacemethod:
 interfacemod abstractmethod
 |interfacemod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 |interfacemod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 ;
+*/
 
 abstractmethod:
 datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
 |TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
 ;
 
-classmethod:
-classmod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|classmod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|classmod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|classmod abstractmethod
+method:
+mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|mod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|mod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+|mod abstractmethod
 ;
 
 
@@ -277,6 +296,7 @@ TOK_INT
 |TOK_BOOLEAN
 |TOK_FLOAT
 |TOK_IDENTIFIER
+|TOK_DOUBLE
 ;
 
 block:
