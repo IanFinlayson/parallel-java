@@ -3,9 +3,9 @@
 #include "Node/Node.cpp"
 
 enum ParseTreeNode{
+	ptEmpty,
 	ptPackageContainer,
 	ptPackage,
-	ptImports,
 	ptImportContainer,
 	ptImport,
 	ptInterfaceContainer,
@@ -13,28 +13,13 @@ enum ParseTreeNode{
 	ptClassContainer,
 	ptClass,
 	ptClassMod,
-	ptExtends,
-	ptImplements,
 	ptMethodContainer,
-	ptMethod,
-	ptMethodMod,
-	ptMethodReturnVoid,
-	ptDataType,
-	ptInstanceType,
-	ptNestedClassContainer,
-	ptAccessMod,
-	ptStatement,
-	ptExpression,
+	ptFieldDeclaration,
+	ptFieldInitialization,
 	ptDeclaration,
 	ptArrayDeclaration,
-	ptEmpty,
-	ptIf,
-	ptSwitch,
-	ptCase,
-	ptCaseDefault,
-	ptFor,
-	ptWhile,
-	ptDoWhile,
+	ptDataType,
+	ptInstanceType
 };
 
 
@@ -173,6 +158,7 @@ Node* root;
 %type<node> packagedec importstatements typedec
 %type<node> interfacedec classdec classmod
 %type<node> importstatement packagename
+%type<node> declarationstatement datatype classbody
 
 %%
 
@@ -180,7 +166,7 @@ Node* root;
 /*interfaces*/
 program:
 packagedec importstatements typedec {
-	if($1->get_type() != ptEmpty){
+	/*if($1->get_type() != ptEmpty){
 		root = $1;
 		if($2->get_type() != ptEmpty){
 			root->attach_child(*$2);
@@ -193,51 +179,52 @@ packagedec importstatements typedec {
 		root->attach_child(*$3);
 	}else{
 		root = $3;
-	}
+	}*/
+	root = $3;
 }
 ;
 
 packagedec:
-%empty {
+%empty /*{
 	$$ = new Node(ptEmpty, 0, 0, "");
-}
-|TOK_PACKAGE packagename TOK_SEMI {
+}*/
+|TOK_PACKAGE packagename TOK_SEMI /*{
 	$$ = new Node(ptPackageContainer, 0, 0, "");
 	$$->attach_child(*$2);
-}
+}*/
 ;
 
 importstatements:
-%empty {
+%empty /*{
 	$$ = new Node(ptEmpty, 0, 0, "");
-}
-|importstatement importstatements {
+}*/
+|importstatement importstatements /*{
 	$$ = new Node(ptImportContainer, 0, 0, "");
 	$$->attach_child(*$1);
 	if($2->get_type() != ptEmpty){
 		$$->attach_child(*$2);
 	}
-}
+}*/
 ;
 
 importstatement:
-TOK_IMPORT packagename TOK_SEMI {
+TOK_IMPORT packagename TOK_SEMI /*{
 	$$ = $2;
-}
-|TOK_IMPORT packagename TOK_DOT TOK_MUL TOK_SEMI {
+}*/
+|TOK_IMPORT packagename TOK_DOT TOK_MUL TOK_SEMI /*{
 	$$ = $2;
 	$$->attach_child(*(new Node(TOK_MUL, 0, 0, "")));
-}
+}*/
 ;
 
 packagename:
-TOK_IDENTIFIER {
+TOK_IDENTIFIER /*{
 	$$ = new Node(ptPackage, 0, 0, $1);
-}
-|TOK_IDENTIFIER TOK_DOT packagename {
+}*/
+|TOK_IDENTIFIER TOK_DOT packagename /*{
 	$$ = new Node(ptPackage, 0, 0, $1);
 	$$->attach_child(*$3);
-}
+}*/
 ;
 
 typedec:
@@ -274,7 +261,7 @@ classdec:
 classmod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
 	$$ = new Node(ptClass, 0, 0, $3);
 	$$->attach_child(*$1);
-	//$$->attach_child(*$5);
+	$$->attach_child(*$5);
 }
 ;
 
@@ -365,15 +352,35 @@ interfacemod:
 
 classbody:
 %empty {
-	//$$ = new Node(ptEmpty, 0, 0, "");
+	$$ = new Node(ptEmpty, 0, 0, "");
 }
 |classmod declarationstatement TOK_SEMI classbody {
+	$$ = new Node(ptFieldDeclaration, 0, 0, "");
+	$$->attach_child(*$2);
+	$2->attach_child(*$1);
+	$$->attach_child(*$4);
 	
 }
-|classmod initializationstatement TOK_SEMI classbody
-|classmethod classbody
-|classdec classbody
-|interfacedec classbody
+|classmod initializationstatement TOK_SEMI classbody{
+	$$ = new Node(ptFieldInitialization, 0, 0, "this is an initialization");
+	$$->attach_child(*(new Node(ptEmpty, 0, 0, "placeholder")));
+	$$->attach_child(*$4);
+}
+|classmethod classbody {
+	$$ = new Node(ptMethodContainer, 0, 0, "");
+	$$->attach_child(*(new Node(ptEmpty, 0, 0, "placeholder")));
+	$$->attach_child(*$2);
+}
+|classdec classbody {
+	$$ = new Node(ptClassContainer, 0, 0, "");
+	$$->attach_child(*$1);
+	$$->attach_child(*$2);
+}
+|interfacedec classbody {
+	$$ = new Node(ptInterfaceContainer, 0, 0, "");
+	$$->attach_child(*$1);
+	$$->attach_child(*$2);
+}
 ;
 
 interfacebody:
@@ -418,10 +425,18 @@ argument:
 ;
 
 datatype:
-TOK_INT 
-|TOK_BOOLEAN 
-|TOK_FLOAT 
-|TOK_IDENTIFIER 
+TOK_INT {
+	$$ = new Node(ptDataType, 0, 0, "int");
+}
+|TOK_BOOLEAN {
+	$$ = new Node(ptDataType, 0, 0, "boolean");
+}
+|TOK_FLOAT {
+	$$ = new Node(ptDataType, 0, 0, "float");
+}
+|TOK_IDENTIFIER {
+	$$ = new Node(ptDataType, 0, 0, $1);
+}
 ;
 
 block:
@@ -494,10 +509,24 @@ whileloop
 ;
 
 declarationstatement:
-datatype TOK_IDENTIFIER 
-|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER 
-|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER 
-|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET 
+datatype TOK_IDENTIFIER {
+	$$ = new Node(ptDeclaration, 0, 0, $2);
+	$$->attach_child(*$1);
+}
+|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER {
+	$$ = new Node(ptDeclaration, 0, 0, $5);
+	Node* _it = new Node(ptInstanceType, 0, 0, $1);
+	_it->attach_child(*$3);
+	$$->attach_child(*_it);
+}
+|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER {
+	$$ = new Node(ptArrayDeclaration, 0, 0, $4);
+	$$->attach_child(*$1);
+}
+|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET {
+	$$ = new Node(ptArrayDeclaration, 0, 0, $2);
+	$$->attach_child(*$1);
+}
 ;
 
 initializationstatement:
