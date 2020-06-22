@@ -14,12 +14,14 @@ enum ParseTreeNode{
 	ptClass,
 	ptClassMod,
 	ptMethodContainer,
+	ptMethod,
 	ptFieldDeclaration,
 	ptFieldInitialization,
 	ptDeclaration,
 	ptArrayDeclaration,
 	ptDataType,
-	ptInstanceType
+	ptInstanceType,
+	ptFormalParameter
 };
 
 
@@ -159,6 +161,7 @@ Node* root;
 %type<node> interfacedec classdec classmod
 %type<node> importstatement packagename
 %type<node> declarationstatement datatype classbody
+%type<node> formalparameters classmethod
 
 %%
 
@@ -368,7 +371,7 @@ classbody:
 }
 |classmethod classbody {
 	$$ = new Node(ptMethodContainer, 0, 0, "");
-	$$->attach_child(*(new Node(ptEmpty, 0, 0, "placeholder")));
+	$$->attach_child(*$1);
 	$$->attach_child(*$2);
 }
 |classdec classbody {
@@ -403,17 +406,40 @@ datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
 ;
 
 classmethod:
-classmod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|classmod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|classmod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|classmod abstractmethod
+classmod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptMethod, 0, 0, $3);
+	$$->attach_child(*$2); //return type first
+	$2->attach_child(*$1); //attach modifiers onto return type because return type is guaranteed to be exactly one node
+	$2->attach_child(*$5); //attach paramaters onto return type for the same reason so return type has two children and no more
+	//$$->attach_child(*$8); //finally attach the code block
+}
+|classmod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptMethod, 0, 0, "method with void return placeholder");
+}
+|classmod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptMethod, 0, 0, "this is constructor placeholder");
+}
+|classmod abstractmethod {
+	$$ = new Node(ptMethod, 0, 0, "abstract method placeholder");
+}
 ;
 
 
 formalparameters:
-%empty
-|declarationstatement
-|declarationstatement TOK_COMMA formalparameters
+%empty {
+	$$ = new Node(ptEmpty, 0, 0, "");
+}
+|declarationstatement {
+	$$ = new Node(ptFormalParameter, 0, 0, "");
+	$$->attach_child(*$1);
+}
+|declarationstatement TOK_COMMA formalparameters {
+	$$ = new Node(ptFormalParameter, 0, 0, "");
+	$$->attach_child(*$1);
+	if($3->get_type() != ptEmpty){
+		$$->attach_child(*$3);
+	}
+}
 ;
 
 argument:
