@@ -169,7 +169,7 @@ Node* root;
 /*interfaces*/
 program:
 packagedec importstatements typedec {
-	/*if($1->get_type() != ptEmpty){
+	if($1->get_type() != ptEmpty){
 		root = $1;
 		if($2->get_type() != ptEmpty){
 			root->attach_child(*$2);
@@ -182,52 +182,53 @@ packagedec importstatements typedec {
 		root->attach_child(*$3);
 	}else{
 		root = $3;
-	}*/
-	root = $3;
+	}
 }
 ;
 
 packagedec:
-%empty /*{
+%empty {
 	$$ = new Node(ptEmpty, 0, 0, "");
-}*/
-|TOK_PACKAGE packagename TOK_SEMI /*{
+}
+|TOK_PACKAGE packagename TOK_SEMI {
 	$$ = new Node(ptPackageContainer, 0, 0, "");
 	$$->attach_child(*$2);
-}*/
+}
 ;
 
 importstatements:
-%empty /*{
+%empty {
 	$$ = new Node(ptEmpty, 0, 0, "");
-}*/
-|importstatement importstatements /*{
+}
+|importstatement importstatements {
 	$$ = new Node(ptImportContainer, 0, 0, "");
 	$$->attach_child(*$1);
 	if($2->get_type() != ptEmpty){
-		$$->attach_child(*$2);
+		$1->attach_child(*$2);
 	}
-}*/
+}
 ;
 
 importstatement:
-TOK_IMPORT packagename TOK_SEMI /*{
-	$$ = $2;
-}*/
-|TOK_IMPORT packagename TOK_DOT TOK_MUL TOK_SEMI /*{
-	$$ = $2;
-	$$->attach_child(*(new Node(TOK_MUL, 0, 0, "")));
-}*/
+TOK_IMPORT packagename TOK_SEMI {
+	$$ = new Node(ptImport, 0, 0, "");
+	$$->attach_child(*$2);
+}
+|TOK_IMPORT packagename TOK_DOT TOK_MUL TOK_SEMI {
+	$$ = new Node(ptImport, 0, 0, "");
+	$$->attach_child(*$2);
+	$2->attach_child(*(new Node(TOK_MUL, 0, 0, "")));
+}
 ;
 
 packagename:
-TOK_IDENTIFIER /*{
+TOK_IDENTIFIER {
 	$$ = new Node(ptPackage, 0, 0, $1);
-}*/
-|TOK_IDENTIFIER TOK_DOT packagename /*{
-	$$ = new Node(ptPackage, 0, 0, $1);
-	$$->attach_child(*$3);
-}*/
+}
+|packagename TOK_DOT TOK_IDENTIFIER {
+	$$ = new Node(ptPackage, 0, 0, $3);
+	$$->attach_child(*$1);
+}
 ;
 
 typedec:
