@@ -44,7 +44,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 35 "JavaGrammar.yy"
+#line 36 "JavaGrammar.yy"
 
 	#include <string>
 	#include <iostream> 
@@ -163,7 +163,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 40 "JavaGrammar.yy"
+#line 41 "JavaGrammar.yy"
 
 //wasn't sure what to call these
 	int iVal;

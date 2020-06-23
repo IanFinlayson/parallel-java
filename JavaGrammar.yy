@@ -15,13 +15,14 @@ enum ParseTreeNode{
 	ptClassMod,
 	ptMethodContainer,
 	ptMethod,
+	ptAbstractMethod,
 	ptFieldDeclaration,
 	ptFieldInitialization,
 	ptDeclaration,
 	ptArrayDeclaration,
 	ptDataType,
 	ptInstanceType,
-	ptFormalParameter
+	ptFormalParameter,
 };
 
 
@@ -162,6 +163,7 @@ Node* root;
 %type<node> importstatement packagename
 %type<node> declarationstatement datatype classbody
 %type<node> formalparameters classmethod
+%type<node> abstractmethod
 
 %%
 
@@ -234,7 +236,7 @@ TOK_IDENTIFIER {
 typedec:
 interfacedec {
 	$$ = new Node(ptInterfaceContainer, 0, 0, "");
-	$$->attach_child(*(new Node(ptEmpty, 0, 0, "temp node")));
+	$$->attach_child(*(new Node(ptEmpty, 0, 0, "interface placeholder")));
 }
 |classdec {
 	$$ = new Node(ptClassContainer, 0, 0, "");
@@ -247,7 +249,7 @@ interfacedec {
 }
 |interfacedec typedec {
 	$$ = new Node(ptInterfaceContainer, 0, 0, "");
-	$$->attach_child(*(new Node(ptEmpty, 0, 0, "temp node")));
+	$$->attach_child(*(new Node(ptEmpty, 0, 0, "interface placeholder")));
 	$$->attach_child(*$2);
 }
 ;
@@ -402,26 +404,46 @@ interfacemod abstractmethod
 ;
 
 abstractmethod:
-datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
-|TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
+datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI {
+	$$ = new Node(ptAbstractMethod, 0, 0, $2);
+	$$->attach_child(*$1);
+	$1->attach_child(*$4);
+}
+|TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI {
+	$$ = new Node(ptAbstractMethod, 0, 0, $2);
+	Node* _ret = new Node(TOK_VOID, 0, 0, "");
+	$$->attach_child(*_ret);
+	_ret->attach_child(*$4);
+}
 ;
 
 classmethod:
 classmod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptMethod, 0, 0, $3);
-	$$->attach_child(*$2); //return type first
-	$2->attach_child(*$1); //attach modifiers onto return type because return type is guaranteed to be exactly one node
-	$2->attach_child(*$5); //attach paramaters onto return type for the same reason so return type has two children and no more
+	$$->attach_child(*$2);
+	$2->attach_child(*$5);
+	$2->attach_child(*$1);
 	//$$->attach_child(*$8); //finally attach the code block
 }
 |classmod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
-	$$ = new Node(ptMethod, 0, 0, "method with void return placeholder");
+	$$ = new Node(ptMethod, 0, 0, $3);
+	Node* _ret = new Node(TOK_VOID, 0, 0, "");
+	$$->attach_child(*_ret);
+	_ret->attach_child(*$5);
+	_ret->attach_child(*$1);
+	//$$->attach_child(*$8);
 }
 |classmod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
-	$$ = new Node(ptMethod, 0, 0, "this is constructor placeholder");
+	$$ = new Node(ptMethod, 0, 0, $2);
+	Node* _ret = new Node(ptEmpty, 0, 0, "constructor");
+	$$->attach_child(*_ret);
+	_ret->attach_child(*$4);
+	_ret->attach_child(*$1);
+	//$$->attach_child(*$8);
 }
 |classmod abstractmethod {
-	$$ = new Node(ptMethod, 0, 0, "abstract method placeholder");
+	$$ = $2;
+	$$->attach_child(*$1);
 }
 ;
 
