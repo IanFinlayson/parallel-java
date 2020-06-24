@@ -162,11 +162,11 @@ union YYSTYPE
 {
 #line 15 "JavaGrammar.yy" /* yacc.c:1909  */
 
-//wasn't sure what to call these
 	int iVal;
 	double dVal;
 	char stVal[100];
 	bool bVal;
+	//still return float for everything?
 	float fVal;
 	long lVal;
 	short shVal;
