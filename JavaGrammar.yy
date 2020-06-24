@@ -8,9 +8,8 @@ enum ParseTreeNode{
 	ptPackage,
 	ptImportContainer,
 	ptImport,
-	ptInterfaceContainer,
+	ptTypeDec,
 	ptInterface,
-	ptClassContainer,
 	ptClass,
 	ptClassMod,
 	ptMethodContainer,
@@ -23,6 +22,7 @@ enum ParseTreeNode{
 	ptDataType,
 	ptInstanceType,
 	ptFormalParameter,
+	ptStatement
 };
 
 
@@ -164,6 +164,8 @@ Node* root;
 %type<node> declarationstatement datatype classbody
 %type<node> formalparameters classmethod
 %type<node> abstractmethod
+%type<node> block statement expressionstatement controlflowstatement
+%type<node> whileloop
 
 %%
 
@@ -235,20 +237,20 @@ TOK_IDENTIFIER {
 
 typedec:
 interfacedec {
-	$$ = new Node(ptInterfaceContainer, 0, 0, "");
+	$$ = new Node(ptTypeDec, 0, 0, "");
 	$$->attach_child(*(new Node(ptEmpty, 0, 0, "interface placeholder")));
 }
 |classdec {
-	$$ = new Node(ptClassContainer, 0, 0, "");
+	$$ = new Node(ptTypeDec, 0, 0, "");
 	$$->attach_child(*$1);
 }
 |classdec typedec {
-	$$ = new Node(ptClassContainer, 0, 0, "");
+	$$ = new Node(ptTypeDec, 0, 0, "");
 	$$->attach_child(*$1);
 	$$->attach_child(*$2);
 }
 |interfacedec typedec {
-	$$ = new Node(ptInterfaceContainer, 0, 0, "");
+	$$ = new Node(ptTypeDec, 0, 0, "");
 	$$->attach_child(*(new Node(ptEmpty, 0, 0, "interface placeholder")));
 	$$->attach_child(*$2);
 }
@@ -378,12 +380,12 @@ classbody:
 	$$->attach_child(*$2);
 }
 |classdec classbody {
-	$$ = new Node(ptClassContainer, 0, 0, "");
+	$$ = new Node(ptTypeDec, 0, 0, "");
 	$$->attach_child(*$1);
 	$$->attach_child(*$2);
 }
 |interfacedec classbody {
-	$$ = new Node(ptInterfaceContainer, 0, 0, "");
+	$$ = new Node(ptTypeDec, 0, 0, "");
 	$$->attach_child(*$1);
 	$$->attach_child(*$2);
 }
@@ -423,7 +425,9 @@ classmod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRA
 	$$->attach_child(*$2);
 	$2->attach_child(*$5);
 	$2->attach_child(*$1);
-	//$$->attach_child(*$8); //finally attach the code block
+	if($8->get_type() != ptEmpty){
+		$$->attach_child(*$8);
+	}
 }
 |classmod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptMethod, 0, 0, $3);
@@ -431,7 +435,9 @@ classmod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRA
 	$$->attach_child(*_ret);
 	_ret->attach_child(*$5);
 	_ret->attach_child(*$1);
-	//$$->attach_child(*$8);
+	if($8->get_type() != ptEmpty){
+		$$->attach_child(*$8);
+	}
 }
 |classmod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptMethod, 0, 0, $2);
@@ -439,7 +445,9 @@ classmod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRA
 	$$->attach_child(*_ret);
 	_ret->attach_child(*$4);
 	_ret->attach_child(*$1);
-	//$$->attach_child(*$8);
+	if($7->get_type() != ptEmpty){
+		$$->attach_child(*$7);
+	}
 }
 |classmod abstractmethod {
 	$$ = $2;
@@ -489,24 +497,52 @@ TOK_INT {
 ;
 
 block:
-%empty
-|statement block
+%empty {
+	$$ = new Node(ptEmpty, 0, 0, "");
+}
+|statement block {
+	$$ = new Node(ptStatement, 0, 0, "");
+	$$->attach_child(*$1);
+	if($2->get_type() != ptEmpty){
+		$$->attach_child(*$2);
+	}
+}
 ;
 
 statement:
-expressionstatement TOK_SEMI
-|controlflowstatement 
-|declarationstatement TOK_SEMI
-|initializationstatement TOK_SEMI
-|trycatchblock
+expressionstatement TOK_SEMI {
+	$$ = $1;
+}
+|controlflowstatement {
+	$$ = $1;
+}
+|declarationstatement TOK_SEMI {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder statement");
+}
+|initializationstatement TOK_SEMI {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder statement");
+}
+|trycatchblock {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder statement");
+}
 ;
 
 expressionstatement:
-instancemethodcall
-|methodcall
-|postdecrement
-|predecrement
-|assignmentstatement
+instancemethodcall {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder expression");
+}
+|methodcall {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder expression");
+}
+|postdecrement {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder expression");
+}
+|predecrement {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder expression");
+}
+|assignmentstatement {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder expression");
+}
 ;
 
 expression:
@@ -546,15 +582,33 @@ TOK_IDENTIFIER TOK_ASSIGN expression
 ;
 
 controlflowstatement:
-whileloop
-|dowhileloop
-|forloop
-|ifstatement
-|ifelsestatement
-|switchstatement
-|TOK_BREAK TOK_SEMI
-|TOK_CONTINUE TOK_SEMI
-|TOK_RETURN TOK_IDENTIFIER TOK_SEMI
+whileloop {
+	$$ = $1;
+}
+|dowhileloop {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+}
+|forloop {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+}
+|ifstatement {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+}
+|ifelsestatement {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+}
+|switchstatement {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+}
+|TOK_BREAK TOK_SEMI {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+}
+|TOK_CONTINUE TOK_SEMI {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+}
+|TOK_RETURN TOK_IDENTIFIER TOK_SEMI {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+}
 ;
 
 declarationstatement:
@@ -601,7 +655,9 @@ TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER
 
 
 whileloop:
-TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptEmpty, 0, 0, "this will be a while loop");
+}
 ;
 
 dowhileloop:
