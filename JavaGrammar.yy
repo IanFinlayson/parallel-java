@@ -199,14 +199,22 @@ mod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE /*{
 
 extendsorimplements:
 TOK_EXTENDS TOK_IDENTIFIER 
-|TOK_IMPLEMENTS implements
-|TOK_EXTENDS TOK_IDENTIFIER TOK_IMPLEMENTS implements
+|TOK_IMPLEMENTS interfaceidentifier
+|TOK_EXTENDS TOK_IDENTIFIER TOK_IMPLEMENTS interfaceidentifier
 ;
 
-/*better way?*/
-implements:
+interfaceidentifier:
 TOK_IDENTIFIER
-|TOK_IDENTIFIER TOK_COMMA implements
+|TOK_IDENTIFIER TOK_COMMA interfaceidentifier
+;
+
+identifier:
+TOK_IDENTIFIER
+|TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET
+|TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER
+|TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_COMMA identifier
+|TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_COMMA identifier
+|TOK_IDENTIFIER TOK_COMMA identifier
 ;
 
 /*rename*/
@@ -278,9 +286,16 @@ mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE bl
 
 
 formalparameters:
+formalparameter
+|formalparameter TOK_COMMA formalparameters
+;
+
+formalparameter:
 %empty
-|declarationstatement
-|declarationstatement TOK_COMMA formalparameters
+|datatype TOK_IDENTIFIER
+|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER
+|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET 
+|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER
 ;
 
 argument:
@@ -306,7 +321,7 @@ block:
 
 statement:
 expressionstatement TOK_SEMI
-|controlflowstatement 
+|controlflowstatement
 |declarationstatement TOK_SEMI
 |initializationstatement TOK_SEMI
 |trycatchblock
@@ -321,11 +336,13 @@ instancemethodcall
 ;
 
 expression:
-TOK_INTVAL
+TOK_LPAREN expression TOK_RPAREN
+|TOK_INTVAL
 |TOK_FLOATVAL
+|TOK_BOOLVAL
 |TOK_STRINGVAL
 |TOK_IDENTIFIER
-|TOK_IDENTIFIER TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
+|TOK_IDENTIFIER TOK_LBRACKET argument TOK_RBRACKET
 |expression TOK_ADD expression
 |expression TOK_SUB expression
 |expression TOK_MOD expression
@@ -368,23 +385,23 @@ whileloop
 |TOK_RETURN TOK_IDENTIFIER TOK_SEMI
 ;
 
-declarationstatement:
-datatype TOK_IDENTIFIER 
-|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER 
-|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER 
-|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET 
+initializer:
+TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
+|TOK_LBRACE argument TOK_RBRACE
+|TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE
 ;
 
+declarationstatement:
+datatype identifier 
+|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER identifier 
+;
+
+/*Better to sacrifice specificity for simplicity, since type will be caught at intialization*/
 initializationstatement:
 datatype TOK_IDENTIFIER TOK_ASSIGN expression
-|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
-|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
-|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN  TOK_LBRACE argument TOK_RBRACE 
-|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN TOK_LBRACE argument TOK_RBRACE
-|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE
-|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE
+|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN initializer
+|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN initializer
 |datatype TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
-|datatype TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN TOK_RPAREN
 |datatype TOK_IDENTIFIER TOK_ASSIGN methodcall
 |datatype TOK_IDENTIFIER TOK_ASSIGN instancemethodcall
 |TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN
