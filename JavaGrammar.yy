@@ -22,7 +22,8 @@ enum ParseTreeNode{
 	ptDataType,
 	ptInstanceType,
 	ptFormalParameter,
-	ptStatement
+	ptStatement,
+	ptWhile
 };
 
 
@@ -166,6 +167,7 @@ Node* root;
 %type<node> abstractmethod
 %type<node> block statement expressionstatement controlflowstatement
 %type<node> whileloop
+%type<node> expression
 
 %%
 
@@ -546,24 +548,87 @@ instancemethodcall {
 ;
 
 expression:
-TOK_INTVAL
-|TOK_FLOATVAL
-|TOK_STRINGVAL
-|TOK_IDENTIFIER
-|TOK_IDENTIFIER TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
-|expression TOK_ADD expression
-|expression TOK_SUB expression
-|expression TOK_MOD expression
-|expression TOK_DIV expression
-|expression TOK_MUL expression
-|expression TOK_EQUAL expression
-|expression TOK_NEQUAL expression
-|expression TOK_GREATER expression
-|expression TOK_LESS expression
-|expression TOK_GEQUAL expression
-|expression TOK_LEQUAL expression
-|expression TOK_AND expression
-|expression TOK_OR expression
+TOK_INTVAL {
+	$$ = new Node(TOK_INTVAL, $1, 0, "");
+}
+|TOK_FLOATVAL {
+	$$ = new Node(TOK_FLOATVAL, 0, $1, "");
+}
+|TOK_STRINGVAL {
+	$$ = new Node(TOK_STRINGVAL, 0, 0, $1);
+}
+|TOK_IDENTIFIER {
+	$$ = new Node(TOK_IDENTIFIER, 0, 0, $1);
+}
+|TOK_IDENTIFIER TOK_LBRACKET TOK_INTVAL TOK_RBRACKET {
+	$$ = new Node(TOK_IDENTIFIER, 0, 0, $1);
+	$$->attach_child(*(new Node(TOK_INTVAL, $3, 0, "")));
+}
+|expression TOK_ADD expression {
+	$$ = new Node(TOK_ADD);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_SUB expression {
+	$$ = new Node(TOK_SUB);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_MOD expression {
+	$$ = new Node(TOK_MOD);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_DIV expression {
+	$$ = new Node(TOK_DIV);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_MUL expression {
+	$$ = new Node(TOK_MUL);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_EQUAL expression {
+	$$ = new Node(TOK_EQUAL);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_NEQUAL expression {
+	$$ = new Node(TOK_NEQUAL);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_GREATER expression {
+	$$ = new Node(TOK_GREATER);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_LESS expression {
+	$$ = new Node(TOK_LESS);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_GEQUAL expression {
+	$$ = new Node(TOK_GEQUAL);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_LEQUAL expression {
+	$$ = new Node(TOK_LEQUAL);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_AND expression {
+	$$ = new Node(TOK_AND);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_OR expression {
+	$$ = new Node(TOK_OR);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
 ;
 
 assignmentstatement:
@@ -656,7 +721,9 @@ TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER
 
 whileloop:
 TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
-	$$ = new Node(ptEmpty, 0, 0, "this will be a while loop");
+	$$ = new Node(ptWhile, 0, 0, "");
+	$$->attach_child(*$3);
+	$$->attach_child(*$6);
 }
 ;
 
