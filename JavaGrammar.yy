@@ -23,7 +23,10 @@ enum ParseTreeNode{
 	ptInstanceType,
 	ptFormalParameter,
 	ptStatement,
-	ptWhile
+	ptWhile,
+	ptDoWhile,
+	ptIf,
+	ptIfElse
 };
 
 
@@ -166,7 +169,7 @@ Node* root;
 %type<node> formalparameters classmethod
 %type<node> abstractmethod
 %type<node> block statement expressionstatement controlflowstatement
-%type<node> whileloop
+%type<node> whileloop ifstatement ifelsestatement dowhileloop
 %type<node> expression
 
 %%
@@ -651,28 +654,29 @@ whileloop {
 	$$ = $1;
 }
 |dowhileloop {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+	$$ = $1;
 }
 |forloop {
 	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
 }
 |ifstatement {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+	$$ = $1;
 }
 |ifelsestatement {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+	$$ = $1;
 }
 |switchstatement {
 	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
 }
 |TOK_BREAK TOK_SEMI {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+	$$ = new Node(TOK_BREAK, 0, 0, "");
 }
 |TOK_CONTINUE TOK_SEMI {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+	$$ = new Node(TOK_CONTINUE, 0, 0, "");
 }
 |TOK_RETURN TOK_IDENTIFIER TOK_SEMI {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflowstatement");
+	$$ = new Node(TOK_RETURN, 0, 0, "");
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $2)));
 }
 ;
 
@@ -728,7 +732,11 @@ TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
 ;
 
 dowhileloop:
-TOK_DO TOK_LBRACE block TOK_RBRACE TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_SEMI
+TOK_DO TOK_LBRACE block TOK_RBRACE TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_SEMI {
+	$$ = new Node(ptDoWhile, 0, 0, "");
+	$$->attach_child(*$7);
+	$$->attach_child(*$3);
+}
 ;
 
 forloop:
@@ -736,18 +744,34 @@ TOK_FOR TOK_LPAREN initializationstatement TOK_SEMI expression TOK_SEMI postdecr
 ;
 
 ifstatement:
-TOK_IF TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|TOK_IF TOK_LPAREN expression TOK_RPAREN statement 
+TOK_IF TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptIf, 0, 0, "");
+	$$->attach_child(*$3);
+	$$->attach_child(*$6);
+}
+|TOK_IF TOK_LPAREN expression TOK_RPAREN statement {
+	$$ = new Node(ptIf, 0, 0, "");
+	$$->attach_child(*$3);
+	$$->attach_child(*$5);
+}
 ;
 
 ifelsestatement:
-ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE
-|ifstatement TOK_ELSE statement 
+ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptIfElse, 0, 0, "");
+	$$->attach_child(*$1);
+	$$->attach_child(*$4);
+}
+|ifstatement TOK_ELSE statement {
+	$$ = new Node(ptIfElse, 0, 0, "");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
 ;
 
 switchstatement:
-TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_RBRACE
-|TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_DEFAULT TOK_COLON block TOK_RBRACE
+TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_RBRACE 
+|TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_DEFAULT TOK_COLON block TOK_RBRACE 
 ;
 
 switchbody:
