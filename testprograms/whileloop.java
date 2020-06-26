@@ -6,5 +6,12 @@ public class whileloop{
 			System.out.println(i);
 			i++;
 		}
+
+		boolean a = true;
+		int b = 5;
+		
+		while(a && (b > 0)){
+			b--;
+		}
 	}
 }
