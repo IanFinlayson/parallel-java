@@ -14,6 +14,7 @@ enum ParseTreeNode{
 	ptClassMod,
 	ptMethodContainer,
 	ptMethod,
+	ptConstructor,
 	ptAbstractMethod,
 	ptFieldDeclaration,
 	ptFieldInitialization,
@@ -26,7 +27,10 @@ enum ParseTreeNode{
 	ptWhile,
 	ptDoWhile,
 	ptIf,
-	ptIfElse
+	ptIfElse,
+	ptInitializationStatement,
+	ptNewInstance,
+	ptArgument
 };
 
 
@@ -446,7 +450,7 @@ classmod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRA
 }
 |classmod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptMethod, 0, 0, $2);
-	Node* _ret = new Node(ptEmpty, 0, 0, "constructor");
+	Node* _ret = new Node(ptConstructor, 0, 0, "");
 	$$->attach_child(*_ret);
 	_ret->attach_child(*$4);
 	_ret->attach_child(*$1);
@@ -479,11 +483,27 @@ formalparameters:
 ;
 
 argument:
-%empty
-|expression
-|expressionstatement
-|expression TOK_COMMA argument
-|expressionstatement TOK_COMMA argument
+%empty {
+	$$ = new Node(ptEmpty, 0, 0, "");
+}
+|expression {
+	$$ = new Node(ptArgument, 0, 0, "");
+	$$->attach_child(*$1);
+}
+|expressionstatement {
+	$$ = new Node(ptArgument, 0, 0, "");
+	$$->attach_child(*$1);
+}
+|expression TOK_COMMA argument {
+	$$ = new Node(ptArgument, 0, 0, "");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expressionstatement TOK_COMMA argument {
+	$$ = new Node(ptArgument, 0, 0, "");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
 ;
 
 datatype:
@@ -522,10 +542,10 @@ expressionstatement TOK_SEMI {
 	$$ = $1;
 }
 |declarationstatement TOK_SEMI {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder statement");
+	$$ = $1;
 }
 |initializationstatement TOK_SEMI {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder statement");
+	$$ = $1;
 }
 |trycatchblock {
 	$$ = new Node(ptEmpty, 0, 0, "placeholder statement");
@@ -534,19 +554,19 @@ expressionstatement TOK_SEMI {
 
 expressionstatement:
 instancemethodcall {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder expression");
+	$$ = new Node(ptEmpty, 0, 0, "placeholder expressionstatement");
 }
 |methodcall {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder expression");
+	$$ = new Node(ptEmpty, 0, 0, "placeholder expressionstatement");
 }
 |postdecrement {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder expression");
+	$$ = new Node(ptEmpty, 0, 0, "placeholder expressionstatement");
 }
 |predecrement {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder expression");
+	$$ = new Node(ptEmpty, 0, 0, "placeholder expressionstatement");
 }
 |assignmentstatement {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder expression");
+	$$ = new Node(ptEmpty, 0, 0, "placeholder expressionstatement");
 }
 ;
 
@@ -702,14 +722,63 @@ datatype TOK_IDENTIFIER {
 ;
 
 initializationstatement:
-datatype TOK_IDENTIFIER TOK_ASSIGN expression
-|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
-|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
-|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN  TOK_LBRACE argument TOK_RBRACE 
-|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN TOK_LBRACE argument TOK_RBRACE
-|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE
-|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE
-|datatype TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+datatype TOK_IDENTIFIER TOK_ASSIGN expression {
+	$$ = new Node(ptInitializationStatement, 0, 0, "");
+	Node* _dec = new Node(ptDeclaration, 0, 0, $2);
+	_dec->attach_child(*$1);
+	$$->attach_child(*_dec);
+	$$->attach_child(*$4);
+}
+|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET {
+	$$ = new Node(ptInitializationStatement, 0, 0, "");
+	Node* _dec = new Node(ptArrayDeclaration, 0, 0, $4);
+	_dec->attach_child(*$1);
+	$$->attach_child(*_dec);
+	$$->attach_child(*(new Node(TOK_INTVAL, $9, 0, "")));
+}
+|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET {
+	$$ = new Node(ptInitializationStatement, 0, 0, "");
+	Node* _dec = new Node(ptArrayDeclaration, 0, 0, $2);
+	_dec->attach_child(*$1);
+	$$->attach_child(*_dec);
+	$$->attach_child(*(new Node(TOK_INTVAL, $9, 0, "")));
+}
+|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN  TOK_LBRACE argument TOK_RBRACE {
+	$$ = new Node(ptInitializationStatement, 0, 0, "");
+	Node* _dec = new Node(ptArrayDeclaration, 0, 0, $4);
+	_dec->attach_child(*$1);
+	$$->attach_child(*_dec);
+	$$->attach_child(*$7);
+}
+|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN TOK_LBRACE argument TOK_RBRACE {
+	$$ = new Node(ptInitializationStatement, 0, 0, "");
+	Node* _dec = new Node(ptArrayDeclaration, 0, 0, $2);
+	_dec->attach_child(*$1);
+	$$->attach_child(*_dec);
+	$$->attach_child(*$7);
+}
+|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE {
+	$$ = new Node(ptInitializationStatement, 0, 0, "");
+	Node* _dec = new Node(ptArrayDeclaration, 0, 0, $4);
+	_dec->attach_child(*$1);
+	$$->attach_child(*_dec);
+	$$->attach_child(*$11);
+}
+|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_ASSIGN TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE {
+	$$ = new Node(ptInitializationStatement, 0, 0, "");
+	Node* _dec = new Node(ptArrayDeclaration, 0, 0, $2);
+	_dec->attach_child(*$1);
+	$$->attach_child(*_dec);
+	$$->attach_child(*$11);
+}
+|datatype TOK_IDENTIFIER TOK_ASSIGN TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN {
+	$$ = new Node(ptInitializationStatement, 0, 0, "");
+	Node* _dec = new Node(ptDeclaration, 0, 0, $2);
+	_dec->attach_child(*$1);
+	$$->attach_child(*_dec);
+	Node* _inst = new Node(ptNewInstance, 0, 0, "");
+	//_inst->attach_child(ptInstanceType,
+}
 |datatype TOK_IDENTIFIER TOK_ASSIGN TOK_NEW datastructure TOK_LPAREN TOK_RPAREN
 |datatype TOK_IDENTIFIER TOK_ASSIGN methodcall
 |datatype TOK_IDENTIFIER TOK_ASSIGN instancemethodcall
