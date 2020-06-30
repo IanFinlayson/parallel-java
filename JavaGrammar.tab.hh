@@ -151,7 +151,8 @@ extern int yydebug;
     TOK_BITNEG = 336,
     TOK_NEG = 337,
     TOK_SUBSUB = 338,
-    TOK_ADDADD = 339
+    TOK_ADDADD = 339,
+    TOK_LAMBDA = 340
   };
 #endif
 
@@ -174,7 +175,7 @@ union YYSTYPE
 	struct Node* node;
 
 
-#line 178 "JavaGrammar.tab.hh" /* yacc.c:1909  */
+#line 179 "JavaGrammar.tab.hh" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

@@ -131,6 +131,7 @@
 %right TOK_NEG 337
 %token TOK_SUBSUB 338
 %token TOK_ADDADD 339
+%token TOK_LAMBDA 340
 
 /*
 %type <node> classdec classdecs classbody
@@ -290,6 +291,7 @@ expressionstatement TOK_SEMI
 |declarationstatement TOK_SEMI
 |initializationstatement TOK_SEMI
 |trycatchblock
+|throwstate TOK_SEMI
 ;
 
 expressionstatement:
@@ -307,6 +309,7 @@ TOK_LPAREN expression TOK_RPAREN
 |TOK_BOOLVAL
 |TOK_STRINGVAL
 |TOK_IDENTIFIER
+|fieldreference
 |TOK_IDENTIFIER TOK_LBRACKET argument TOK_RBRACKET
 |TOK_SUB expression
 |TOK_BITNEG expression
@@ -338,12 +341,14 @@ TOK_IDENTIFIER TOK_MODASSIGN expression
 |TOK_IDENTIFIER TOK_ADDASSIGN expression
 |TOK_IDENTIFIER TOK_SUBASSIGN expression
 |TOK_IDENTIFIER TOK_ASSIGN initializer
+|TOK_IDENTIFIER TOK_ASSIGN assignmentstatement
 ;
 
 controlflowstatement:
 whileloop
 |dowhileloop
 |forloop
+|enhancedfor
 |ifstatement
 |ifelsestatement
 |switchstatement
@@ -402,7 +407,21 @@ TOK_DO TOK_LBRACE block TOK_RBRACE TOK_WHILE TOK_LPAREN expression TOK_RPAREN TO
 ;
 
 forloop:
-TOK_FOR TOK_LPAREN initializationstatement TOK_SEMI expression TOK_SEMI postdecrement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+TOK_FOR TOK_LPAREN forinit TOK_SEMI expression TOK_SEMI forupdate TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+;
+
+enhancedfor:
+TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+;
+
+forinit:
+declarationstatement
+|expressionstatement
+;
+
+forupdate:
+expressionstatement
+|expressionstatement TOK_COMMA forupdate
 ;
 
 ifstatement:
@@ -415,20 +434,55 @@ ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE
 |ifstatement TOK_ELSE statement 
 ;
 
+/*lambda help?*/
 switchstatement:
-TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_RBRACE
-|TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchbody TOK_DEFAULT TOK_COLON block TOK_RBRACE
+TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchblock TOK_RBRACE
 ;
 
-switchbody:
-TOK_CASE expression TOK_COLON block
-|TOK_CASE expression TOK_COLON block switchbody
+switchblock:
+switchrules
+|switchblockstates
 ;
 
+switchrules:
+switchrule
+|switchrule switchrules
+;
+
+switchrule:
+switchlabel TOK_LAMBDA expressionstatement TOK_SEMI
+|switchlabel TOK_LAMBDA TOK_LBRACE block TOK_RBRACE
+|switchlabel TOK_LAMBDA throwstate TOK_SEMI
+;
+
+switchblockstates:
+switchblockstate
+|switchblockstate switchblockstates
+;
+switchblockstate:
+switchlabel TOK_COLON TOK_LBRACE block TOK_RBRACE
+|switchlabel TOK_COLON block
+;
+
+switchlabel:
+TOK_CASE case
+|TOK_DEFAULT 
+;
+
+case:
+expression 
+|expression TOK_COMMA case
+;
+
+/*fix to catch multiple*/
 trycatchblock:
 TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN 
 TOK_LBRACE block TOK_RBRACE
 |TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+;
+
+throwstate:
+TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN 
 ;
 
 postdecrement:

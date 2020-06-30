@@ -11,10 +11,12 @@ public class ifelse{
 			System.out.println("<= 25");
 		}else if (b >= 25 && b <= 45){
 			System.out.println(b);
-		}else{
-			if ((c == true) && (b > 45)){
+		}else if (b == 50){
+			if ((c == true)){
 				System.out.println("!");
 			}
 		}		
+		else{
+		}
 	}
 }
