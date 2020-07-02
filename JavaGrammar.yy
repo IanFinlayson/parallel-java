@@ -1,9 +1,36 @@
 %{
 	#include <cstdlib>
 	#include "Node/Node.cpp"
+
+	enum ParseTreeNode {
+		ptEmpty,
+		ptPackageContainer,
+		ptPackage,
+		ptImports,
+		ptImportContainer,
+		ptImport,
+		ptTypeDec,
+		ptClass,
+		ptMod,
+		ptClassBody,
+		ptDeclaration,
+		ptDataType,
+		ptInstanceGeneric,
+		ptIdentifierContainer,
+		ptIdentifier,
+		ptArrayIdentifier,
+		ptEnclosedExpression,
+		ptNegation,	
+		ptBitNegation,
+		ptOperation,
+		ptArrayDeclaration,
+		ptInitializationContainer,
+		ptInitializationStatement
+	};
+
 	extern int yylex();
-	void yyerror (char const *error);
-	
+	void yyerror(char const *error);
+
 	Node* root;
 %}
 
@@ -31,7 +58,7 @@
 %token <iVal> TOK_INTVAL 101
 %token <fVal> TOK_FLOATVAL 102
 %token <stVal> TOK_STRINGVAL 103
-%token <booVal> TOK_BOOLVAL 104
+%token <bVal> TOK_BOOLVAL 104
 %token <cVal> TOK_CHARVAL 105
 %token <dVal> TOK_DOUBLEVAL 106
 %token <lVal> TOK_LONGVAL 107
@@ -82,6 +109,7 @@
 %token TOK_CLASS 240
 %token TOK_FINALLY 241
 %token TOK_LONG 242
+
 %token TOK_STRICTFP 243
 %token TOK_VOLATILE 244
 %token TOK_CONST 245
@@ -133,56 +161,92 @@
 %token TOK_ADDADD 339
 %token TOK_LAMBDA 340
 
-/*
-%type <node> classdec classdecs classbody
-*/
+
+%type <node> packagedec importstatements typedec packagename importstatement
+%type <node> classdec interfacedec
+%type <node> mod extendsorimplements classbody
+%type <node> declarationstatement initializationstatement method
+%type <node> declarator initializer
+%type <node> datatype identifier
+%type <node> expression
+
 %%
 
 
 program:
-packagedec importstatements typedec /*{
+packagedec importstatements typedec {
 	root = $1;
-}*/
+	Node* _im = new Node(ptImports);
+	_im->attach_child(*$2);
+	root->attach_child(*_im);
+	_im->attach_child(*$3);
+}
 ;
 
 packagedec:
-%empty
-|TOK_PACKAGE packagename TOK_SEMI
+%empty {
+	$$ = new Node(ptPackageContainer);
+	$$->attach_child(*(new Node(ptEmpty)));
+}
+|TOK_PACKAGE packagename TOK_SEMI {
+	$$ = new Node(ptPackageContainer);
+	$$->attach_child(*$2);
+}
 ;
 
 importstatements:
-%empty
-|importstatement importstatements
+%empty {
+	$$ = new Node(ptEmpty);
+}
+|importstatement importstatements {
+	$$ = new Node(ptImportContainer);
+	$$->attach_child(*$1);
+	$$->attach_child(*$2);
+}
 ;
 
 importstatement:
-TOK_IMPORT packagename TOK_SEMI
-|TOK_IMPORT packagename TOK_DOT TOK_MUL TOK_SEMI
+TOK_IMPORT packagename TOK_SEMI {
+	$$ = new Node(ptImport);
+	$$->attach_child(*$2);
+}
+|TOK_IMPORT packagename TOK_DOT TOK_MUL TOK_SEMI {
+	$$ = new Node(ptImport);
+	$$->attach_child(*$2);
+	$$->attach_child(*(new Node(TOK_MUL)));
+}
 ;
 
 packagename:
-TOK_IDENTIFIER 
-|packagename TOK_DOT TOK_IDENTIFIER 
+TOK_IDENTIFIER {
+	$$ = new Node(ptPackage, 0, 0, $1);
+}
+|packagename TOK_DOT TOK_IDENTIFIER {
+	$$ = new Node(ptPackage, 0, 0, $3);
+	$$->attach_child(*$1);
+}
 ;
 
 typedec:
-interfacedec
-|classdec
-|classdec typedec
-|interfacedec typedec
-;
-
-/*changed the grammar so this might not be needed anymore. Just didnt want to delete the actions
-classdecs:
-classdec classdecs {
-	$1->attach_child(*$2);
-	$$ = $1;
+interfacedec {
+	$$ = new Node(ptTypeDec);
+	$$->attach_child(*(new Node(ptEmpty, 0, 0, "interface placeholder")));
 }
-|classdec /*{
-	$$ = $1;
-}*/
+|classdec {
+	$$ = new Node(ptTypeDec);
+	$$->attach_child(*$1);
+}
+|classdec typedec {
+	$$ = new Node(ptTypeDec);
+	$$->attach_child(*$1);
+	$$->attach_child(*$2);
+}
+|interfacedec typedec {
+	$$ = new Node(ptTypeDec);
+	$$->attach_child(*(new Node(ptEmpty, 0, 0, "interface placeholder")));
+	$$->attach_child(*$2);
+}
 ;
-
 
 interfacedec:
 mod TOK_INTERFACE TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE
@@ -190,11 +254,17 @@ mod TOK_INTERFACE TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE
 ;
 
 classdec:
-mod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE /*{
-	$$ = new Node(TOK_CLASS, 0, 0, $4);
-	//$$->attach_child(*$6);
-}*/
-|mod TOK_CLASS TOK_IDENTIFIER extendsorimplements TOK_LBRACE classbody TOK_RBRACE 
+mod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
+	$$ = new Node(ptClass, 0, 0, $3);
+	$$->attach_child(*$1);
+	$$->attach_child(*$5);
+}
+|mod TOK_CLASS TOK_IDENTIFIER extendsorimplements TOK_LBRACE classbody TOK_RBRACE {
+	$$ = new Node(ptClass, 0, 0, $3);
+	$$->attach_child(*$1);
+	$$->attach_child(*$6);
+	//$1->attach_child(*$4);
+}
 ;
 
 extendsorimplements:
@@ -210,28 +280,93 @@ TOK_IDENTIFIER
 
 
 mod:
-%empty
-|TOK_FINAL mod
-|TOK_ABSTRACT mod
-|TOK_STRICTFP mod
-|TOK_STATIC mod
-|TOK_NATIVE mod
-|TOK_SYNCHRONIZED mod
-|TOK_TRANSIENT mod
-|TOK_VOLATILE mod
-|TOK_PUBLIC mod
-|TOK_PRIVATE mod
-|TOK_PROTECTED mod
-|TOK_DEFAULT mod
+%empty {
+	$$ = new Node(ptEmpty);
+	$$->attach_child(*(new Node(ptEmpty))); //ensure that whatever gets attached to $$ is a right node
+}
+|TOK_FINAL mod {
+	$$ = new Node(ptMod, 0, 0, "final");
+	$$->attach_child(*$2);
+}
+|TOK_ABSTRACT mod {
+	$$ = new Node(ptMod, 0, 0, "abstract");
+	$$->attach_child(*$2);
+}
+|TOK_STRICTFP mod {
+	$$ = new Node(ptMod, 0, 0, "strictfp");
+	$$->attach_child(*$2);
+}
+|TOK_STATIC mod {
+	$$ = new Node(ptMod, 0, 0, "static");
+	$$->attach_child(*$2);
+}
+|TOK_NATIVE mod {
+	$$ = new Node(ptMod, 0, 0, "native");
+	$$->attach_child(*$2);
+}
+|TOK_SYNCHRONIZED mod {
+	$$ = new Node(ptMod, 0, 0, "synchronized");
+	$$->attach_child(*$2);
+}
+|TOK_TRANSIENT mod {
+	$$ = new Node(ptMod, 0, 0, "transient");
+	$$->attach_child(*$2);
+}
+|TOK_VOLATILE mod {
+	$$ = new Node(ptMod, 0, 0, "volatile");
+	$$->attach_child(*$2);
+}
+|TOK_PUBLIC mod {
+	$$ = new Node(ptMod, 0, 0, "public");
+	$$->attach_child(*$2);
+}
+|TOK_PRIVATE mod {
+	$$ = new Node(ptMod, 0, 0, "private");
+	$$->attach_child(*$2);
+}
+|TOK_PROTECTED mod {
+	$$ = new Node(ptMod, 0, 0, "protected");
+	$$->attach_child(*$2);
+}
+|TOK_DEFAULT mod {
+	$$ = new Node(ptMod, 0, 0, "default");
+	$$->attach_child(*$2);
+}
 ;
 
 classbody:
-%empty
-|mod declarationstatement TOK_SEMI classbody
-|mod initializationstatement TOK_SEMI classbody
-|method classbody
-|classdec classbody
-|interfacedec classbody
+%empty {
+	$$ = new Node(ptClassBody);
+	$$->attach_child(*(new Node(ptEmpty)));
+}
+|mod declarationstatement TOK_SEMI classbody {
+	$$ = new Node(ptClassBody);
+	$$->attach_child(*$2);
+	$2->attach_child(*$1);
+	$$->attach_child(*$4);
+}
+|mod initializationstatement TOK_SEMI classbody {
+	$$ = new Node(ptClassBody);
+	$$->attach_child(*$2);
+	$2->attach_child(*$1);
+	$$->attach_child(*$4);
+}
+|method classbody {
+	$$ = new Node(ptClassBody);
+	//$$->attach_child(*$1);
+	$$->attach_child(*(new Node(ptEmpty, 0, 0, "method placeholder")));
+	$$->attach_child(*$2);
+}
+|classdec classbody {
+	$$ = new Node(ptClassBody);
+	$$->attach_child(*$1);
+	$$->attach_child(*$2);
+}
+|interfacedec classbody {
+	$$ = new Node(ptClassBody);
+	$$->attach_child(*$1);
+	$$->attach_child(*$2);
+}
 ;
 
 interfacebody:
@@ -273,11 +408,21 @@ argument:
 ;
 
 datatype:
-TOK_INT
-|TOK_BOOLEAN
-|TOK_FLOAT
-|TOK_IDENTIFIER
-|TOK_DOUBLE
+TOK_INT {
+	$$ = new Node(ptDataType, 0, 0, "int");
+}
+|TOK_BOOLEAN {
+	$$ = new Node(ptDataType, 0, 0, "boolean");
+}
+|TOK_FLOAT {
+	$$ = new Node(ptDataType, 0, 0, "float");
+}
+|TOK_IDENTIFIER {
+	$$ = new Node(ptDataType, 0, 0, $1);
+}
+|TOK_DOUBLE {
+	$$ = new Node(ptDataType, 0, 0, "double");
+}
 ;
 
 block:
@@ -303,35 +448,134 @@ instancemethodcall
 ;
 
 expression:
-TOK_LPAREN expression TOK_RPAREN
-|TOK_INTVAL
-|TOK_FLOATVAL
-|TOK_BOOLVAL
-|TOK_STRINGVAL
-|TOK_IDENTIFIER
-|fieldreference
-|TOK_IDENTIFIER TOK_LBRACKET argument TOK_RBRACKET
-|TOK_SUB expression
-|TOK_BITNEG expression
-|expression TOK_ADD expression
-|expression TOK_SUB expression
-|expression TOK_MOD expression
-|expression TOK_DIV expression
-|expression TOK_MUL expression
-|expression TOK_EQUAL expression
-|expression TOK_NEQUAL expression
-|expression TOK_GREATER expression
-|expression TOK_LESS expression
-|expression TOK_GEQUAL expression
-|expression TOK_LEQUAL expression
-|expression TOK_AND expression
-|expression TOK_OR expression
-|expression TOK_BITOR expression
-|expression TOK_BITAND expression
-|expression TOK_BITXOR expression
-|expression TOK_LSHIFT expression
-|expression TOK_RSHIFT expression
-|expression TOK_RSHIFTZ expression
+TOK_LPAREN expression TOK_RPAREN {
+	$$ = new Node(ptEnclosedExpression);
+	$$->attach_child(*$2);
+}
+|TOK_INTVAL {
+	$$ = new Node(TOK_INTVAL, $1, 0, "");
+}
+|TOK_FLOATVAL {
+	$$ = new Node(TOK_FLOATVAL, 0, $1, "");
+}
+|TOK_BOOLVAL {
+	$$ = new Node(TOK_BOOLVAL, $1, 0, "");
+}
+|TOK_STRINGVAL {
+	$$ = new Node(TOK_STRINGVAL, 0, 0, $1);
+}
+|TOK_IDENTIFIER {
+	$$ = new Node(TOK_IDENTIFIER, 0, 0, $1);
+}
+|fieldreference {
+	$$ = new Node(ptEmpty, 0, 0, "fieldreference placeholder");
+}
+|TOK_IDENTIFIER TOK_LBRACKET argument TOK_RBRACKET {
+	$$ = new Node(ptEmpty, 0, 0, "arrayaccess placeholder");
+}
+|TOK_SUB expression {
+	$$ = new Node(ptNegation);
+	$$->attach_child(*$2);
+}
+|TOK_BITNEG expression {
+	$$ = new Node(ptBitNegation);
+	$$->attach_child(*$2);
+}
+|expression TOK_ADD expression {
+	$$ = new Node(ptOperation, 0, 0, "+");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_SUB expression {
+	$$ = new Node(ptOperation, 0, 0, "-");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_MOD expression {
+	$$ = new Node(ptOperation, 0, 0, "%");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_DIV expression {
+	$$ = new Node(ptOperation, 0, 0, "/");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_MUL expression {
+	$$ = new Node(ptOperation, 0, 0, "*");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_EQUAL expression {
+	$$ = new Node(ptOperation, 0, 0, "==");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_NEQUAL expression {
+	$$ = new Node(ptOperation, 0, 0, "!=");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_GREATER expression {
+	$$ = new Node(ptOperation, 0, 0, ">");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_LESS expression {
+	$$ = new Node(ptOperation, 0, 0, "<");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_GEQUAL expression {
+	$$ = new Node(ptOperation, 0, 0, ">=");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_LEQUAL expression {
+	$$ = new Node(ptOperation, 0, 0, "<=");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_AND expression {
+	$$ = new Node(ptOperation, 0, 0, "&&");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_OR expression {
+	$$ = new Node(ptOperation, 0, 0, "||");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_BITOR expression {
+	$$ = new Node(ptOperation, 0, 0, "|");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_BITAND expression {
+	$$ = new Node(ptOperation, 0, 0, "&");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_BITXOR expression {
+	$$ = new Node(ptOperation, 0, 0, "^");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_LSHIFT expression {
+	$$ = new Node(ptOperation, 0, 0, "<<");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_RSHIFT expression {
+	$$ = new Node(ptOperation, 0, 0, ">>");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expression TOK_RSHIFTZ expression {
+	$$ = new Node(ptOperation, 0, 0, ">>>");
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
 ;
 
 assignmentstatement:
@@ -358,29 +602,77 @@ whileloop
 ;
 
 identifier:
-TOK_IDENTIFIER
-|TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET
-|TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER
-|TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_COMMA identifier
-|TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_COMMA identifier
-|TOK_IDENTIFIER TOK_COMMA identifier
+TOK_IDENTIFIER {
+	$$ = new Node(ptIdentifierContainer);
+	$$->attach_child(*(new Node(ptIdentifier, 0, 0, $1)));
+}
+|TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET {
+	$$ = new Node(ptIdentifierContainer);
+	$$->attach_child(*(new Node(ptArrayIdentifier, 0, 0, $1)));
+}
+|TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER {
+	$$ = new Node(ptIdentifierContainer);
+	$$->attach_child(*(new Node(ptArrayIdentifier, 0, 0, $3)));
+}
+|TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_COMMA identifier {
+	$$ = new Node(ptIdentifierContainer);
+	$$->attach_child(*(new Node(ptArrayIdentifier, 0, 0, $1)));
+	$$->attach_child(*$5);
+}
+|TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_COMMA identifier {
+	$$ = new Node(ptIdentifierContainer);
+	$$->attach_child(*(new Node(ptArrayIdentifier, 0, 0, $3)));
+	$$->attach_child(*$5);
+}
+|TOK_IDENTIFIER TOK_COMMA identifier {
+	$$ = new Node(ptIdentifierContainer);
+	$$->attach_child(*(new Node(ptIdentifier, 0, 0, $1)));
+}
 ;
 
 declarationstatement:
-datatype identifier 
-|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER identifier 
+datatype identifier {
+	$$ = new Node(ptDeclaration);
+	$$->attach_child(*$1);
+	$1->attach_child(*$2);
+}
+|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER identifier {
+	$$ = new Node(ptDeclaration);
+	Node* _it = new Node(ptInstanceGeneric, 0, 0, $1);
+	_it->attach_child(*$5);
+	_it->attach_child(*$3);
+	$$->attach_child(*_it);
+}
 ;
 
 declarator:
-datatype TOK_IDENTIFIER
-|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER
-|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET
-|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER
+datatype TOK_IDENTIFIER {
+	$$ = new Node(ptDeclaration, 0, 0, $2);
+	$$->attach_child(*$1);
+}
+|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER {
+	$$ = new Node(ptArrayDeclaration, 0, 0, $4);
+	$$->attach_child(*$1);
+}
+|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET {
+	$$ = new Node(ptArrayDeclaration, 0, 0, $2);
+	$$->attach_child(*$1);
+}
+|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER {
+	$$ = new Node(ptDeclaration, 0, 0, $5);
+	Node* _it = new Node(ptInstanceGeneric, 0, 0, $1);
+	_it->attach_child(*$3);
+	$$->attach_child(*_it);
+}
 ;
 
 initializer:
-expression
-|TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET
+expression /*{
+	$$ = $1;
+}*/
+|TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET /*{
+	
+}*/
 |TOK_LBRACE argument TOK_RBRACE
 |TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE
 |TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
@@ -390,7 +682,14 @@ expression
 ;
 
 initializationstatement:
-declarator TOK_ASSIGN initializer
+declarator TOK_ASSIGN initializer {
+	$$ = new Node(ptInitializationContainer);
+	Node* _is = new Node(ptInitializationStatement);
+	_is->attach_child(*$1);
+	//_is->attach_child(*$3);
+	_is->attach_child(*(new Node(ptEmpty, 0, 0, "initializer placeholder")));
+	$$->attach_child(*_is);
+}
 ;
 
 datastructure:
@@ -417,6 +716,7 @@ TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN T
 forinit:
 declarationstatement
 |expressionstatement
+|initializationstatement
 ;
 
 forupdate:
@@ -506,7 +806,7 @@ TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 ;
 
 fieldreference:
-TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER
+TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER 
 |fieldreference TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/
 ;
 
@@ -519,7 +819,7 @@ int main ()
 	//root = new Node(0, 0, 0, "k");
 	//printf("%s\n", root->get_tree_string(0).data());
 	yyparse();
-//	root->print();
+	root->print();
 	return 0;
 }
 
