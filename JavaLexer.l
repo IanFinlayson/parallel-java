@@ -105,6 +105,7 @@ ID			[a-zA-Z_$][a-zA-Z_0-9$]*
 "!"						{ return TOK_NEG; }
 "--"					{ return TOK_SUBSUB; }
 "++"					{ return TOK_ADDADD; }
+"->"                    { return TOK_LAMBDA; }
 
 {DIGIT}+				{ yylval.iVal = atoi(yytext); return TOK_INTVAL; }
 {DIGIT}+"."{DIGIT}*		{ yylval.fVal = atof(yytext); return TOK_FLOATVAL; }
