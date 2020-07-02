@@ -199,13 +199,13 @@ mod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE /*{
 
 extendsorimplements:
 TOK_EXTENDS TOK_IDENTIFIER 
-|TOK_IMPLEMENTS interfaceidentifier
-|TOK_EXTENDS TOK_IDENTIFIER TOK_IMPLEMENTS interfaceidentifier
+|TOK_IMPLEMENTS basicidentifier
+|TOK_EXTENDS TOK_IDENTIFIER TOK_IMPLEMENTS basicidentifier
 ;
 
-interfaceidentifier:
+basicidentifier:
 TOK_IDENTIFIER
-|TOK_IDENTIFIER TOK_COMMA interfaceidentifier
+|TOK_IDENTIFIER TOK_COMMA basicidentifier
 ;
 
 
@@ -243,15 +243,20 @@ interfacebody:
 ;
 
 abstractmethod:
-datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
-|TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
+datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI
+|TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI
 ;
 
 method:
-mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|mod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|mod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE
+|mod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE
+|mod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE
 |mod abstractmethod
+;
+
+throwsclause:
+%empty
+|TOK_THROWS basicidentifier
 ;
 
 formalparameters:
@@ -376,6 +381,7 @@ datatype TOK_IDENTIFIER
 |datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER
 |datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET
 |TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER
+|fieldreference
 ;
 
 initializer:
@@ -415,7 +421,8 @@ TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN T
 ;
 
 forinit:
-declarationstatement
+initializationstatement
+|declarationstatement
 |expressionstatement
 ;
 

@@ -1,3 +1,4 @@
+import java.io.*;
 public abstract class methods{
 	String a;
 	int b;
@@ -7,7 +8,7 @@ public abstract class methods{
 	
 	}
 
-	public methods(String a, int b, boolean c){
+	public methods(String a, int b, boolean c) throws IOException, ClassNotFoundException{
 	
 	}
 
