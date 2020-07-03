@@ -423,16 +423,16 @@ Nonterminals, with rules where they appear
     interfacebody (117)
         on left: 42 43 44 45 46
         on right: 14 15 43 44 45 46
-    abstractmethod (118)
+    abstractmethod <node> (118)
         on left: 47 48
         on right: 52
     method <node> (119)
         on left: 49 50 51 52
         on right: 39 44
-    formalparameters (120)
+    formalparameters <node> (120)
         on left: 53 54
         on right: 47 48 49 50 51 54
-    formalparameter (121)
+    formalparameter <node> (121)
         on left: 55 56
         on right: 53 54
     argument (122)
@@ -441,7 +441,7 @@ Nonterminals, with rules where they appear
     datatype <node> (123)
         on left: 62 63 64 65 66
         on right: 47 49 132 133 134 135 136 137 139 141 147 152
-    block (124)
+    block <node> (124)
         on left: 67 68
         on right: 49 50 51 68 149 150 151 152 158 160 168 172 173 178 179
     statement (125)

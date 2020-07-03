@@ -94,7 +94,10 @@
 		ptOperation,
 		ptArrayDeclaration,
 		ptInitializationContainer,
-		ptInitializationStatement
+		ptInitializationStatement,
+		ptMethod,
+		ptAbstractMethod,
+		ptConstructorInfo
 	};
 
 	extern int yylex();
@@ -102,7 +105,7 @@
 
 	Node* root;
 
-#line 106 "JavaGrammar.tab.cc"
+#line 109 "JavaGrammar.tab.cc"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -145,12 +148,12 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 37 "JavaGrammar.yy"
+#line 40 "JavaGrammar.yy"
 
 	#include <string>
 	#include <iostream> 
 
-#line 154 "JavaGrammar.tab.cc"
+#line 157 "JavaGrammar.tab.cc"
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -265,7 +268,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 42 "JavaGrammar.yy"
+#line 45 "JavaGrammar.yy"
 
 	int iVal;
 	double dVal;
@@ -279,7 +282,7 @@ union YYSTYPE
 	struct Node* node;
 
 
-#line 283 "JavaGrammar.tab.cc"
+#line 286 "JavaGrammar.tab.cc"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -663,26 +666,26 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   177,   177,   187,   191,   198,   201,   209,   213,   221,
-     224,   231,   235,   239,   244,   252,   253,   257,   262,   271,
-     272,   273,   277,   278,   283,   287,   291,   295,   299,   303,
-     307,   311,   315,   319,   323,   327,   331,   338,   342,   348,
-     354,   360,   365,   373,   374,   375,   376,   377,   381,   382,
-     386,   387,   388,   389,   393,   394,   398,   399,   403,   404,
-     405,   406,   407,   411,   414,   417,   420,   423,   429,   430,
-     434,   435,   436,   437,   438,   439,   443,   444,   445,   446,
-     447,   451,   455,   458,   461,   464,   467,   470,   473,   476,
-     480,   484,   489,   494,   499,   504,   509,   514,   519,   524,
-     529,   534,   539,   544,   549,   554,   559,   564,   569,   574,
-     582,   583,   584,   585,   586,   587,   588,   592,   593,   594,
-     595,   596,   597,   598,   599,   600,   601,   605,   609,   613,
-     617,   622,   627,   634,   639,   649,   653,   657,   661,   670,
-     673,   676,   677,   678,   679,   680,   681,   685,   696,   697,
-     701,   705,   709,   713,   717,   718,   719,   723,   724,   728,
-     729,   733,   734,   739,   743,   744,   748,   749,   753,   754,
-     755,   759,   760,   763,   764,   768,   769,   773,   774,   779,
-     781,   785,   789,   790,   794,   795,   799,   800,   804,   805,
-     809,   810
+       0,   181,   181,   191,   195,   202,   205,   213,   217,   225,
+     228,   235,   239,   243,   248,   256,   257,   261,   266,   275,
+     276,   277,   281,   282,   287,   291,   295,   299,   303,   307,
+     311,   315,   319,   323,   327,   331,   335,   342,   346,   352,
+     358,   364,   369,   377,   378,   379,   380,   381,   385,   390,
+     398,   405,   413,   421,   429,   432,   439,   442,   448,   449,
+     450,   451,   452,   456,   459,   462,   465,   468,   474,   477,
+     484,   485,   486,   487,   488,   489,   493,   494,   495,   496,
+     497,   501,   505,   508,   511,   514,   517,   520,   523,   526,
+     530,   534,   539,   544,   549,   554,   559,   564,   569,   574,
+     579,   584,   589,   594,   599,   604,   609,   614,   619,   624,
+     632,   633,   634,   635,   636,   637,   638,   642,   643,   644,
+     645,   646,   647,   648,   649,   650,   651,   655,   659,   663,
+     667,   672,   677,   684,   689,   699,   703,   707,   711,   720,
+     723,   726,   727,   728,   729,   730,   731,   735,   746,   747,
+     751,   755,   759,   763,   767,   768,   769,   773,   774,   778,
+     779,   783,   784,   789,   793,   794,   798,   799,   803,   804,
+     805,   809,   810,   813,   814,   818,   819,   823,   824,   829,
+     831,   835,   839,   840,   844,   845,   849,   850,   854,   855,
+     859,   860
 };
 #endif
 
@@ -1917,7 +1920,7 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 177 "JavaGrammar.yy"
+#line 181 "JavaGrammar.yy"
                                     {
 	root = (yyvsp[-2].node);
 	Node* _im = new Node(ptImports);
@@ -1925,700 +1928,818 @@ yyreduce:
 	root->attach_child(*_im);
 	_im->attach_child(*(yyvsp[0].node));
 }
-#line 1929 "JavaGrammar.tab.cc"
+#line 1932 "JavaGrammar.tab.cc"
     break;
 
   case 3:
-#line 187 "JavaGrammar.yy"
+#line 191 "JavaGrammar.yy"
        {
 	(yyval.node) = new Node(ptPackageContainer);
 	(yyval.node)->attach_child(*(new Node(ptEmpty)));
 }
-#line 1938 "JavaGrammar.tab.cc"
+#line 1941 "JavaGrammar.tab.cc"
     break;
 
   case 4:
-#line 191 "JavaGrammar.yy"
+#line 195 "JavaGrammar.yy"
                                   {
 	(yyval.node) = new Node(ptPackageContainer);
 	(yyval.node)->attach_child(*(yyvsp[-1].node));
 }
-#line 1947 "JavaGrammar.tab.cc"
+#line 1950 "JavaGrammar.tab.cc"
     break;
 
   case 5:
-#line 198 "JavaGrammar.yy"
+#line 202 "JavaGrammar.yy"
        {
 	(yyval.node) = new Node(ptEmpty);
 }
-#line 1955 "JavaGrammar.tab.cc"
+#line 1958 "JavaGrammar.tab.cc"
     break;
 
   case 6:
-#line 201 "JavaGrammar.yy"
+#line 205 "JavaGrammar.yy"
                                   {
 	(yyval.node) = new Node(ptImportContainer);
 	(yyval.node)->attach_child(*(yyvsp[-1].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 1965 "JavaGrammar.tab.cc"
+#line 1968 "JavaGrammar.tab.cc"
     break;
 
   case 7:
-#line 209 "JavaGrammar.yy"
+#line 213 "JavaGrammar.yy"
                                 {
 	(yyval.node) = new Node(ptImport);
 	(yyval.node)->attach_child(*(yyvsp[-1].node));
 }
-#line 1974 "JavaGrammar.tab.cc"
+#line 1977 "JavaGrammar.tab.cc"
     break;
 
   case 8:
-#line 213 "JavaGrammar.yy"
+#line 217 "JavaGrammar.yy"
                                                  {
 	(yyval.node) = new Node(ptImport);
 	(yyval.node)->attach_child(*(yyvsp[-3].node));
 	(yyval.node)->attach_child(*(new Node(TOK_MUL)));
 }
-#line 1984 "JavaGrammar.tab.cc"
+#line 1987 "JavaGrammar.tab.cc"
     break;
 
   case 9:
-#line 221 "JavaGrammar.yy"
+#line 225 "JavaGrammar.yy"
                {
 	(yyval.node) = new Node(ptPackage, 0, 0, (yyvsp[0].stVal));
 }
-#line 1992 "JavaGrammar.tab.cc"
+#line 1995 "JavaGrammar.tab.cc"
     break;
 
   case 10:
-#line 224 "JavaGrammar.yy"
+#line 228 "JavaGrammar.yy"
                                     {
 	(yyval.node) = new Node(ptPackage, 0, 0, (yyvsp[0].stVal));
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 }
-#line 2001 "JavaGrammar.tab.cc"
+#line 2004 "JavaGrammar.tab.cc"
     break;
 
   case 11:
-#line 231 "JavaGrammar.yy"
+#line 235 "JavaGrammar.yy"
              {
 	(yyval.node) = new Node(ptTypeDec);
 	(yyval.node)->attach_child(*(new Node(ptEmpty, 0, 0, "interface placeholder")));
 }
-#line 2010 "JavaGrammar.tab.cc"
+#line 2013 "JavaGrammar.tab.cc"
     break;
 
   case 12:
-#line 235 "JavaGrammar.yy"
+#line 239 "JavaGrammar.yy"
           {
 	(yyval.node) = new Node(ptTypeDec);
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2019 "JavaGrammar.tab.cc"
+#line 2022 "JavaGrammar.tab.cc"
     break;
 
   case 13:
-#line 239 "JavaGrammar.yy"
+#line 243 "JavaGrammar.yy"
                   {
 	(yyval.node) = new Node(ptTypeDec);
 	(yyval.node)->attach_child(*(yyvsp[-1].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2029 "JavaGrammar.tab.cc"
+#line 2032 "JavaGrammar.tab.cc"
     break;
 
   case 14:
-#line 244 "JavaGrammar.yy"
+#line 248 "JavaGrammar.yy"
                       {
 	(yyval.node) = new Node(ptTypeDec);
 	(yyval.node)->attach_child(*(new Node(ptEmpty, 0, 0, "interface placeholder")));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2039 "JavaGrammar.tab.cc"
+#line 2042 "JavaGrammar.tab.cc"
     break;
 
   case 17:
-#line 257 "JavaGrammar.yy"
+#line 261 "JavaGrammar.yy"
                                                              {
 	(yyval.node) = new Node(ptClass, 0, 0, (yyvsp[-3].stVal));
 	(yyval.node)->attach_child(*(yyvsp[-5].node));
 	(yyval.node)->attach_child(*(yyvsp[-1].node));
 }
-#line 2049 "JavaGrammar.tab.cc"
+#line 2052 "JavaGrammar.tab.cc"
     break;
 
   case 18:
-#line 262 "JavaGrammar.yy"
+#line 266 "JavaGrammar.yy"
                                                                                   {
 	(yyval.node) = new Node(ptClass, 0, 0, (yyvsp[-4].stVal));
 	(yyval.node)->attach_child(*(yyvsp[-6].node));
 	(yyval.node)->attach_child(*(yyvsp[-1].node));
 	//$1->attach_child(*$4);
 }
-#line 2060 "JavaGrammar.tab.cc"
+#line 2063 "JavaGrammar.tab.cc"
     break;
 
   case 24:
-#line 283 "JavaGrammar.yy"
+#line 287 "JavaGrammar.yy"
        {
 	(yyval.node) = new Node(ptEmpty);
 	(yyval.node)->attach_child(*(new Node(ptEmpty))); //ensure that whatever gets attached to $$ is a right node
 }
-#line 2069 "JavaGrammar.tab.cc"
+#line 2072 "JavaGrammar.tab.cc"
     break;
 
   case 25:
-#line 287 "JavaGrammar.yy"
+#line 291 "JavaGrammar.yy"
                {
 	(yyval.node) = new Node(ptMod, 0, 0, "final");
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2078 "JavaGrammar.tab.cc"
+#line 2081 "JavaGrammar.tab.cc"
     break;
 
   case 26:
-#line 291 "JavaGrammar.yy"
+#line 295 "JavaGrammar.yy"
                   {
 	(yyval.node) = new Node(ptMod, 0, 0, "abstract");
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2087 "JavaGrammar.tab.cc"
+#line 2090 "JavaGrammar.tab.cc"
     break;
 
   case 27:
-#line 295 "JavaGrammar.yy"
+#line 299 "JavaGrammar.yy"
                   {
 	(yyval.node) = new Node(ptMod, 0, 0, "strictfp");
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2096 "JavaGrammar.tab.cc"
+#line 2099 "JavaGrammar.tab.cc"
     break;
 
   case 28:
-#line 299 "JavaGrammar.yy"
+#line 303 "JavaGrammar.yy"
                 {
 	(yyval.node) = new Node(ptMod, 0, 0, "static");
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2105 "JavaGrammar.tab.cc"
+#line 2108 "JavaGrammar.tab.cc"
     break;
 
   case 29:
-#line 303 "JavaGrammar.yy"
+#line 307 "JavaGrammar.yy"
                 {
 	(yyval.node) = new Node(ptMod, 0, 0, "native");
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2114 "JavaGrammar.tab.cc"
+#line 2117 "JavaGrammar.tab.cc"
     break;
 
   case 30:
-#line 307 "JavaGrammar.yy"
+#line 311 "JavaGrammar.yy"
                       {
 	(yyval.node) = new Node(ptMod, 0, 0, "synchronized");
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2123 "JavaGrammar.tab.cc"
+#line 2126 "JavaGrammar.tab.cc"
     break;
 
   case 31:
-#line 311 "JavaGrammar.yy"
+#line 315 "JavaGrammar.yy"
                    {
 	(yyval.node) = new Node(ptMod, 0, 0, "transient");
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2132 "JavaGrammar.tab.cc"
+#line 2135 "JavaGrammar.tab.cc"
     break;
 
   case 32:
-#line 315 "JavaGrammar.yy"
+#line 319 "JavaGrammar.yy"
                   {
 	(yyval.node) = new Node(ptMod, 0, 0, "volatile");
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2141 "JavaGrammar.tab.cc"
+#line 2144 "JavaGrammar.tab.cc"
     break;
 
   case 33:
-#line 319 "JavaGrammar.yy"
+#line 323 "JavaGrammar.yy"
                 {
 	(yyval.node) = new Node(ptMod, 0, 0, "public");
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2150 "JavaGrammar.tab.cc"
+#line 2153 "JavaGrammar.tab.cc"
     break;
 
   case 34:
-#line 323 "JavaGrammar.yy"
+#line 327 "JavaGrammar.yy"
                  {
 	(yyval.node) = new Node(ptMod, 0, 0, "private");
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2159 "JavaGrammar.tab.cc"
+#line 2162 "JavaGrammar.tab.cc"
     break;
 
   case 35:
-#line 327 "JavaGrammar.yy"
+#line 331 "JavaGrammar.yy"
                    {
 	(yyval.node) = new Node(ptMod, 0, 0, "protected");
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2168 "JavaGrammar.tab.cc"
+#line 2171 "JavaGrammar.tab.cc"
     break;
 
   case 36:
-#line 331 "JavaGrammar.yy"
+#line 335 "JavaGrammar.yy"
                  {
 	(yyval.node) = new Node(ptMod, 0, 0, "default");
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2177 "JavaGrammar.tab.cc"
+#line 2180 "JavaGrammar.tab.cc"
     break;
 
   case 37:
-#line 338 "JavaGrammar.yy"
+#line 342 "JavaGrammar.yy"
        {
 	(yyval.node) = new Node(ptClassBody);
 	(yyval.node)->attach_child(*(new Node(ptEmpty)));
 }
-#line 2186 "JavaGrammar.tab.cc"
+#line 2189 "JavaGrammar.tab.cc"
     break;
 
   case 38:
-#line 342 "JavaGrammar.yy"
+#line 346 "JavaGrammar.yy"
                                              {
 	(yyval.node) = new Node(ptClassBody);
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyvsp[-2].node)->attach_child(*(yyvsp[-3].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2197 "JavaGrammar.tab.cc"
+#line 2200 "JavaGrammar.tab.cc"
     break;
 
   case 39:
-#line 348 "JavaGrammar.yy"
+#line 352 "JavaGrammar.yy"
                                                 {
 	(yyval.node) = new Node(ptClassBody);
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyvsp[-2].node)->attach_child(*(yyvsp[-3].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2208 "JavaGrammar.tab.cc"
+#line 2211 "JavaGrammar.tab.cc"
     break;
 
   case 40:
-#line 354 "JavaGrammar.yy"
+#line 358 "JavaGrammar.yy"
                   {
 	(yyval.node) = new Node(ptClassBody);
-	//$$->attach_child(*$1);
-	(yyval.node)->attach_child(*(new Node(ptEmpty, 0, 0, "method placeholder")));
+	(yyval.node)->attach_child(*(yyvsp[-1].node));
+	//$$->attach_child(*(new Node(ptEmpty, 0, 0, "method placeholder")));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2219 "JavaGrammar.tab.cc"
+#line 2222 "JavaGrammar.tab.cc"
     break;
 
   case 41:
-#line 360 "JavaGrammar.yy"
+#line 364 "JavaGrammar.yy"
                     {
 	(yyval.node) = new Node(ptClassBody);
 	(yyval.node)->attach_child(*(yyvsp[-1].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2229 "JavaGrammar.tab.cc"
+#line 2232 "JavaGrammar.tab.cc"
     break;
 
   case 42:
-#line 365 "JavaGrammar.yy"
+#line 369 "JavaGrammar.yy"
                         {
 	(yyval.node) = new Node(ptClassBody);
 	(yyval.node)->attach_child(*(yyvsp[-1].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2239 "JavaGrammar.tab.cc"
+#line 2242 "JavaGrammar.tab.cc"
+    break;
+
+  case 48:
+#line 385 "JavaGrammar.yy"
+                                                                        {
+	(yyval.node) = new Node(ptAbstractMethod, 0, 0, (yyvsp[-4].stVal));
+	(yyval.node)->attach_child(*(yyvsp[-5].node));
+	(yyval.node)->attach_child(*(yyvsp[-2].node));
+}
+#line 2252 "JavaGrammar.tab.cc"
+    break;
+
+  case 49:
+#line 390 "JavaGrammar.yy"
+                                                                         {
+	(yyval.node) = new Node(ptAbstractMethod, 0, 0, (yyvsp[-4].stVal));
+	(yyval.node)->attach_child(*(new Node(TOK_VOID)));
+	(yyval.node)->attach_child(*(yyvsp[-2].node));
+}
+#line 2262 "JavaGrammar.tab.cc"
+    break;
+
+  case 50:
+#line 398 "JavaGrammar.yy"
+                                                                                               {
+	(yyval.node) = new Node(ptMethod, 0, 0, (yyvsp[-6].stVal));
+	(yyval.node)->attach_child(*(yyvsp[-7].node));
+	(yyvsp[-7].node)->attach_child(*(yyvsp[-4].node));
+	(yyvsp[-7].node)->attach_child(*(yyvsp[-8].node));
+	(yyval.node)->attach_child(*(yyvsp[-1].node));
+}
+#line 2274 "JavaGrammar.tab.cc"
+    break;
+
+  case 51:
+#line 405 "JavaGrammar.yy"
+                                                                                                {
+	(yyval.node) = new Node(ptMethod, 0, 0, (yyvsp[-6].stVal));
+	Node* _rt = new Node(TOK_VOID);
+	_rt->attach_child(*(yyvsp[-4].node));
+	_rt->attach_child(*(yyvsp[-8].node));
+	(yyval.node)->attach_child(*_rt);
+	(yyval.node)->attach_child(*(yyvsp[-1].node));
+}
+#line 2287 "JavaGrammar.tab.cc"
+    break;
+
+  case 52:
+#line 413 "JavaGrammar.yy"
+                                                                                       {
+	(yyval.node) = new Node(ptMethod, 0, 0, (yyvsp[-6].stVal));
+	Node* _const = new Node(ptConstructorInfo);
+	_const->attach_child(*(yyvsp[-4].node));
+	_const->attach_child(*(yyvsp[-7].node));
+	(yyval.node)->attach_child(*_const);
+	(yyval.node)->attach_child(*(yyvsp[-1].node));
+}
+#line 2300 "JavaGrammar.tab.cc"
+    break;
+
+  case 53:
+#line 421 "JavaGrammar.yy"
+                    {
+	(yyval.node) = new Node(ptMethod);
+	(yyval.node)->attach_child(*(yyvsp[-1].node));
+	(yyval.node)->attach_child(*(yyvsp[0].node));
+}
+#line 2310 "JavaGrammar.tab.cc"
+    break;
+
+  case 54:
+#line 429 "JavaGrammar.yy"
+                {
+	(yyval.node) = (yyvsp[0].node);
+}
+#line 2318 "JavaGrammar.tab.cc"
+    break;
+
+  case 55:
+#line 432 "JavaGrammar.yy"
+                                           {
+	(yyval.node) = (yyvsp[-2].node);
+	(yyval.node)->attach_child(*(yyvsp[0].node));
+}
+#line 2327 "JavaGrammar.tab.cc"
+    break;
+
+  case 56:
+#line 439 "JavaGrammar.yy"
+       {
+	(yyval.node) = new Node(ptEmpty);
+}
+#line 2335 "JavaGrammar.tab.cc"
+    break;
+
+  case 57:
+#line 442 "JavaGrammar.yy"
+            {
+	(yyval.node) = (yyvsp[0].node);
+}
+#line 2343 "JavaGrammar.tab.cc"
     break;
 
   case 63:
-#line 411 "JavaGrammar.yy"
+#line 456 "JavaGrammar.yy"
         {
 	(yyval.node) = new Node(ptDataType, 0, 0, "int");
 }
-#line 2247 "JavaGrammar.tab.cc"
+#line 2351 "JavaGrammar.tab.cc"
     break;
 
   case 64:
-#line 414 "JavaGrammar.yy"
+#line 459 "JavaGrammar.yy"
              {
 	(yyval.node) = new Node(ptDataType, 0, 0, "boolean");
 }
-#line 2255 "JavaGrammar.tab.cc"
+#line 2359 "JavaGrammar.tab.cc"
     break;
 
   case 65:
-#line 417 "JavaGrammar.yy"
+#line 462 "JavaGrammar.yy"
            {
 	(yyval.node) = new Node(ptDataType, 0, 0, "float");
 }
-#line 2263 "JavaGrammar.tab.cc"
+#line 2367 "JavaGrammar.tab.cc"
     break;
 
   case 66:
-#line 420 "JavaGrammar.yy"
+#line 465 "JavaGrammar.yy"
                 {
 	(yyval.node) = new Node(ptDataType, 0, 0, (yyvsp[0].stVal));
 }
-#line 2271 "JavaGrammar.tab.cc"
+#line 2375 "JavaGrammar.tab.cc"
     break;
 
   case 67:
-#line 423 "JavaGrammar.yy"
+#line 468 "JavaGrammar.yy"
             {
 	(yyval.node) = new Node(ptDataType, 0, 0, "double");
 }
-#line 2279 "JavaGrammar.tab.cc"
+#line 2383 "JavaGrammar.tab.cc"
+    break;
+
+  case 68:
+#line 474 "JavaGrammar.yy"
+       {
+	(yyval.node) = new Node(ptEmpty);
+}
+#line 2391 "JavaGrammar.tab.cc"
+    break;
+
+  case 69:
+#line 477 "JavaGrammar.yy"
+                 {
+	(yyval.node) = new Node(ptEmpty, 0, 0, "placeholder statement");
+	(yyval.node)->attach_child(*(yyvsp[0].node));
+}
+#line 2400 "JavaGrammar.tab.cc"
     break;
 
   case 81:
-#line 451 "JavaGrammar.yy"
+#line 501 "JavaGrammar.yy"
                                  {
 	(yyval.node) = new Node(ptEnclosedExpression);
 	(yyval.node)->attach_child(*(yyvsp[-1].node));
 }
-#line 2288 "JavaGrammar.tab.cc"
+#line 2409 "JavaGrammar.tab.cc"
     break;
 
   case 82:
-#line 455 "JavaGrammar.yy"
+#line 505 "JavaGrammar.yy"
             {
 	(yyval.node) = new Node(TOK_INTVAL, (yyvsp[0].iVal), 0, "");
 }
-#line 2296 "JavaGrammar.tab.cc"
+#line 2417 "JavaGrammar.tab.cc"
     break;
 
   case 83:
-#line 458 "JavaGrammar.yy"
+#line 508 "JavaGrammar.yy"
               {
 	(yyval.node) = new Node(TOK_FLOATVAL, 0, (yyvsp[0].fVal), "");
 }
-#line 2304 "JavaGrammar.tab.cc"
+#line 2425 "JavaGrammar.tab.cc"
     break;
 
   case 84:
-#line 461 "JavaGrammar.yy"
+#line 511 "JavaGrammar.yy"
              {
 	(yyval.node) = new Node(TOK_BOOLVAL, (yyvsp[0].bVal), 0, "");
 }
-#line 2312 "JavaGrammar.tab.cc"
+#line 2433 "JavaGrammar.tab.cc"
     break;
 
   case 85:
-#line 464 "JavaGrammar.yy"
+#line 514 "JavaGrammar.yy"
                {
 	(yyval.node) = new Node(TOK_STRINGVAL, 0, 0, (yyvsp[0].stVal));
 }
-#line 2320 "JavaGrammar.tab.cc"
+#line 2441 "JavaGrammar.tab.cc"
     break;
 
   case 86:
-#line 467 "JavaGrammar.yy"
+#line 517 "JavaGrammar.yy"
                 {
 	(yyval.node) = new Node(TOK_IDENTIFIER, 0, 0, (yyvsp[0].stVal));
 }
-#line 2328 "JavaGrammar.tab.cc"
+#line 2449 "JavaGrammar.tab.cc"
     break;
 
   case 87:
-#line 470 "JavaGrammar.yy"
+#line 520 "JavaGrammar.yy"
                 {
 	(yyval.node) = new Node(ptEmpty, 0, 0, "fieldreference placeholder");
 }
-#line 2336 "JavaGrammar.tab.cc"
+#line 2457 "JavaGrammar.tab.cc"
     break;
 
   case 88:
-#line 473 "JavaGrammar.yy"
+#line 523 "JavaGrammar.yy"
                                                    {
 	(yyval.node) = new Node(ptEmpty, 0, 0, "arrayaccess placeholder");
 }
-#line 2344 "JavaGrammar.tab.cc"
+#line 2465 "JavaGrammar.tab.cc"
     break;
 
   case 89:
-#line 476 "JavaGrammar.yy"
+#line 526 "JavaGrammar.yy"
                     {
 	(yyval.node) = new Node(ptNegation);
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2353 "JavaGrammar.tab.cc"
+#line 2474 "JavaGrammar.tab.cc"
     break;
 
   case 90:
-#line 480 "JavaGrammar.yy"
+#line 530 "JavaGrammar.yy"
                        {
 	(yyval.node) = new Node(ptBitNegation);
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2362 "JavaGrammar.tab.cc"
+#line 2483 "JavaGrammar.tab.cc"
     break;
 
   case 91:
-#line 484 "JavaGrammar.yy"
+#line 534 "JavaGrammar.yy"
                                {
 	(yyval.node) = new Node(ptOperation, 0, 0, "+");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2372 "JavaGrammar.tab.cc"
+#line 2493 "JavaGrammar.tab.cc"
     break;
 
   case 92:
-#line 489 "JavaGrammar.yy"
+#line 539 "JavaGrammar.yy"
                                {
 	(yyval.node) = new Node(ptOperation, 0, 0, "-");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2382 "JavaGrammar.tab.cc"
+#line 2503 "JavaGrammar.tab.cc"
     break;
 
   case 93:
-#line 494 "JavaGrammar.yy"
+#line 544 "JavaGrammar.yy"
                                {
 	(yyval.node) = new Node(ptOperation, 0, 0, "%");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2392 "JavaGrammar.tab.cc"
+#line 2513 "JavaGrammar.tab.cc"
     break;
 
   case 94:
-#line 499 "JavaGrammar.yy"
+#line 549 "JavaGrammar.yy"
                                {
 	(yyval.node) = new Node(ptOperation, 0, 0, "/");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2402 "JavaGrammar.tab.cc"
+#line 2523 "JavaGrammar.tab.cc"
     break;
 
   case 95:
-#line 504 "JavaGrammar.yy"
+#line 554 "JavaGrammar.yy"
                                {
 	(yyval.node) = new Node(ptOperation, 0, 0, "*");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2412 "JavaGrammar.tab.cc"
+#line 2533 "JavaGrammar.tab.cc"
     break;
 
   case 96:
-#line 509 "JavaGrammar.yy"
+#line 559 "JavaGrammar.yy"
                                  {
 	(yyval.node) = new Node(ptOperation, 0, 0, "==");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2422 "JavaGrammar.tab.cc"
+#line 2543 "JavaGrammar.tab.cc"
     break;
 
   case 97:
-#line 514 "JavaGrammar.yy"
+#line 564 "JavaGrammar.yy"
                                   {
 	(yyval.node) = new Node(ptOperation, 0, 0, "!=");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2432 "JavaGrammar.tab.cc"
+#line 2553 "JavaGrammar.tab.cc"
     break;
 
   case 98:
-#line 519 "JavaGrammar.yy"
+#line 569 "JavaGrammar.yy"
                                    {
 	(yyval.node) = new Node(ptOperation, 0, 0, ">");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2442 "JavaGrammar.tab.cc"
+#line 2563 "JavaGrammar.tab.cc"
     break;
 
   case 99:
-#line 524 "JavaGrammar.yy"
+#line 574 "JavaGrammar.yy"
                                 {
 	(yyval.node) = new Node(ptOperation, 0, 0, "<");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2452 "JavaGrammar.tab.cc"
+#line 2573 "JavaGrammar.tab.cc"
     break;
 
   case 100:
-#line 529 "JavaGrammar.yy"
+#line 579 "JavaGrammar.yy"
                                   {
 	(yyval.node) = new Node(ptOperation, 0, 0, ">=");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2462 "JavaGrammar.tab.cc"
+#line 2583 "JavaGrammar.tab.cc"
     break;
 
   case 101:
-#line 534 "JavaGrammar.yy"
+#line 584 "JavaGrammar.yy"
                                   {
 	(yyval.node) = new Node(ptOperation, 0, 0, "<=");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2472 "JavaGrammar.tab.cc"
+#line 2593 "JavaGrammar.tab.cc"
     break;
 
   case 102:
-#line 539 "JavaGrammar.yy"
+#line 589 "JavaGrammar.yy"
                                {
 	(yyval.node) = new Node(ptOperation, 0, 0, "&&");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2482 "JavaGrammar.tab.cc"
+#line 2603 "JavaGrammar.tab.cc"
     break;
 
   case 103:
-#line 544 "JavaGrammar.yy"
+#line 594 "JavaGrammar.yy"
                               {
 	(yyval.node) = new Node(ptOperation, 0, 0, "||");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2492 "JavaGrammar.tab.cc"
+#line 2613 "JavaGrammar.tab.cc"
     break;
 
   case 104:
-#line 549 "JavaGrammar.yy"
+#line 599 "JavaGrammar.yy"
                                  {
 	(yyval.node) = new Node(ptOperation, 0, 0, "|");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2502 "JavaGrammar.tab.cc"
+#line 2623 "JavaGrammar.tab.cc"
     break;
 
   case 105:
-#line 554 "JavaGrammar.yy"
+#line 604 "JavaGrammar.yy"
                                   {
 	(yyval.node) = new Node(ptOperation, 0, 0, "&");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2512 "JavaGrammar.tab.cc"
+#line 2633 "JavaGrammar.tab.cc"
     break;
 
   case 106:
-#line 559 "JavaGrammar.yy"
+#line 609 "JavaGrammar.yy"
                                   {
 	(yyval.node) = new Node(ptOperation, 0, 0, "^");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2522 "JavaGrammar.tab.cc"
+#line 2643 "JavaGrammar.tab.cc"
     break;
 
   case 107:
-#line 564 "JavaGrammar.yy"
+#line 614 "JavaGrammar.yy"
                                   {
 	(yyval.node) = new Node(ptOperation, 0, 0, "<<");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2532 "JavaGrammar.tab.cc"
+#line 2653 "JavaGrammar.tab.cc"
     break;
 
   case 108:
-#line 569 "JavaGrammar.yy"
+#line 619 "JavaGrammar.yy"
                                   {
 	(yyval.node) = new Node(ptOperation, 0, 0, ">>");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2542 "JavaGrammar.tab.cc"
+#line 2663 "JavaGrammar.tab.cc"
     break;
 
   case 109:
-#line 574 "JavaGrammar.yy"
+#line 624 "JavaGrammar.yy"
                                    {
 	(yyval.node) = new Node(ptOperation, 0, 0, ">>>");
 	(yyval.node)->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2552 "JavaGrammar.tab.cc"
+#line 2673 "JavaGrammar.tab.cc"
     break;
 
   case 127:
-#line 605 "JavaGrammar.yy"
+#line 655 "JavaGrammar.yy"
                {
 	(yyval.node) = new Node(ptIdentifierContainer);
 	(yyval.node)->attach_child(*(new Node(ptIdentifier, 0, 0, (yyvsp[0].stVal))));
 }
-#line 2561 "JavaGrammar.tab.cc"
+#line 2682 "JavaGrammar.tab.cc"
     break;
 
   case 128:
-#line 609 "JavaGrammar.yy"
+#line 659 "JavaGrammar.yy"
                                           {
 	(yyval.node) = new Node(ptIdentifierContainer);
 	(yyval.node)->attach_child(*(new Node(ptArrayIdentifier, 0, 0, (yyvsp[-2].stVal))));
 }
-#line 2570 "JavaGrammar.tab.cc"
+#line 2691 "JavaGrammar.tab.cc"
     break;
 
   case 129:
-#line 613 "JavaGrammar.yy"
+#line 663 "JavaGrammar.yy"
                                           {
 	(yyval.node) = new Node(ptIdentifierContainer);
 	(yyval.node)->attach_child(*(new Node(ptArrayIdentifier, 0, 0, (yyvsp[0].stVal))));
 }
-#line 2579 "JavaGrammar.tab.cc"
+#line 2700 "JavaGrammar.tab.cc"
     break;
 
   case 130:
-#line 617 "JavaGrammar.yy"
+#line 667 "JavaGrammar.yy"
                                                                {
 	(yyval.node) = new Node(ptIdentifierContainer);
 	(yyval.node)->attach_child(*(new Node(ptArrayIdentifier, 0, 0, (yyvsp[-4].stVal))));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2589 "JavaGrammar.tab.cc"
+#line 2710 "JavaGrammar.tab.cc"
     break;
 
   case 131:
-#line 622 "JavaGrammar.yy"
+#line 672 "JavaGrammar.yy"
                                                                {
 	(yyval.node) = new Node(ptIdentifierContainer);
 	(yyval.node)->attach_child(*(new Node(ptArrayIdentifier, 0, 0, (yyvsp[-2].stVal))));
 	(yyval.node)->attach_child(*(yyvsp[0].node));
 }
-#line 2599 "JavaGrammar.tab.cc"
+#line 2720 "JavaGrammar.tab.cc"
     break;
 
   case 132:
-#line 627 "JavaGrammar.yy"
+#line 677 "JavaGrammar.yy"
                                      {
 	(yyval.node) = new Node(ptIdentifierContainer);
 	(yyval.node)->attach_child(*(new Node(ptIdentifier, 0, 0, (yyvsp[-2].stVal))));
 }
-#line 2608 "JavaGrammar.tab.cc"
+#line 2729 "JavaGrammar.tab.cc"
     break;
 
   case 133:
-#line 634 "JavaGrammar.yy"
+#line 684 "JavaGrammar.yy"
                     {
 	(yyval.node) = new Node(ptDeclaration);
 	(yyval.node)->attach_child(*(yyvsp[-1].node));
 	(yyvsp[-1].node)->attach_child(*(yyvsp[0].node));
 }
-#line 2618 "JavaGrammar.tab.cc"
+#line 2739 "JavaGrammar.tab.cc"
     break;
 
   case 134:
-#line 639 "JavaGrammar.yy"
+#line 689 "JavaGrammar.yy"
                                                          {
 	(yyval.node) = new Node(ptDeclaration);
 	Node* _it = new Node(ptInstanceGeneric, 0, 0, (yyvsp[-4].stVal));
@@ -2626,49 +2747,49 @@ yyreduce:
 	_it->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*_it);
 }
-#line 2630 "JavaGrammar.tab.cc"
+#line 2751 "JavaGrammar.tab.cc"
     break;
 
   case 135:
-#line 649 "JavaGrammar.yy"
+#line 699 "JavaGrammar.yy"
                         {
 	(yyval.node) = new Node(ptDeclaration, 0, 0, (yyvsp[0].stVal));
 	(yyval.node)->attach_child(*(yyvsp[-1].node));
 }
-#line 2639 "JavaGrammar.tab.cc"
+#line 2760 "JavaGrammar.tab.cc"
     break;
 
   case 136:
-#line 653 "JavaGrammar.yy"
+#line 703 "JavaGrammar.yy"
                                                    {
 	(yyval.node) = new Node(ptArrayDeclaration, 0, 0, (yyvsp[0].stVal));
 	(yyval.node)->attach_child(*(yyvsp[-3].node));
 }
-#line 2648 "JavaGrammar.tab.cc"
+#line 2769 "JavaGrammar.tab.cc"
     break;
 
   case 137:
-#line 657 "JavaGrammar.yy"
+#line 707 "JavaGrammar.yy"
                                                    {
 	(yyval.node) = new Node(ptArrayDeclaration, 0, 0, (yyvsp[-2].stVal));
 	(yyval.node)->attach_child(*(yyvsp[-3].node));
 }
-#line 2657 "JavaGrammar.tab.cc"
+#line 2778 "JavaGrammar.tab.cc"
     break;
 
   case 138:
-#line 661 "JavaGrammar.yy"
+#line 711 "JavaGrammar.yy"
                                                              {
 	(yyval.node) = new Node(ptDeclaration, 0, 0, (yyvsp[0].stVal));
 	Node* _it = new Node(ptInstanceGeneric, 0, 0, (yyvsp[-4].stVal));
 	_it->attach_child(*(yyvsp[-2].node));
 	(yyval.node)->attach_child(*_it);
 }
-#line 2668 "JavaGrammar.tab.cc"
+#line 2789 "JavaGrammar.tab.cc"
     break;
 
   case 147:
-#line 685 "JavaGrammar.yy"
+#line 735 "JavaGrammar.yy"
                                   {
 	(yyval.node) = new Node(ptInitializationContainer);
 	Node* _is = new Node(ptInitializationStatement);
@@ -2677,11 +2798,11 @@ yyreduce:
 	_is->attach_child(*(new Node(ptEmpty, 0, 0, "initializer placeholder")));
 	(yyval.node)->attach_child(*_is);
 }
-#line 2681 "JavaGrammar.tab.cc"
+#line 2802 "JavaGrammar.tab.cc"
     break;
 
 
-#line 2685 "JavaGrammar.tab.cc"
+#line 2806 "JavaGrammar.tab.cc"
 
       default: break;
     }
@@ -2913,7 +3034,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 813 "JavaGrammar.yy"
+#line 863 "JavaGrammar.yy"
 
 
 //Node* root;

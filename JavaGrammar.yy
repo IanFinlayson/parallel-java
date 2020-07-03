@@ -25,7 +25,10 @@
 		ptOperation,
 		ptArrayDeclaration,
 		ptInitializationContainer,
-		ptInitializationStatement
+		ptInitializationStatement,
+		ptMethod,
+		ptAbstractMethod,
+		ptConstructorInfo
 	};
 
 	extern int yylex();
@@ -169,6 +172,7 @@
 %type <node> declarator initializer
 %type <node> datatype identifier
 %type <node> expression
+%type <node> abstractmethod formalparameter formalparameters block
 
 %%
 
@@ -353,8 +357,8 @@ classbody:
 }
 |method classbody {
 	$$ = new Node(ptClassBody);
-	//$$->attach_child(*$1);
-	$$->attach_child(*(new Node(ptEmpty, 0, 0, "method placeholder")));
+	$$->attach_child(*$1);
+	//$$->attach_child(*(new Node(ptEmpty, 0, 0, "method placeholder")));
 	$$->attach_child(*$2);
 }
 |classdec classbody {
@@ -378,25 +382,66 @@ interfacebody:
 ;
 
 abstractmethod:
-datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
-|TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI
+datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI {
+	$$ = new Node(ptAbstractMethod, 0, 0, $2);
+	$$->attach_child(*$1);
+	$$->attach_child(*$4);
+}
+|TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI {
+	$$ = new Node(ptAbstractMethod, 0, 0, $2);
+	$$->attach_child(*(new Node(TOK_VOID)));
+	$$->attach_child(*$4);
+}
 ;
 
 method:
-mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|mod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|mod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-|mod abstractmethod
+mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptMethod, 0, 0, $3);
+	$$->attach_child(*$2);
+	$2->attach_child(*$5);
+	$2->attach_child(*$1);
+	$$->attach_child(*$8);
+}
+|mod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptMethod, 0, 0, $3);
+	Node* _rt = new Node(TOK_VOID);
+	_rt->attach_child(*$5);
+	_rt->attach_child(*$1);
+	$$->attach_child(*_rt);
+	$$->attach_child(*$8);
+}
+|mod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptMethod, 0, 0, $2);
+	Node* _const = new Node(ptConstructorInfo);
+	_const->attach_child(*$4);
+	_const->attach_child(*$1);
+	$$->attach_child(*_const);
+	$$->attach_child(*$7);
+}
+|mod abstractmethod {
+	$$ = new Node(ptMethod);
+	$$->attach_child(*$1);
+	$$->attach_child(*$2);
+}
 ;
 
 formalparameters:
-formalparameter
-|formalparameter TOK_COMMA formalparameters
+formalparameter {
+	$$ = $1;
+}
+|formalparameter TOK_COMMA formalparameters{
+	$$ = $1;
+	$$->attach_child(*$3);
+}
 ;
 
 formalparameter:
-%empty
-|declarator
+%empty {
+	$$ = new Node(ptEmpty);
+}
+|declarator {
+	$$ = $1;
+}
 ;
 
 argument:
@@ -426,8 +471,13 @@ TOK_INT {
 ;
 
 block:
-%empty
-|statement block
+%empty {
+	$$ = new Node(ptEmpty);
+}
+|statement block {
+	$$ = new Node(ptEmpty, 0, 0, "placeholder statement");
+	$$->attach_child(*$2);
+}
 ;
 
 statement:
