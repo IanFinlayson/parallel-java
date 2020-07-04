@@ -28,7 +28,20 @@
 		ptInitializationStatement,
 		ptMethod,
 		ptAbstractMethod,
-		ptConstructorInfo
+		ptConstructorInfo,
+		ptStatement,
+		ptArgument,
+		ptInstanceMethodCall,
+		ptMethodCall,
+		ptFieldReference,
+		ptPreDecrement,
+		ptPostDecrement,
+		ptArraySizeInitializer,
+		ptArrayExplicitInitializer,
+		ptInstanceInitializer,
+		ptDataStructureInitializer,
+		ptDataStructure,
+		ptAssignment
 	};
 
 	extern int yylex();
@@ -173,6 +186,10 @@
 %type <node> datatype identifier
 %type <node> expression
 %type <node> abstractmethod formalparameter formalparameters block
+%type <node> statement
+%type <node> argument expressionstatement instancemethodcall methodcall fieldreference
+%type <node> predecrement postdecrement
+%type <node> datastructure assignmentstatement 
 
 %%
 
@@ -445,11 +462,27 @@ formalparameter:
 ;
 
 argument:
-%empty
-|expression
-|expressionstatement
-|expression TOK_COMMA argument
-|expressionstatement TOK_COMMA argument
+%empty {
+	$$ = new Node(ptEmpty);
+}
+|expression {
+	$$ = new Node(ptArgument);
+	$$->attach_child(*$1);
+}
+|expressionstatement {
+	$$ = new Node(ptArgument);
+	$$->attach_child(*$1);
+}
+|expression TOK_COMMA argument {
+	$$ = new Node(ptArgument);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|expressionstatement TOK_COMMA argument {
+	$$ = new Node(ptArgument);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
 ;
 
 datatype:
@@ -475,26 +508,54 @@ block:
 	$$ = new Node(ptEmpty);
 }
 |statement block {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder statement");
+	$$ = $1;
 	$$->attach_child(*$2);
 }
 ;
 
 statement:
-expressionstatement TOK_SEMI
-|controlflowstatement
-|declarationstatement TOK_SEMI
-|initializationstatement TOK_SEMI
-|trycatchblock
-|throwstate TOK_SEMI
+expressionstatement TOK_SEMI {
+	$$ = new Node(ptStatement);
+	$$->attach_child(*$1);
+}
+|controlflowstatement {
+	$$ = new Node(ptStatement);
+	$$->attach_child(*(new Node(ptEmpty, 0, 0, "placeholder controlflow")));
+}
+|declarationstatement TOK_SEMI {
+	$$ = new Node(ptStatement);
+	$$->attach_child(*$1);
+}
+|initializationstatement TOK_SEMI {
+	$$ = new Node(ptStatement);
+	$$->attach_child(*$1);
+}
+|trycatchblock {
+	$$ = new Node(ptStatement);
+	$$->attach_child(*(new Node(ptEmpty, 0, 0, "placeholder trycatch")));
+}
+|throwstate TOK_SEMI {
+	$$ = new Node(ptStatement);
+	$$->attach_child(*(new Node(ptEmpty, 0, 0, "placeholder throwstate")));
+}
 ;
 
 expressionstatement:
-instancemethodcall
-|methodcall
-|postdecrement
-|predecrement
-|assignmentstatement
+instancemethodcall {
+	$$ = $1;
+}
+|methodcall {
+	$$ = $1;
+}
+|postdecrement {
+	$$ = $1;
+}
+|predecrement {
+	$$ = $1;
+}
+|assignmentstatement {
+	$$ = $1;
+}
 ;
 
 expression:
@@ -629,13 +690,41 @@ TOK_LPAREN expression TOK_RPAREN {
 ;
 
 assignmentstatement:
-TOK_IDENTIFIER TOK_MODASSIGN expression
-|TOK_IDENTIFIER TOK_DIVASSIGN expression
-|TOK_IDENTIFIER TOK_MULASSIGN expression
-|TOK_IDENTIFIER TOK_ADDASSIGN expression
-|TOK_IDENTIFIER TOK_SUBASSIGN expression
-|TOK_IDENTIFIER TOK_ASSIGN initializer
-|TOK_IDENTIFIER TOK_ASSIGN assignmentstatement
+TOK_IDENTIFIER TOK_MODASSIGN expression {
+	$$ = new Node(ptAssignment, 0, 0, "%=");
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*$3);
+}
+|TOK_IDENTIFIER TOK_DIVASSIGN expression {
+	$$ = new Node(ptAssignment, 0, 0, "/=");
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*$3);
+}
+|TOK_IDENTIFIER TOK_MULASSIGN expression {
+	$$ = new Node(ptAssignment, 0, 0, "*=");
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*$3);
+}
+|TOK_IDENTIFIER TOK_ADDASSIGN expression {
+	$$ = new Node(ptAssignment, 0, 0, "+=");
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*$3);
+}
+|TOK_IDENTIFIER TOK_SUBASSIGN expression {
+	$$ = new Node(ptAssignment, 0, 0, "-=");
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*$3);
+}
+|TOK_IDENTIFIER TOK_ASSIGN initializer {
+	$$ = new Node(ptAssignment, 0, 0, "=");
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*$3);
+}
+|TOK_IDENTIFIER TOK_ASSIGN assignmentstatement {
+	$$ = new Node(ptAssignment, 0, 0, "=");
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*$3);
+}
 ;
 
 controlflowstatement:
@@ -717,18 +806,38 @@ datatype TOK_IDENTIFIER {
 ;
 
 initializer:
-expression /*{
+expression {
 	$$ = $1;
-}*/
-|TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET /*{
-	
-}*/
-|TOK_LBRACE argument TOK_RBRACE
-|TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE
-|TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
-|methodcall
-|instancemethodcall
-|TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN
+}
+|TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET {
+	$$ = new Node(ptArraySizeInitializer);
+	$$->attach_child(*$2);
+	$$->attach_child(*(new Node(TOK_INTVAL, $4, 0, "")));
+}
+|TOK_LBRACE argument TOK_RBRACE {
+	$$ = new Node(ptArrayExplicitInitializer);
+	$$->attach_child(*$2);
+}
+|TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE {
+	$$ = new Node(ptArrayExplicitInitializer);
+	$$->attach_child(*$6);
+}
+|TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN {
+	$$ = new Node(ptInstanceInitializer);
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $2)));
+	$$->attach_child(*$4);
+}
+|methodcall {
+	$$ = $1;
+}
+|instancemethodcall {
+	$$ = $1;
+}
+|TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN {
+	$$ = new Node(ptDataStructureInitializer);
+	$$->attach_child(*$2);
+	$$->attach_child(*$4);
+}
 ;
 
 initializationstatement:
@@ -736,15 +845,22 @@ declarator TOK_ASSIGN initializer {
 	$$ = new Node(ptInitializationContainer);
 	Node* _is = new Node(ptInitializationStatement);
 	_is->attach_child(*$1);
-	//_is->attach_child(*$3);
-	_is->attach_child(*(new Node(ptEmpty, 0, 0, "initializer placeholder")));
+	_is->attach_child(*$3);
+	//_is->attach_child(*(new Node(ptEmpty, 0, 0, "initializer placeholder")));
 	$$->attach_child(*_is);
 }
 ;
 
 datastructure:
-TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER
-|TOK_IDENTIFIER TOK_LESS TOK_GREATER 
+TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER {
+	$$ = new Node(ptDataStructure);
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*$3);
+}
+|TOK_IDENTIFIER TOK_LESS TOK_GREATER {
+	$$ = new Node(ptDataStructure);
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+}
 ;
 
 whileloop:
@@ -836,28 +952,72 @@ TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 ;
 
 postdecrement:
-TOK_IDENTIFIER TOK_ADDADD
-|TOK_IDENTIFIER TOK_SUBSUB
+TOK_IDENTIFIER TOK_ADDADD {
+	$$ = new Node(ptPostDecrement);
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*(new Node(TOK_ADDADD)));
+}
+|TOK_IDENTIFIER TOK_SUBSUB {
+	$$ = new Node(ptPostDecrement);
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*(new Node(TOK_SUBSUB)));
+}
 ;
 
 predecrement:
-TOK_ADDADD TOK_IDENTIFIER
-|TOK_SUBSUB TOK_IDENTIFIER 
+TOK_ADDADD TOK_IDENTIFIER {
+	$$ = new Node(ptPreDecrement);
+	$$->attach_child(*(new Node(TOK_ADDADD)));
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $2)));
+}
+|TOK_SUBSUB TOK_IDENTIFIER {
+	$$ = new Node(ptPreDecrement);
+	$$->attach_child(*(new Node(TOK_SUBSUB)));
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $2)));
+}
 ;
 
 instancemethodcall:
-fieldreference TOK_DOT methodcall
-|TOK_IDENTIFIER TOK_DOT methodcall
+fieldreference TOK_DOT methodcall {
+	$$ = new Node(ptInstanceMethodCall);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|TOK_IDENTIFIER TOK_DOT methodcall {
+	$$ = new Node(ptInstanceMethodCall);
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*$3);
+}
 ;
 
 methodcall:
-TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
-|methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN {
+	$$ = new Node(ptMethodCall);
+	Node* _method_name = new Node(TOK_IDENTIFIER, 0, 0, $1);
+	$$->attach_child(*_method_name);
+	_method_name->attach_child(*$3);
+}
+|methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN {
+	$$ = $1;
+	Node* _method_call = new Node(ptMethodCall);
+	Node* _method_name = new Node(TOK_IDENTIFIER, 0, 0, $3);
+	_method_call->attach_child(*_method_name);
+	_method_name->attach_child(*$5);
+	$$->attach_child(*_method_call);
+}
 ;
 
 fieldreference:
-TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER 
-|fieldreference TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/
+TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER {
+	$$ = new Node(ptFieldReference);
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $3)));
+}
+|fieldreference TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/{
+	$$ = new Node(ptFieldReference);
+	$$->attach_child(*$1);
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $3)));
+}
 ;
 
 %%

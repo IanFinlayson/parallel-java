@@ -435,7 +435,7 @@ Nonterminals, with rules where they appear
     formalparameter <node> (121)
         on left: 55 56
         on right: 53 54
-    argument (122)
+    argument <node> (122)
         on left: 57 58 59 60 61
         on right: 60 61 87 140 141 142 145 180 187 188
     datatype <node> (123)
@@ -444,16 +444,16 @@ Nonterminals, with rules where they appear
     block <node> (124)
         on left: 67 68
         on right: 49 50 51 68 149 150 151 152 158 160 168 172 173 178 179
-    statement (125)
+    statement <node> (125)
         on left: 69 70 71 72 73 74
         on right: 68 159 161
-    expressionstatement (126)
+    expressionstatement <node> (126)
         on left: 75 76 77 78 79
         on right: 59 61 69 154 156 157 167
     expression <node> (127)
         on left: 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108
         on right: 58 60 80 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 138 149 150 151 158 159 162 176 177
-    assignmentstatement (128)
+    assignmentstatement <node> (128)
         on left: 109 110 111 112 113 114 115
         on right: 79 115
     controlflowstatement (129)
@@ -474,7 +474,7 @@ Nonterminals, with rules where they appear
     initializationstatement <node> (134)
         on left: 146
         on right: 38 43 72 155
-    datastructure (135)
+    datastructure <node> (135)
         on left: 147 148
         on right: 145
     whileloop (136)
@@ -531,19 +531,19 @@ Nonterminals, with rules where they appear
     throwstate (153)
         on left: 180
         on right: 74 169
-    postdecrement (154)
+    postdecrement <node> (154)
         on left: 181 182
         on right: 77
-    predecrement (155)
+    predecrement <node> (155)
         on left: 183 184
         on right: 78
-    instancemethodcall (156)
+    instancemethodcall <node> (156)
         on left: 185 186
         on right: 75 144
-    methodcall (157)
+    methodcall <node> (157)
         on left: 187 188
         on right: 76 143 185 186 188
-    fieldreference (158)
+    fieldreference <node> (158)
         on left: 189 190
         on right: 86 185 190
 
