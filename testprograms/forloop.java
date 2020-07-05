@@ -4,10 +4,10 @@ public class forloop{
 			System.out.println(i);
 		}
 
-		int d = 0;
-
-		for(int i = 10; i > d; i--){
-			System.out.println(i);	
+		int d = 10;
+		int k = 6;
+		for(int i; k > d; k--){
+			System.out.println(k);	
 		}
 	}
 }

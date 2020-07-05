@@ -45,7 +45,7 @@
 		ptInterface,
 		ptExtends,
 		ptImplements,
-		ptInterfaceIdentifier,
+		ptBasicIdentifier,
 		ptArrayAccess,
 		ptWhile,
 		ptDoWhile,
@@ -54,7 +54,8 @@
 		ptForEachDec,
 		ptIf,
 		ptIfElse,
-		ptReturn
+		ptReturn,
+		ptThrows
 	};
 
 	extern int yylex();
@@ -193,7 +194,7 @@
 
 %type <node> packagedec importstatements typedec packagename importstatement
 %type <node> classdec interfacedec
-%type <node> mod extendsorimplements classbody interfaceidentifier interfacebody
+%type <node> mod extendsorimplements classbody basicidentifier interfacebody
 %type <node> declarationstatement initializationstatement method
 %type <node> declarator initializer
 %type <node> datatype identifier
@@ -205,6 +206,7 @@
 %type <node> datastructure assignmentstatement 
 %type <node> controlflowstatement
 %type <node> whileloop dowhileloop forloop enhancedfor forinit forupdate ifstatement ifelsestatement
+%type <node> throwsclause
 
 %%
 
@@ -317,11 +319,11 @@ extendsorimplements:
 TOK_EXTENDS TOK_IDENTIFIER {
 	$$ = new Node(ptExtends, 0, 0, $2);
 }
-|TOK_IMPLEMENTS interfaceidentifier {
+|TOK_IMPLEMENTS basicidentifier {
 	$$ = new Node(ptImplements);
 	$$->attach_child(*$2);
 }
-|TOK_EXTENDS TOK_IDENTIFIER TOK_IMPLEMENTS interfaceidentifier {
+|TOK_EXTENDS TOK_IDENTIFIER TOK_IMPLEMENTS basicidentifier {
 	$$ = new Node(ptExtends, 0, 0, $2);
 	Node* _imp = new Node(ptImplements);
 	_imp->attach_child(*$4);
@@ -329,12 +331,12 @@ TOK_EXTENDS TOK_IDENTIFIER {
 }
 ;
 
-interfaceidentifier:
+basicidentifier:
 TOK_IDENTIFIER {
-	$$ = new Node(ptInterfaceIdentifier, 0, 0, $1);
+	$$ = new Node(ptBasicIdentifier, 0, 0, $1);
 }
-|TOK_IDENTIFIER TOK_COMMA interfaceidentifier {
-	$$ = new Node(ptInterfaceIdentifier, 0, 0, $1);
+|TOK_IDENTIFIER TOK_COMMA basicidentifier {
+	$$ = new Node(ptBasicIdentifier, 0, 0, $1);
 	$$->attach_child(*$3);
 }
 ;
@@ -458,12 +460,12 @@ interfacebody:
 ;
 
 abstractmethod:
-datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI {
+datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI {
 	$$ = new Node(ptAbstractMethod, 0, 0, $2);
 	$$->attach_child(*$1);
 	$$->attach_child(*$4);
 }
-|TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI {
+|TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI {
 	$$ = new Node(ptAbstractMethod, 0, 0, $2);
 	$$->attach_child(*(new Node(TOK_VOID)));
 	$$->attach_child(*$4);
@@ -471,32 +473,42 @@ datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_SEMI {
 ;
 
 method:
-mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptMethod, 0, 0, $3);
 	$$->attach_child(*$2);
 	$2->attach_child(*$5);
 	$2->attach_child(*$1);
-	$$->attach_child(*$8);
+	$$->attach_child(*$9);
 }
-|mod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+|mod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptMethod, 0, 0, $3);
 	Node* _rt = new Node(TOK_VOID);
 	_rt->attach_child(*$5);
 	_rt->attach_child(*$1);
 	$$->attach_child(*_rt);
-	$$->attach_child(*$8);
+	$$->attach_child(*$9);
 }
-|mod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+|mod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptMethod, 0, 0, $2);
 	Node* _const = new Node(ptConstructorInfo);
 	_const->attach_child(*$4);
 	_const->attach_child(*$1);
 	$$->attach_child(*_const);
-	$$->attach_child(*$7);
+	$$->attach_child(*$8);
 }
 |mod abstractmethod {
 	$$ = new Node(ptMethod);
 	$$->attach_child(*$1);
+	$$->attach_child(*$2);
+}
+;
+
+throwsclause:
+%empty {
+	$$ = new Node(ptEmpty);
+}
+|TOK_THROWS basicidentifier {
+	$$ = new Node(ptThrows);
 	$$->attach_child(*$2);
 }
 ;
@@ -886,6 +898,9 @@ datatype TOK_IDENTIFIER {
 	Node* _it = new Node(ptInstanceGeneric, 0, 0, $1);
 	_it->attach_child(*$3);
 	$$->attach_child(*_it);
+}
+|fieldreference {
+	$$ = $1;
 }
 ;
 
