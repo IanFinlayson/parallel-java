@@ -51,7 +51,10 @@
 		ptDoWhile,
 		ptFor,
 		ptForEach,
-		ptForEachDec
+		ptForEachDec,
+		ptIf,
+		ptIfElse,
+		ptReturn
 	};
 
 	extern int yylex();
@@ -201,7 +204,7 @@
 %type <node> predecrement postdecrement
 %type <node> datastructure assignmentstatement 
 %type <node> controlflowstatement
-%type <node> whileloop dowhileloop forloop enhancedfor forinit forupdate
+%type <node> whileloop dowhileloop forloop enhancedfor forinit forupdate ifstatement ifelsestatement
 
 %%
 
@@ -801,22 +804,23 @@ whileloop {
 	$$ = $1;
 }
 |ifstatement {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflow");
+	$$ = $1;
 }
 |ifelsestatement {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflow");
+	$$ = $1;
 }
 |switchstatement {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflow");
+	$$ = new Node(ptEmpty, 0, 0, "placeholder switch");
 }
 |TOK_BREAK TOK_SEMI {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflow");
+	$$ = new Node(TOK_BREAK);
 }
 |TOK_CONTINUE TOK_SEMI {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflow");
+	$$ = new Node(TOK_CONTINUE);
 }
 |TOK_RETURN TOK_IDENTIFIER TOK_SEMI {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder controlflow");
+	$$ = new Node(ptReturn);
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $2)));
 }
 ;
 
@@ -1014,13 +1018,29 @@ expressionstatement {
 ;
 
 ifstatement:
-TOK_IF TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE 
-|TOK_IF TOK_LPAREN expression TOK_RPAREN statement 
+TOK_IF TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptIf);
+	$$->attach_child(*$3);
+	$$->attach_child(*$6);
+}
+|TOK_IF TOK_LPAREN expression TOK_RPAREN statement {
+	$$ = new Node(ptIf);
+	$$->attach_child(*$3);
+	$$->attach_child(*$5);
+}
 ;
 
 ifelsestatement:
-ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE
-|ifstatement TOK_ELSE statement 
+ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptIfElse);
+	$$->attach_child(*$1);
+	$$->attach_child(*$4);
+}
+|ifstatement TOK_ELSE statement {
+	$$ = new Node(ptIfElse);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
 ;
 
 /*lambda help?*/
@@ -1029,7 +1049,7 @@ TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchblock TOK_RBRACE
 ;
 
 switchblock:
-switchrules
+switchrules 
 |switchblockstates
 ;
 

@@ -495,10 +495,10 @@ Nonterminals, with rules where they appear
     forupdate <node> (141)
         on left: 156 157
         on right: 151 157
-    ifstatement (142)
+    ifstatement <node> (142)
         on left: 158 159
         on right: 120 160 161
-    ifelsestatement (143)
+    ifelsestatement <node> (143)
         on left: 160 161
         on right: 121
     switchstatement (144)
