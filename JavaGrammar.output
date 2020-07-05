@@ -411,7 +411,7 @@ Nonterminals, with rules where they appear
     extendsorimplements <node> (113)
         on left: 18 19 20
         on right: 17
-    interfaceidentifier (114)
+    interfaceidentifier <node> (114)
         on left: 21 22
         on right: 19 20 22
     mod <node> (115)
@@ -420,7 +420,7 @@ Nonterminals, with rules where they appear
     classbody <node> (116)
         on left: 36 37 38 39 40 41
         on right: 16 17 37 38 39 40 41
-    interfacebody (117)
+    interfacebody <node> (117)
         on left: 42 43 44 45 46
         on right: 14 15 43 44 45 46
     abstractmethod <node> (118)
@@ -456,7 +456,7 @@ Nonterminals, with rules where they appear
     assignmentstatement <node> (128)
         on left: 109 110 111 112 113 114 115
         on right: 79 115
-    controlflowstatement (129)
+    controlflowstatement <node> (129)
         on left: 116 117 118 119 120 121 122 123 124 125
         on right: 70
     identifier <node> (130)
@@ -477,22 +477,22 @@ Nonterminals, with rules where they appear
     datastructure <node> (135)
         on left: 147 148
         on right: 145
-    whileloop (136)
+    whileloop <node> (136)
         on left: 149
         on right: 116
-    dowhileloop (137)
+    dowhileloop <node> (137)
         on left: 150
         on right: 117
-    forloop (138)
+    forloop <node> (138)
         on left: 151
         on right: 118
-    enhancedfor (139)
+    enhancedfor <node> (139)
         on left: 152
         on right: 119
-    forinit (140)
+    forinit <node> (140)
         on left: 153 154 155
         on right: 151
-    forupdate (141)
+    forupdate <node> (141)
         on left: 156 157
         on right: 151 157
     ifstatement (142)
