@@ -1,7 +1,8 @@
 %{
 	#include <cstdlib>
-	#include "Node/Node.cpp"
-	#include "nodeTypes.h"
+	//#include "Node/Node.cpp"
+	//#include "nodeTypes.h"
+	#include "Dump/JavaDumper.cpp"
 
 	extern int yylex();
 	void yyerror(char const *error);
@@ -1235,10 +1236,21 @@ TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER {
 
 %%
 
-int main ()
-{
+int main (int argc, char* argv[])
+{	
+	char* filename;
+	if(argc == 2){
+		filename = argv[0];
+	}else{
+		return 1;
+	}
+	//std::streambuf* buf = std::cin.rdbuf();
+	//std::ifstream file(filename);
+	//std::cin.rdbuf(file.rdbuf());
 	yyparse();
 	root->print();
+	dump_tree(*root, filename);
+	//std::cin.rdbuf(buf);
 	return 0;
 }
 
