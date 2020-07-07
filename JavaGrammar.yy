@@ -89,6 +89,7 @@
 %token TOK_NATIVE 247
 %token TOK_SUPER 248
 %token TOK_WHILE 249
+%token TOK_YIELD 341
 
 //punctuation
 %token TOK_LBRACKET 300
@@ -197,10 +198,6 @@ mod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE /*{
 |mod TOK_CLASS TOK_IDENTIFIER extendsorimplements TOK_LBRACE classbody TOK_RBRACE 
 ;
 
-anoninnerclass:
-TOK_NEW TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
-;
-
 extendsorimplements:
 TOK_EXTENDS TOK_IDENTIFIER 
 |TOK_IMPLEMENTS basicidentifier
@@ -258,6 +255,10 @@ mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause 
 |mod abstractmethod
 ;
 
+parallelblock:
+TOK_IDENTIFIER TOK_LBRACE block TOK_RBRACE
+;
+
 throwsclause:
 %empty
 |TOK_THROWS basicidentifier
@@ -292,6 +293,7 @@ TOK_INT
 block:
 %empty
 |statement block
+|parallelblock block
 ;
 
 statement:
@@ -363,7 +365,8 @@ whileloop
 |switchstatement
 |TOK_BREAK TOK_SEMI
 |TOK_CONTINUE TOK_SEMI
-|TOK_RETURN TOK_IDENTIFIER TOK_SEMI
+|TOK_RETURN expression TOK_SEMI
+|TOK_YIELD expression TOK_SEMI
 ;
 
 identifier:
@@ -394,6 +397,7 @@ expression
 |TOK_LBRACE argument TOK_RBRACE
 |TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE
 |TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+|TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_LBRACE classbody TOK_RBRACE
 |methodcall
 |instancemethodcall
 |TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN
@@ -462,6 +466,7 @@ switchrule
 
 switchrule:
 switchlabel TOK_LAMBDA expressionstatement TOK_SEMI
+|switchlabel TOK_LAMBDA expression TOK_SEMI
 |switchlabel TOK_LAMBDA TOK_LBRACE block TOK_RBRACE
 |switchlabel TOK_LAMBDA throwstate TOK_SEMI
 ;
