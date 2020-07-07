@@ -197,6 +197,10 @@ mod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE /*{
 |mod TOK_CLASS TOK_IDENTIFIER extendsorimplements TOK_LBRACE classbody TOK_RBRACE 
 ;
 
+anoninnerclass:
+TOK_NEW TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE
+;
+
 extendsorimplements:
 TOK_EXTENDS TOK_IDENTIFIER 
 |TOK_IMPLEMENTS basicidentifier
@@ -466,6 +470,7 @@ switchblockstates:
 switchblockstate
 |switchblockstate switchblockstates
 ;
+
 switchblockstate:
 switchlabel TOK_COLON TOK_LBRACE block TOK_RBRACE
 |switchlabel TOK_COLON block
@@ -483,10 +488,16 @@ expression
 
 /*fix to catch multiple*/
 trycatchblock:
-TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN 
+TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN 
 TOK_LBRACE block TOK_RBRACE
-|TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+|TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 ;
+
+exceptionname:
+TOK_IDENTIFIER 
+|TOK_IDENTIFIER TOK_BITOR exceptionname
+;
+
 
 throwstate:
 TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN 

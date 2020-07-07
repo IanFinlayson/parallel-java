@@ -255,25 +255,28 @@ Grammar
   179 case: expression
   180     | expression TOK_COMMA case
 
-  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 
-  183 throwstate: TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+  183 exceptionname: TOK_IDENTIFIER
+  184              | TOK_IDENTIFIER TOK_BITOR exceptionname
 
-  184 postdecrement: TOK_IDENTIFIER TOK_ADDADD
-  185              | TOK_IDENTIFIER TOK_SUBSUB
+  185 throwstate: TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 
-  186 predecrement: TOK_ADDADD TOK_IDENTIFIER
-  187             | TOK_SUBSUB TOK_IDENTIFIER
+  186 postdecrement: TOK_IDENTIFIER TOK_ADDADD
+  187              | TOK_IDENTIFIER TOK_SUBSUB
 
-  188 instancemethodcall: fieldreference TOK_DOT methodcall
-  189                   | TOK_IDENTIFIER TOK_DOT methodcall
+  188 predecrement: TOK_ADDADD TOK_IDENTIFIER
+  189             | TOK_SUBSUB TOK_IDENTIFIER
 
-  190 methodcall: TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
-  191           | methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+  190 instancemethodcall: fieldreference TOK_DOT methodcall
+  191                   | TOK_IDENTIFIER TOK_DOT methodcall
 
-  192 fieldreference: TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER
-  193               | fieldreference TOK_DOT TOK_IDENTIFIER
+  192 methodcall: TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+  193           | methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+
+  194 fieldreference: TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER
+  195               | fieldreference TOK_DOT TOK_IDENTIFIER
 
 
 Terminals, with rules where they appear
@@ -281,8 +284,8 @@ Terminals, with rules where they appear
 $end (0) 0
 TOK_IDENTIFIER (100) 8 9 14 15 16 17 18 20 21 22 47 48 49 50 51 67
     87 89 111 112 113 114 115 116 117 127 128 129 130 131 132 133 135
-    136 137 138 139 145 150 151 155 183 184 185 186 187 189 190 191
-    192 193
+    136 137 138 139 145 150 151 155 181 182 183 184 185 186 187 188
+    189 191 192 193 194 195
 TOK_INTVAL (101) 83 142
 TOK_FLOATVAL (102) 84
 TOK_STRINGVAL (103) 86
@@ -295,7 +298,7 @@ TOK_NULLVAL (109)
 TOK_ABSTRACT (200) 25
 TOK_CONTINUE (201) 126
 TOK_FOR (202) 154 155
-TOK_NEW (203) 142 144 145 148 183
+TOK_NEW (203) 142 144 145 148 185
 TOK_SWITCH (204) 165
 TOK_ASSERT (205)
 TOK_DEFAULT (206) 35 178
@@ -311,7 +314,7 @@ TOK_BREAK (215) 125
 TOK_DOUBLE (216) 68
 TOK_IMPLEMENTS (217) 19 20
 TOK_PROTECTED (218) 34
-TOK_THROW (219) 183
+TOK_THROW (219) 185
 TOK_BYTE (220)
 TOK_ELSE (221) 163 164
 TOK_IMPORT (222) 6 7
@@ -346,9 +349,9 @@ error (256)
 TOK_LBRACKET (300) 89 129 130 131 132 137 138 142 144
 TOK_RBRACKET (301) 89 129 130 131 132 137 138 142 144
 TOK_LPAREN (302) 47 48 49 50 51 82 145 148 152 153 154 155 161 162
-    165 181 182 183 190 191
+    165 181 182 185 192 193
 TOK_RPAREN (303) 47 48 49 50 51 82 145 148 152 153 154 155 161 162
-    165 181 182 183 190 191
+    165 181 182 185 192 193
 TOK_LBRACE (304) 14 15 16 17 49 50 51 143 144 152 153 154 155 161 163
     165 171 175 181 182
 TOK_RBRACE (305) 14 15 16 17 49 50 51 143 144 152 153 154 155 161 163
@@ -356,7 +359,7 @@ TOK_RBRACE (305) 14 15 16 17 49 50 51 143 144 152 153 154 155 161 163
 TOK_COMMA (306) 22 56 62 63 131 132 133 160 180
 TOK_SEMI (307) 3 6 7 37 38 43 47 48 71 73 74 76 125 126 127 153 154
     170 172
-TOK_DOT (308) 7 9 188 189 191 192 193
+TOK_DOT (308) 7 9 190 191 193 194 195
 TOK_ASSIGN (309) 116 117 149
 TOK_MODASSIGN (310) 111
 TOK_DIVASSIGN (311) 112
@@ -367,7 +370,7 @@ TOK_COLON (315) 155 175 176
 TOK_QUESTION (316)
 TOK_OR (317) 104
 TOK_AND (318) 103
-TOK_BITOR (319) 105
+TOK_BITOR (319) 105 184
 TOK_BITAND (320) 106
 TOK_BITXOR (321) 107
 TOK_EQUAL (322) 97
@@ -386,8 +389,8 @@ TOK_DIV (334) 95
 TOK_MUL (335) 7 96
 TOK_BITNEG (336) 91
 TOK_NEG (337)
-TOK_SUBSUB (338) 185 187
-TOK_ADDADD (339) 184 186
+TOK_SUBSUB (338) 187 189
+TOK_ADDADD (339) 186 188
 TOK_LAMBDA (340) 170 171 172
 
 
@@ -433,8 +436,8 @@ formalparameters (121)
 formalparameter (122)
     on left: 57 58, on right: 55 56
 argument (123)
-    on left: 59 60 61 62 63, on right: 62 63 89 143 144 145 148 183
-    190 191
+    on left: 59 60 61 62 63, on right: 62 63 89 143 144 145 148 185
+    192 193
 datatype (124)
     on left: 64 65 66 67 68, on right: 47 49 134 135 136 137 138 139
     142 144 150 155
@@ -457,7 +460,7 @@ controlflowstatement (130)
 identifier (131)
     on left: 128 129 130 131 132 133, on right: 131 132 133 134 135
 declarationstatement (132)
-    on left: 134 135, on right: 37 73 157 181 182
+    on left: 134 135, on right: 37 73 157
 declarator (133)
     on left: 136 137 138 139 140, on right: 58 149
 initializer (134)
@@ -500,18 +503,20 @@ case (152)
     on left: 179 180, on right: 177 180
 trycatchblock (153)
     on left: 181 182, on right: 75
-throwstate (154)
-    on left: 183, on right: 76 172
-postdecrement (155)
-    on left: 184 185, on right: 79
-predecrement (156)
-    on left: 186 187, on right: 80
-instancemethodcall (157)
-    on left: 188 189, on right: 77 147
-methodcall (158)
-    on left: 190 191, on right: 78 146 188 189 191
-fieldreference (159)
-    on left: 192 193, on right: 88 140 188 193
+exceptionname (154)
+    on left: 183 184, on right: 181 182 184
+throwstate (155)
+    on left: 185, on right: 76 172
+postdecrement (156)
+    on left: 186 187, on right: 79
+predecrement (157)
+    on left: 188 189, on right: 80
+instancemethodcall (158)
+    on left: 190 191, on right: 77 147
+methodcall (159)
+    on left: 192 193, on right: 78 146 190 191 193
+fieldreference (160)
+    on left: 194 195, on right: 88 140 190 195
 
 
 State 0
@@ -1589,7 +1594,7 @@ State 77
    51 method: mod TOK_IDENTIFIER . TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE
    67 datatype: TOK_IDENTIFIER .
   139 declarator: TOK_IDENTIFIER . TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER
-  192 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
+  194 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
 
     TOK_LPAREN  shift, and go to state 102
     TOK_DOT     shift, and go to state 103
@@ -1670,7 +1675,7 @@ State 86
 State 87
 
   140 declarator: fieldreference .
-  193 fieldreference: fieldreference . TOK_DOT TOK_IDENTIFIER
+  195 fieldreference: fieldreference . TOK_DOT TOK_IDENTIFIER
 
     TOK_DOT  shift, and go to state 110
 
@@ -1729,7 +1734,7 @@ State 94
    67 datatype: TOK_IDENTIFIER .
   135 declarationstatement: TOK_IDENTIFIER . TOK_LESS datatype TOK_GREATER identifier
   139 declarator: TOK_IDENTIFIER . TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER
-  192 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
+  194 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
 
     TOK_LPAREN  shift, and go to state 102
     TOK_DOT     shift, and go to state 103
@@ -1816,7 +1821,7 @@ State 102
 
 State 103
 
-  192 fieldreference: TOK_IDENTIFIER TOK_DOT . TOK_IDENTIFIER
+  194 fieldreference: TOK_IDENTIFIER TOK_DOT . TOK_IDENTIFIER
 
     TOK_IDENTIFIER  shift, and go to state 126
 
@@ -1913,7 +1918,7 @@ State 109
 
 State 110
 
-  193 fieldreference: fieldreference TOK_DOT . TOK_IDENTIFIER
+  195 fieldreference: fieldreference TOK_DOT . TOK_IDENTIFIER
 
     TOK_IDENTIFIER  shift, and go to state 149
 
@@ -2053,7 +2058,7 @@ State 121
 
    67 datatype: TOK_IDENTIFIER .
   139 declarator: TOK_IDENTIFIER . TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER
-  192 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
+  194 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
 
     TOK_DOT   shift, and go to state 103
     TOK_LESS  shift, and go to state 104
@@ -2097,9 +2102,9 @@ State 125
 
 State 126
 
-  192 fieldreference: TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER .
+  194 fieldreference: TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER .
 
-    $default  reduce using rule 192 (fieldreference)
+    $default  reduce using rule 194 (fieldreference)
 
 
 State 127
@@ -2174,9 +2179,9 @@ State 133
 
    87 expression: TOK_IDENTIFIER .
    89           | TOK_IDENTIFIER . TOK_LBRACKET argument TOK_RBRACKET
-  189 instancemethodcall: TOK_IDENTIFIER . TOK_DOT methodcall
-  190 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
-  192 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
+  191 instancemethodcall: TOK_IDENTIFIER . TOK_DOT methodcall
+  192 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  194 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
 
     TOK_LBRACKET  shift, and go to state 164
     TOK_LPAREN    shift, and go to state 165
@@ -2372,7 +2377,7 @@ State 145
 State 146
 
   146 initializer: methodcall .
-  191 methodcall: methodcall . TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+  193 methodcall: methodcall . TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 
     TOK_DOT  shift, and go to state 205
 
@@ -2382,8 +2387,8 @@ State 146
 State 147
 
    88 expression: fieldreference .
-  188 instancemethodcall: fieldreference . TOK_DOT methodcall
-  193 fieldreference: fieldreference . TOK_DOT TOK_IDENTIFIER
+  190 instancemethodcall: fieldreference . TOK_DOT methodcall
+  195 fieldreference: fieldreference . TOK_DOT TOK_IDENTIFIER
 
     TOK_DOT  shift, and go to state 206
 
@@ -2399,9 +2404,9 @@ State 148
 
 State 149
 
-  193 fieldreference: fieldreference TOK_DOT TOK_IDENTIFIER .
+  195 fieldreference: fieldreference TOK_DOT TOK_IDENTIFIER .
 
-    $default  reduce using rule 193 (fieldreference)
+    $default  reduce using rule 195 (fieldreference)
 
 
 State 150
@@ -2561,7 +2566,7 @@ State 164
 
 State 165
 
-  190 methodcall: TOK_IDENTIFIER TOK_LPAREN . argument TOK_RPAREN
+  192 methodcall: TOK_IDENTIFIER TOK_LPAREN . argument TOK_RPAREN
 
     TOK_IDENTIFIER  shift, and go to state 173
     TOK_INTVAL      shift, and go to state 134
@@ -2589,8 +2594,8 @@ State 165
 
 State 166
 
-  189 instancemethodcall: TOK_IDENTIFIER TOK_DOT . methodcall
-  192 fieldreference: TOK_IDENTIFIER TOK_DOT . TOK_IDENTIFIER
+  191 instancemethodcall: TOK_IDENTIFIER TOK_DOT . methodcall
+  194 fieldreference: TOK_IDENTIFIER TOK_DOT . TOK_IDENTIFIER
 
     TOK_IDENTIFIER  shift, and go to state 221
 
@@ -2629,7 +2634,7 @@ State 170
 
    87 expression: TOK_IDENTIFIER .
    89           | TOK_IDENTIFIER . TOK_LBRACKET argument TOK_RBRACKET
-  192 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
+  194 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
 
     TOK_LBRACKET  shift, and go to state 164
     TOK_DOT       shift, and go to state 103
@@ -2685,7 +2690,7 @@ State 171
 State 172
 
    88 expression: fieldreference .
-  193 fieldreference: fieldreference . TOK_DOT TOK_IDENTIFIER
+  195 fieldreference: fieldreference . TOK_DOT TOK_IDENTIFIER
 
     TOK_DOT  shift, and go to state 110
 
@@ -2703,11 +2708,11 @@ State 173
   115                    | TOK_IDENTIFIER . TOK_SUBASSIGN expression
   116                    | TOK_IDENTIFIER . TOK_ASSIGN initializer
   117                    | TOK_IDENTIFIER . TOK_ASSIGN assignmentstatement
-  184 postdecrement: TOK_IDENTIFIER . TOK_ADDADD
-  185              | TOK_IDENTIFIER . TOK_SUBSUB
-  189 instancemethodcall: TOK_IDENTIFIER . TOK_DOT methodcall
-  190 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
-  192 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
+  186 postdecrement: TOK_IDENTIFIER . TOK_ADDADD
+  187              | TOK_IDENTIFIER . TOK_SUBSUB
+  191 instancemethodcall: TOK_IDENTIFIER . TOK_DOT methodcall
+  192 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  194 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
 
     TOK_LBRACKET   shift, and go to state 164
     TOK_LPAREN     shift, and go to state 165
@@ -2726,14 +2731,14 @@ State 173
 
 State 174
 
-  187 predecrement: TOK_SUBSUB . TOK_IDENTIFIER
+  189 predecrement: TOK_SUBSUB . TOK_IDENTIFIER
 
     TOK_IDENTIFIER  shift, and go to state 236
 
 
 State 175
 
-  186 predecrement: TOK_ADDADD . TOK_IDENTIFIER
+  188 predecrement: TOK_ADDADD . TOK_IDENTIFIER
 
     TOK_IDENTIFIER  shift, and go to state 237
 
@@ -2834,7 +2839,7 @@ State 182
 State 183
 
    78 expressionstatement: methodcall .
-  191 methodcall: methodcall . TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+  193 methodcall: methodcall . TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 
     TOK_DOT  shift, and go to state 205
 
@@ -3222,15 +3227,15 @@ State 204
 
 State 205
 
-  191 methodcall: methodcall TOK_DOT . TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+  193 methodcall: methodcall TOK_DOT . TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 
     TOK_IDENTIFIER  shift, and go to state 260
 
 
 State 206
 
-  188 instancemethodcall: fieldreference TOK_DOT . methodcall
-  193 fieldreference: fieldreference TOK_DOT . TOK_IDENTIFIER
+  190 instancemethodcall: fieldreference TOK_DOT . methodcall
+  195 fieldreference: fieldreference TOK_DOT . TOK_IDENTIFIER
 
     TOK_IDENTIFIER  shift, and go to state 261
 
@@ -3363,29 +3368,29 @@ State 219
 
 State 220
 
-  190 methodcall: TOK_IDENTIFIER TOK_LPAREN argument . TOK_RPAREN
+  192 methodcall: TOK_IDENTIFIER TOK_LPAREN argument . TOK_RPAREN
 
     TOK_RPAREN  shift, and go to state 274
 
 
 State 221
 
-  190 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
-  192 fieldreference: TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER .
+  192 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  194 fieldreference: TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER .
 
     TOK_LPAREN  shift, and go to state 165
 
-    $default  reduce using rule 192 (fieldreference)
+    $default  reduce using rule 194 (fieldreference)
 
 
 State 222
 
-  189 instancemethodcall: TOK_IDENTIFIER TOK_DOT methodcall .
-  191 methodcall: methodcall . TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+  191 instancemethodcall: TOK_IDENTIFIER TOK_DOT methodcall .
+  193 methodcall: methodcall . TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 
     TOK_DOT  shift, and go to state 205
 
-    $default  reduce using rule 189 (instancemethodcall)
+    $default  reduce using rule 191 (instancemethodcall)
 
 
 State 223
@@ -3586,30 +3591,30 @@ State 233
 
 State 234
 
-  185 postdecrement: TOK_IDENTIFIER TOK_SUBSUB .
+  187 postdecrement: TOK_IDENTIFIER TOK_SUBSUB .
 
-    $default  reduce using rule 185 (postdecrement)
+    $default  reduce using rule 187 (postdecrement)
 
 
 State 235
 
-  184 postdecrement: TOK_IDENTIFIER TOK_ADDADD .
+  186 postdecrement: TOK_IDENTIFIER TOK_ADDADD .
 
-    $default  reduce using rule 184 (postdecrement)
+    $default  reduce using rule 186 (postdecrement)
 
 
 State 236
 
-  187 predecrement: TOK_SUBSUB TOK_IDENTIFIER .
+  189 predecrement: TOK_SUBSUB TOK_IDENTIFIER .
 
-    $default  reduce using rule 187 (predecrement)
+    $default  reduce using rule 189 (predecrement)
 
 
 State 237
 
-  186 predecrement: TOK_ADDADD TOK_IDENTIFIER .
+  188 predecrement: TOK_ADDADD TOK_IDENTIFIER .
 
-    $default  reduce using rule 186 (predecrement)
+    $default  reduce using rule 188 (predecrement)
 
 
 State 238
@@ -4372,29 +4377,29 @@ State 259
 
 State 260
 
-  191 methodcall: methodcall TOK_DOT TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  193 methodcall: methodcall TOK_DOT TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
 
     TOK_LPAREN  shift, and go to state 291
 
 
 State 261
 
-  190 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
-  193 fieldreference: fieldreference TOK_DOT TOK_IDENTIFIER .
+  192 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  195 fieldreference: fieldreference TOK_DOT TOK_IDENTIFIER .
 
     TOK_LPAREN  shift, and go to state 165
 
-    $default  reduce using rule 193 (fieldreference)
+    $default  reduce using rule 195 (fieldreference)
 
 
 State 262
 
-  188 instancemethodcall: fieldreference TOK_DOT methodcall .
-  191 methodcall: methodcall . TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+  190 instancemethodcall: fieldreference TOK_DOT methodcall .
+  193 methodcall: methodcall . TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 
     TOK_DOT  shift, and go to state 205
 
-    $default  reduce using rule 188 (instancemethodcall)
+    $default  reduce using rule 190 (instancemethodcall)
 
 
 State 263
@@ -4538,9 +4543,9 @@ State 273
 
 State 274
 
-  190 methodcall: TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN .
+  192 methodcall: TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN .
 
-    $default  reduce using rule 190 (methodcall)
+    $default  reduce using rule 192 (methodcall)
 
 
 State 275
@@ -4596,9 +4601,9 @@ State 281
   115                    | TOK_IDENTIFIER . TOK_SUBASSIGN expression
   116                    | TOK_IDENTIFIER . TOK_ASSIGN initializer
   117                    | TOK_IDENTIFIER . TOK_ASSIGN assignmentstatement
-  189 instancemethodcall: TOK_IDENTIFIER . TOK_DOT methodcall
-  190 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
-  192 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
+  191 instancemethodcall: TOK_IDENTIFIER . TOK_DOT methodcall
+  192 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  194 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
 
     TOK_LBRACKET   shift, and go to state 164
     TOK_LPAREN     shift, and go to state 165
@@ -4873,7 +4878,7 @@ State 290
 
 State 291
 
-  191 methodcall: methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN . argument TOK_RPAREN
+  193 methodcall: methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN . argument TOK_RPAREN
 
     TOK_IDENTIFIER  shift, and go to state 173
     TOK_INTVAL      shift, and go to state 134
@@ -4945,11 +4950,11 @@ State 296
   117                    | TOK_IDENTIFIER . TOK_ASSIGN assignmentstatement
   135 declarationstatement: TOK_IDENTIFIER . TOK_LESS datatype TOK_GREATER identifier
   139 declarator: TOK_IDENTIFIER . TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER
-  184 postdecrement: TOK_IDENTIFIER . TOK_ADDADD
-  185              | TOK_IDENTIFIER . TOK_SUBSUB
-  189 instancemethodcall: TOK_IDENTIFIER . TOK_DOT methodcall
-  190 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
-  192 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
+  186 postdecrement: TOK_IDENTIFIER . TOK_ADDADD
+  187              | TOK_IDENTIFIER . TOK_SUBSUB
+  191 instancemethodcall: TOK_IDENTIFIER . TOK_DOT methodcall
+  192 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  194 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
 
     TOK_LPAREN     shift, and go to state 165
     TOK_DOT        shift, and go to state 166
@@ -5012,7 +5017,7 @@ State 302
 
 State 303
 
-  183 throwstate: TOK_THROW . TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+  185 throwstate: TOK_THROW . TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 
     TOK_NEW  shift, and go to state 340
 
@@ -5026,8 +5031,8 @@ State 304
 
 State 305
 
-  181 trycatchblock: TOK_TRY . TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-  182              | TOK_TRY . TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+  181 trycatchblock: TOK_TRY . TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+  182              | TOK_TRY . TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 
     TOK_LBRACE  shift, and go to state 342
 
@@ -5207,8 +5212,8 @@ State 322
 State 323
 
   140 declarator: fieldreference .
-  188 instancemethodcall: fieldreference . TOK_DOT methodcall
-  193 fieldreference: fieldreference . TOK_DOT TOK_IDENTIFIER
+  190 instancemethodcall: fieldreference . TOK_DOT methodcall
+  195 fieldreference: fieldreference . TOK_DOT TOK_IDENTIFIER
 
     TOK_DOT  shift, and go to state 206
 
@@ -5385,7 +5390,7 @@ State 332
 
 State 333
 
-  191 methodcall: methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument . TOK_RPAREN
+  193 methodcall: methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument . TOK_RPAREN
 
     TOK_RPAREN  shift, and go to state 355
 
@@ -5517,7 +5522,7 @@ State 339
 
 State 340
 
-  183 throwstate: TOK_THROW TOK_NEW . TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+  185 throwstate: TOK_THROW TOK_NEW . TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
 
     TOK_IDENTIFIER  shift, and go to state 364
 
@@ -5531,8 +5536,8 @@ State 341
 
 State 342
 
-  181 trycatchblock: TOK_TRY TOK_LBRACE . block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-  182              | TOK_TRY TOK_LBRACE . block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+  181 trycatchblock: TOK_TRY TOK_LBRACE . block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+  182              | TOK_TRY TOK_LBRACE . block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 
     TOK_IDENTIFIER  shift, and go to state 296
     TOK_CONTINUE    shift, and go to state 297
@@ -5725,9 +5730,9 @@ State 354
 
 State 355
 
-  191 methodcall: methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN .
+  193 methodcall: methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN .
 
-    $default  reduce using rule 191 (methodcall)
+    $default  reduce using rule 193 (methodcall)
 
 
 State 356
@@ -5872,7 +5877,7 @@ State 363
 
 State 364
 
-  183 throwstate: TOK_THROW TOK_NEW TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  185 throwstate: TOK_THROW TOK_NEW TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
 
     TOK_LPAREN  shift, and go to state 378
 
@@ -5886,8 +5891,8 @@ State 365
 
 State 366
 
-  181 trycatchblock: TOK_TRY TOK_LBRACE block . TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-  182              | TOK_TRY TOK_LBRACE block . TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+  181 trycatchblock: TOK_TRY TOK_LBRACE block . TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+  182              | TOK_TRY TOK_LBRACE block . TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 
     TOK_RBRACE  shift, and go to state 379
 
@@ -6113,7 +6118,7 @@ State 377
 
 State 378
 
-  183 throwstate: TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN . argument TOK_RPAREN
+  185 throwstate: TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN . argument TOK_RPAREN
 
     TOK_IDENTIFIER  shift, and go to state 173
     TOK_INTVAL      shift, and go to state 134
@@ -6141,8 +6146,8 @@ State 378
 
 State 379
 
-  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE . TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE . TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE . TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE . TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 
     TOK_CATCH  shift, and go to state 389
 
@@ -6293,15 +6298,15 @@ State 387
 
 State 388
 
-  183 throwstate: TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument . TOK_RPAREN
+  185 throwstate: TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument . TOK_RPAREN
 
     TOK_RPAREN  shift, and go to state 404
 
 
 State 389
 
-  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH . TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH . TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH . TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH . TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 
     TOK_LPAREN  shift, and go to state 405
 
@@ -6501,38 +6506,33 @@ State 403
 
 State 404
 
-  183 throwstate: TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN .
+  185 throwstate: TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN .
 
-    $default  reduce using rule 183 (throwstate)
+    $default  reduce using rule 185 (throwstate)
 
 
 State 405
 
-  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN . declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN . declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN . exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN . exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 
     TOK_IDENTIFIER  shift, and go to state 423
-    TOK_BOOLEAN     shift, and go to state 78
-    TOK_DOUBLE      shift, and go to state 79
-    TOK_INT         shift, and go to state 80
-    TOK_FLOAT       shift, and go to state 82
 
-    datatype              go to state 424
-    declarationstatement  go to state 425
+    exceptionname  go to state 424
 
 
 State 406
 
   152 whileloop: TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
 
-    TOK_RBRACE  shift, and go to state 426
+    TOK_RBRACE  shift, and go to state 425
 
 
 State 407
 
   155 enhancedfor: TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN . TOK_LBRACE block TOK_RBRACE
 
-    TOK_LBRACE  shift, and go to state 427
+    TOK_LBRACE  shift, and go to state 426
 
 
 State 408
@@ -6544,11 +6544,11 @@ State 408
   115                    | TOK_IDENTIFIER . TOK_SUBASSIGN expression
   116                    | TOK_IDENTIFIER . TOK_ASSIGN initializer
   117                    | TOK_IDENTIFIER . TOK_ASSIGN assignmentstatement
-  184 postdecrement: TOK_IDENTIFIER . TOK_ADDADD
-  185              | TOK_IDENTIFIER . TOK_SUBSUB
-  189 instancemethodcall: TOK_IDENTIFIER . TOK_DOT methodcall
-  190 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
-  192 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
+  186 postdecrement: TOK_IDENTIFIER . TOK_ADDADD
+  187              | TOK_IDENTIFIER . TOK_SUBSUB
+  191 instancemethodcall: TOK_IDENTIFIER . TOK_DOT methodcall
+  192 methodcall: TOK_IDENTIFIER . TOK_LPAREN argument TOK_RPAREN
+  194 fieldreference: TOK_IDENTIFIER . TOK_DOT TOK_IDENTIFIER
 
     TOK_LPAREN     shift, and go to state 165
     TOK_DOT        shift, and go to state 166
@@ -6567,7 +6567,7 @@ State 409
   159 forupdate: expressionstatement .
   160          | expressionstatement . TOK_COMMA forupdate
 
-    TOK_COMMA  shift, and go to state 428
+    TOK_COMMA  shift, and go to state 427
 
     $default  reduce using rule 159 (forupdate)
 
@@ -6576,13 +6576,13 @@ State 410
 
   154 forloop: TOK_FOR TOK_LPAREN forinit TOK_SEMI expression TOK_SEMI forupdate . TOK_RPAREN TOK_LBRACE block TOK_RBRACE
 
-    TOK_RPAREN  shift, and go to state 429
+    TOK_RPAREN  shift, and go to state 428
 
 
 State 411
 
-  188 instancemethodcall: fieldreference . TOK_DOT methodcall
-  193 fieldreference: fieldreference . TOK_DOT TOK_IDENTIFIER
+  190 instancemethodcall: fieldreference . TOK_DOT methodcall
+  195 fieldreference: fieldreference . TOK_DOT TOK_IDENTIFIER
 
     TOK_DOT  shift, and go to state 206
 
@@ -6611,7 +6611,7 @@ State 412
   179 case: expression .
   180     | expression . TOK_COMMA case
 
-    TOK_COMMA    shift, and go to state 430
+    TOK_COMMA    shift, and go to state 429
     TOK_OR       shift, and go to state 186
     TOK_AND      shift, and go to state 187
     TOK_BITOR    shift, and go to state 188
@@ -6700,14 +6700,14 @@ State 419
     TOK_TRY         shift, and go to state 305
     TOK_FLOAT       shift, and go to state 82
     TOK_WHILE       shift, and go to state 306
-    TOK_LBRACE      shift, and go to state 431
+    TOK_LBRACE      shift, and go to state 430
     TOK_SUBSUB      shift, and go to state 174
     TOK_ADDADD      shift, and go to state 175
 
     $default  reduce using rule 69 (block)
 
     datatype                 go to state 307
-    block                    go to state 432
+    block                    go to state 431
     statement                go to state 309
     expressionstatement      go to state 310
     assignmentstatement      go to state 179
@@ -6739,13 +6739,13 @@ State 420
 
     TOK_IDENTIFIER  shift, and go to state 408
     TOK_THROW       shift, and go to state 303
-    TOK_LBRACE      shift, and go to state 433
+    TOK_LBRACE      shift, and go to state 432
     TOK_SUBSUB      shift, and go to state 174
     TOK_ADDADD      shift, and go to state 175
 
-    expressionstatement  go to state 434
+    expressionstatement  go to state 433
     assignmentstatement  go to state 179
-    throwstate           go to state 435
+    throwstate           go to state 434
     postdecrement        go to state 180
     predecrement         go to state 181
     instancemethodcall   go to state 182
@@ -6776,7 +6776,7 @@ State 421
   110           | expression . TOK_RSHIFTZ expression
   153 dowhileloop: TOK_DO TOK_LBRACE block TOK_RBRACE TOK_WHILE TOK_LPAREN expression . TOK_RPAREN TOK_SEMI
 
-    TOK_RPAREN   shift, and go to state 436
+    TOK_RPAREN   shift, and go to state 435
     TOK_OR       shift, and go to state 186
     TOK_AND      shift, and go to state 187
     TOK_BITOR    shift, and go to state 188
@@ -6807,40 +6807,30 @@ State 422
 
 State 423
 
-   67 datatype: TOK_IDENTIFIER .
-  135 declarationstatement: TOK_IDENTIFIER . TOK_LESS datatype TOK_GREATER identifier
+  183 exceptionname: TOK_IDENTIFIER .
+  184              | TOK_IDENTIFIER . TOK_BITOR exceptionname
 
-    TOK_LESS  shift, and go to state 437
+    TOK_BITOR  shift, and go to state 436
 
-    $default  reduce using rule 67 (datatype)
+    $default  reduce using rule 183 (exceptionname)
 
 
 State 424
 
-  134 declarationstatement: datatype . identifier
+  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname . TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname . TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 
-    TOK_IDENTIFIER  shift, and go to state 209
-    TOK_LBRACKET    shift, and go to state 210
-
-    identifier  go to state 116
+    TOK_IDENTIFIER  shift, and go to state 437
 
 
 State 425
-
-  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement . TOK_RPAREN TOK_LBRACE block TOK_RBRACE
-  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement . TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
-
-    TOK_RPAREN  shift, and go to state 438
-
-
-State 426
 
   152 whileloop: TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
 
     $default  reduce using rule 152 (whileloop)
 
 
-State 427
+State 426
 
   155 enhancedfor: TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE . block TOK_RBRACE
 
@@ -6865,7 +6855,7 @@ State 427
     $default  reduce using rule 69 (block)
 
     datatype                 go to state 307
-    block                    go to state 439
+    block                    go to state 438
     statement                go to state 309
     expressionstatement      go to state 310
     assignmentstatement      go to state 179
@@ -6889,7 +6879,7 @@ State 427
     fieldreference           go to state 323
 
 
-State 428
+State 427
 
   160 forupdate: expressionstatement TOK_COMMA . forupdate
 
@@ -6899,7 +6889,7 @@ State 428
 
     expressionstatement  go to state 409
     assignmentstatement  go to state 179
-    forupdate            go to state 440
+    forupdate            go to state 439
     postdecrement        go to state 180
     predecrement         go to state 181
     instancemethodcall   go to state 182
@@ -6907,14 +6897,14 @@ State 428
     fieldreference       go to state 411
 
 
-State 429
+State 428
 
   154 forloop: TOK_FOR TOK_LPAREN forinit TOK_SEMI expression TOK_SEMI forupdate TOK_RPAREN . TOK_LBRACE block TOK_RBRACE
 
-    TOK_LBRACE  shift, and go to state 441
+    TOK_LBRACE  shift, and go to state 440
 
 
-State 430
+State 429
 
   180 case: expression TOK_COMMA . case
 
@@ -6928,13 +6918,69 @@ State 430
     TOK_BITNEG      shift, and go to state 142
 
     expression      go to state 412
-    case            go to state 442
+    case            go to state 441
     fieldreference  go to state 172
+
+
+State 430
+
+  175 switchblockstate: switchlabel TOK_COLON TOK_LBRACE . block TOK_RBRACE
+
+    TOK_IDENTIFIER  shift, and go to state 296
+    TOK_CONTINUE    shift, and go to state 297
+    TOK_FOR         shift, and go to state 298
+    TOK_SWITCH      shift, and go to state 299
+    TOK_BOOLEAN     shift, and go to state 78
+    TOK_DO          shift, and go to state 300
+    TOK_IF          shift, and go to state 301
+    TOK_BREAK       shift, and go to state 302
+    TOK_DOUBLE      shift, and go to state 79
+    TOK_THROW       shift, and go to state 303
+    TOK_RETURN      shift, and go to state 304
+    TOK_INT         shift, and go to state 80
+    TOK_TRY         shift, and go to state 305
+    TOK_FLOAT       shift, and go to state 82
+    TOK_WHILE       shift, and go to state 306
+    TOK_SUBSUB      shift, and go to state 174
+    TOK_ADDADD      shift, and go to state 175
+
+    $default  reduce using rule 69 (block)
+
+    datatype                 go to state 307
+    block                    go to state 442
+    statement                go to state 309
+    expressionstatement      go to state 310
+    assignmentstatement      go to state 179
+    controlflowstatement     go to state 311
+    declarationstatement     go to state 312
+    declarator               go to state 85
+    initializationstatement  go to state 313
+    whileloop                go to state 314
+    dowhileloop              go to state 315
+    forloop                  go to state 316
+    enhancedfor              go to state 317
+    ifstatement              go to state 318
+    ifelsestatement          go to state 319
+    switchstatement          go to state 320
+    trycatchblock            go to state 321
+    throwstate               go to state 322
+    postdecrement            go to state 180
+    predecrement             go to state 181
+    instancemethodcall       go to state 182
+    methodcall               go to state 183
+    fieldreference           go to state 323
 
 
 State 431
 
-  175 switchblockstate: switchlabel TOK_COLON TOK_LBRACE . block TOK_RBRACE
+  176 switchblockstate: switchlabel TOK_COLON block .
+
+    $default  reduce using rule 176 (switchblockstate)
+
+
+State 432
+
+  171 switchrule: switchlabel TOK_LAMBDA TOK_LBRACE . block TOK_RBRACE
 
     TOK_IDENTIFIER  shift, and go to state 296
     TOK_CONTINUE    shift, and go to state 297
@@ -6981,119 +7027,59 @@ State 431
     fieldreference           go to state 323
 
 
-State 432
-
-  176 switchblockstate: switchlabel TOK_COLON block .
-
-    $default  reduce using rule 176 (switchblockstate)
-
-
 State 433
 
-  171 switchrule: switchlabel TOK_LAMBDA TOK_LBRACE . block TOK_RBRACE
+  170 switchrule: switchlabel TOK_LAMBDA expressionstatement . TOK_SEMI
 
-    TOK_IDENTIFIER  shift, and go to state 296
-    TOK_CONTINUE    shift, and go to state 297
-    TOK_FOR         shift, and go to state 298
-    TOK_SWITCH      shift, and go to state 299
-    TOK_BOOLEAN     shift, and go to state 78
-    TOK_DO          shift, and go to state 300
-    TOK_IF          shift, and go to state 301
-    TOK_BREAK       shift, and go to state 302
-    TOK_DOUBLE      shift, and go to state 79
-    TOK_THROW       shift, and go to state 303
-    TOK_RETURN      shift, and go to state 304
-    TOK_INT         shift, and go to state 80
-    TOK_TRY         shift, and go to state 305
-    TOK_FLOAT       shift, and go to state 82
-    TOK_WHILE       shift, and go to state 306
-    TOK_SUBSUB      shift, and go to state 174
-    TOK_ADDADD      shift, and go to state 175
-
-    $default  reduce using rule 69 (block)
-
-    datatype                 go to state 307
-    block                    go to state 444
-    statement                go to state 309
-    expressionstatement      go to state 310
-    assignmentstatement      go to state 179
-    controlflowstatement     go to state 311
-    declarationstatement     go to state 312
-    declarator               go to state 85
-    initializationstatement  go to state 313
-    whileloop                go to state 314
-    dowhileloop              go to state 315
-    forloop                  go to state 316
-    enhancedfor              go to state 317
-    ifstatement              go to state 318
-    ifelsestatement          go to state 319
-    switchstatement          go to state 320
-    trycatchblock            go to state 321
-    throwstate               go to state 322
-    postdecrement            go to state 180
-    predecrement             go to state 181
-    instancemethodcall       go to state 182
-    methodcall               go to state 183
-    fieldreference           go to state 323
+    TOK_SEMI  shift, and go to state 444
 
 
 State 434
 
-  170 switchrule: switchlabel TOK_LAMBDA expressionstatement . TOK_SEMI
+  172 switchrule: switchlabel TOK_LAMBDA throwstate . TOK_SEMI
 
     TOK_SEMI  shift, and go to state 445
 
 
 State 435
 
-  172 switchrule: switchlabel TOK_LAMBDA throwstate . TOK_SEMI
+  153 dowhileloop: TOK_DO TOK_LBRACE block TOK_RBRACE TOK_WHILE TOK_LPAREN expression TOK_RPAREN . TOK_SEMI
 
     TOK_SEMI  shift, and go to state 446
 
 
 State 436
 
-  153 dowhileloop: TOK_DO TOK_LBRACE block TOK_RBRACE TOK_WHILE TOK_LPAREN expression TOK_RPAREN . TOK_SEMI
+  184 exceptionname: TOK_IDENTIFIER TOK_BITOR . exceptionname
 
-    TOK_SEMI  shift, and go to state 447
+    TOK_IDENTIFIER  shift, and go to state 423
+
+    exceptionname  go to state 447
 
 
 State 437
 
-  135 declarationstatement: TOK_IDENTIFIER TOK_LESS . datatype TOK_GREATER identifier
+  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER . TOK_RPAREN TOK_LBRACE block TOK_RBRACE
+  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER . TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 
-    TOK_IDENTIFIER  shift, and go to state 127
-    TOK_BOOLEAN     shift, and go to state 78
-    TOK_DOUBLE      shift, and go to state 79
-    TOK_INT         shift, and go to state 80
-    TOK_FLOAT       shift, and go to state 82
-
-    datatype  go to state 448
+    TOK_RPAREN  shift, and go to state 448
 
 
 State 438
 
-  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN . TOK_LBRACE block TOK_RBRACE
-  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN . TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+  155 enhancedfor: TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
 
-    TOK_LBRACE  shift, and go to state 449
+    TOK_RBRACE  shift, and go to state 449
 
 
 State 439
-
-  155 enhancedfor: TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
-
-    TOK_RBRACE  shift, and go to state 450
-
-
-State 440
 
   160 forupdate: expressionstatement TOK_COMMA forupdate .
 
     $default  reduce using rule 160 (forupdate)
 
 
-State 441
+State 440
 
   154 forloop: TOK_FOR TOK_LPAREN forinit TOK_SEMI expression TOK_SEMI forupdate TOK_RPAREN TOK_LBRACE . block TOK_RBRACE
 
@@ -7118,7 +7104,7 @@ State 441
     $default  reduce using rule 69 (block)
 
     datatype                 go to state 307
-    block                    go to state 451
+    block                    go to state 450
     statement                go to state 309
     expressionstatement      go to state 310
     assignmentstatement      go to state 179
@@ -7142,59 +7128,95 @@ State 441
     fieldreference           go to state 323
 
 
-State 442
+State 441
 
   180 case: expression TOK_COMMA case .
 
     $default  reduce using rule 180 (case)
 
 
-State 443
+State 442
 
   175 switchblockstate: switchlabel TOK_COLON TOK_LBRACE block . TOK_RBRACE
+
+    TOK_RBRACE  shift, and go to state 451
+
+
+State 443
+
+  171 switchrule: switchlabel TOK_LAMBDA TOK_LBRACE block . TOK_RBRACE
 
     TOK_RBRACE  shift, and go to state 452
 
 
 State 444
 
-  171 switchrule: switchlabel TOK_LAMBDA TOK_LBRACE block . TOK_RBRACE
-
-    TOK_RBRACE  shift, and go to state 453
-
-
-State 445
-
   170 switchrule: switchlabel TOK_LAMBDA expressionstatement TOK_SEMI .
 
     $default  reduce using rule 170 (switchrule)
 
 
-State 446
+State 445
 
   172 switchrule: switchlabel TOK_LAMBDA throwstate TOK_SEMI .
 
     $default  reduce using rule 172 (switchrule)
 
 
-State 447
+State 446
 
   153 dowhileloop: TOK_DO TOK_LBRACE block TOK_RBRACE TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_SEMI .
 
     $default  reduce using rule 153 (dowhileloop)
 
 
+State 447
+
+  184 exceptionname: TOK_IDENTIFIER TOK_BITOR exceptionname .
+
+    $default  reduce using rule 184 (exceptionname)
+
+
 State 448
 
-  135 declarationstatement: TOK_IDENTIFIER TOK_LESS datatype . TOK_GREATER identifier
+  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN . TOK_LBRACE block TOK_RBRACE
+  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN . TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 
-    TOK_GREATER  shift, and go to state 454
+    TOK_LBRACE  shift, and go to state 453
 
 
 State 449
 
-  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE . block TOK_RBRACE
-  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE . block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+  155 enhancedfor: TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
+
+    $default  reduce using rule 155 (enhancedfor)
+
+
+State 450
+
+  154 forloop: TOK_FOR TOK_LPAREN forinit TOK_SEMI expression TOK_SEMI forupdate TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
+
+    TOK_RBRACE  shift, and go to state 454
+
+
+State 451
+
+  175 switchblockstate: switchlabel TOK_COLON TOK_LBRACE block TOK_RBRACE .
+
+    $default  reduce using rule 175 (switchblockstate)
+
+
+State 452
+
+  171 switchrule: switchlabel TOK_LAMBDA TOK_LBRACE block TOK_RBRACE .
+
+    $default  reduce using rule 171 (switchrule)
+
+
+State 453
+
+  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE . block TOK_RBRACE
+  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE . block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 
     TOK_IDENTIFIER  shift, and go to state 296
     TOK_CONTINUE    shift, and go to state 297
@@ -7241,79 +7263,41 @@ State 449
     fieldreference           go to state 323
 
 
-State 450
-
-  155 enhancedfor: TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
-
-    $default  reduce using rule 155 (enhancedfor)
-
-
-State 451
-
-  154 forloop: TOK_FOR TOK_LPAREN forinit TOK_SEMI expression TOK_SEMI forupdate TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
-
-    TOK_RBRACE  shift, and go to state 456
-
-
-State 452
-
-  175 switchblockstate: switchlabel TOK_COLON TOK_LBRACE block TOK_RBRACE .
-
-    $default  reduce using rule 175 (switchblockstate)
-
-
-State 453
-
-  171 switchrule: switchlabel TOK_LAMBDA TOK_LBRACE block TOK_RBRACE .
-
-    $default  reduce using rule 171 (switchrule)
-
-
 State 454
-
-  135 declarationstatement: TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER . identifier
-
-    TOK_IDENTIFIER  shift, and go to state 209
-    TOK_LBRACKET    shift, and go to state 210
-
-    identifier  go to state 264
-
-
-State 455
-
-  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
-  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block . TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
-
-    TOK_RBRACE  shift, and go to state 457
-
-
-State 456
 
   154 forloop: TOK_FOR TOK_LPAREN forinit TOK_SEMI expression TOK_SEMI forupdate TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
 
     $default  reduce using rule 154 (forloop)
 
 
-State 457
+State 455
 
-  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
-  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE . TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block . TOK_RBRACE
+  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block . TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 
-    TOK_FINALLY  shift, and go to state 458
+    TOK_RBRACE  shift, and go to state 456
+
+
+State 456
+
+  181 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE .
+  182              | TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE . TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+
+    TOK_FINALLY  shift, and go to state 457
 
     $default  reduce using rule 181 (trycatchblock)
 
 
+State 457
+
+  182 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY . TOK_LBRACE block TOK_RBRACE
+
+    TOK_LBRACE  shift, and go to state 458
+
+
 State 458
 
-  182 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY . TOK_LBRACE block TOK_RBRACE
-
-    TOK_LBRACE  shift, and go to state 459
-
-
-State 459
-
-  182 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE . block TOK_RBRACE
+  182 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE . block TOK_RBRACE
 
     TOK_IDENTIFIER  shift, and go to state 296
     TOK_CONTINUE    shift, and go to state 297
@@ -7336,7 +7320,7 @@ State 459
     $default  reduce using rule 69 (block)
 
     datatype                 go to state 307
-    block                    go to state 460
+    block                    go to state 459
     statement                go to state 309
     expressionstatement      go to state 310
     assignmentstatement      go to state 179
@@ -7360,15 +7344,15 @@ State 459
     fieldreference           go to state 323
 
 
+State 459
+
+  182 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block . TOK_RBRACE
+
+    TOK_RBRACE  shift, and go to state 460
+
+
 State 460
 
-  182 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block . TOK_RBRACE
-
-    TOK_RBRACE  shift, and go to state 461
-
-
-State 461
-
-  182 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE .
+  182 trycatchblock: TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE .
 
     $default  reduce using rule 182 (trycatchblock)
