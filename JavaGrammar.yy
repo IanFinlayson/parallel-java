@@ -28,7 +28,9 @@
 		ptInitializationStatement,
 		ptMethod,
 		ptAbstractMethod,
-		ptConstructorInfo,
+		ptAbstractMethodLabel,
+		ptMethodLabel,
+		ptConstructorLabel,
 		ptStatement,
 		ptArgument,
 		ptInstanceMethodCall,
@@ -290,7 +292,7 @@ interfacedec {
 }
 |interfacedec typedec {
 	$$ = new Node(ptTypeDec);
-	$$->attach_child(*(new Node(ptEmpty, 0, 0, "interface placeholder")));
+	$$->attach_child(*$1);
 	$$->attach_child(*$2);
 }
 ;
@@ -469,13 +471,13 @@ interfacebody:
 
 abstractmethod:
 datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI {
-	$$ = new Node(ptAbstractMethod, 0, 0, $2);
+	$$ = new Node(ptAbstractMethodLabel, 0, 0, $2);
 	$$->attach_child(*$1);
 	$1->attach_child(*$6);
 	$$->attach_child(*$4);
 }
 |TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI {
-	$$ = new Node(ptAbstractMethod, 0, 0, $2);
+	$$ = new Node(ptAbstractMethodLabel, 0, 0, $2);
 	Node* _ret = new Node(TOK_VOID);
 	_ret->attach_child(*$6);
 	$$->attach_child(*_ret);
@@ -487,29 +489,45 @@ method:
 mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
 	//have to include the throwsclause later
 	$$ = new Node(ptMethod, 0, 0, $3);
-	$$->attach_child(*$2);
-	$2->attach_child(*$5);
-	$2->attach_child(*$1);
+	Node* _m1 = new Node(ptMethodLabel);
+	_m1->attach_child(*$1);
+	_m1->attach_child(*$2);
+	Node* _m2 = new Node(ptMethodLabel);
+	_m2->attach_child(*_m1);
+	_m2->attach_child(*$5);
+	Node* _m3 = new Node(ptMethodLabel);
+	_m3->attach_child(*_m2);
+	_m3->attach_child(*$7);
+	$$->attach_child(*_m3);
 	$$->attach_child(*$9);
 }
 |mod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptMethod, 0, 0, $3);
-	Node* _rt = new Node(TOK_VOID);
-	_rt->attach_child(*$5);
-	_rt->attach_child(*$1);
-	$$->attach_child(*_rt);
+	Node* _m1 = new Node(ptMethodLabel);
+	_m1->attach_child(*$1);
+	_m1->attach_child(*(new Node(TOK_VOID)));
+	Node* _m2 = new Node(ptMethodLabel);
+	_m2->attach_child(*_m1);
+	_m2->attach_child(*$5);
+	Node* _m3 = new Node(ptMethodLabel);
+	_m3->attach_child(*_m2);
+	_m3->attach_child(*$7);
+	$$->attach_child(*_m3);
 	$$->attach_child(*$9);
 }
 |mod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptMethod, 0, 0, $2);
-	Node* _const = new Node(ptConstructorInfo);
-	_const->attach_child(*$4);
-	_const->attach_child(*$1);
-	$$->attach_child(*_const);
+	Node* _c1 = new Node(ptConstructorLabel);
+	_c1->attach_child(*$1);
+	_c1->attach_child(*$4);
+	Node* _c2 = new Node(ptConstructorLabel);
+	_c2->attach_child(*_c1);
+	_c2->attach_child(*$6);
+	$$->attach_child(*_c2);
 	$$->attach_child(*$8);
 }
 |mod abstractmethod {
-	$$ = new Node(ptMethod);
+	$$ = new Node(ptAbstractMethod);
 	$$->attach_child(*$1);
 	$$->attach_child(*$2);
 }
@@ -620,7 +638,7 @@ expressionstatement TOK_SEMI {
 }
 |throwstate TOK_SEMI {
 	$$ = new Node(ptStatement);
-	$$->attach_child(*(new Node(ptEmpty, 0, 0, "placeholder throwstate")));
+	$$->attach_child(*$1);
 }
 ;
 
