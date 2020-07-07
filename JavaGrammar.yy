@@ -2,6 +2,11 @@
 	#include <cstdlib>
 	#include "Node/Node.cpp"
 
+	/*
+		This enumerator is exclusively for the parse tree.
+		Each node is denoted by a value from this enumerator or, 
+		in some special cases, a token value like TOK_IDENTIFIER.
+	*/
 	enum ParseTreeNode {
 		ptEmpty,
 		ptPackageContainer,
@@ -228,16 +233,20 @@
 
 program:
 packagedec importstatements typedec {
+	// root is always a package (but the package can be no package)
 	root = $1;
-	Node* _im = new Node(ptImports);
+	Node* _im = new Node(ptImports); //import section node
 	_im->attach_child(*$2);
+	//right child of root is the import section
 	root->attach_child(*_im);
+	//right child of import section is the rest of the program starting with a class definition
 	_im->attach_child(*$3);
 }
 ;
 
 packagedec:
 %empty {
+	//empty package section
 	$$ = new Node(ptPackageContainer);
 	$$->attach_child(*(new Node(ptEmpty)));
 }
@@ -283,7 +292,6 @@ TOK_IDENTIFIER {
 typedec:
 interfacedec {
 	$$ = new Node(ptTypeDec);
-	//$$->attach_child(*(new Node(ptEmpty, 0, 0, "interface placeholder")));
 	$$->attach_child(*$1);
 }
 |classdec {
@@ -432,7 +440,6 @@ classbody:
 |method classbody {
 	$$ = new Node(ptClassBody);
 	$$->attach_child(*$1);
-	//$$->attach_child(*(new Node(ptEmpty, 0, 0, "method placeholder")));
 	$$->attach_child(*$2);
 }
 |classdec classbody {
@@ -492,7 +499,6 @@ datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_
 
 method:
 mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
-	//have to include the throwsclause later
 	$$ = new Node(ptMethod, 0, 0, $3);
 	Node* _m1 = new Node(ptMethodLabel);
 	_m1->attach_child(*$1);
@@ -637,7 +643,6 @@ expressionstatement TOK_SEMI {
 }
 |controlflowstatement {
 	$$ = new Node(ptStatement);
-	//$$->attach_child(*(new Node(ptEmpty, 0, 0, "placeholder controlflow")));
 	$$->attach_child(*$1);
 }
 |declarationstatement TOK_SEMI {
@@ -697,11 +702,9 @@ TOK_LPAREN expression TOK_RPAREN {
 	$$ = new Node(TOK_IDENTIFIER, 0, 0, $1);
 }
 |fieldreference {
-	//$$ = new Node(ptEmpty, 0, 0, "fieldreference placeholder");
 	$$ = $1;
 }
 |TOK_IDENTIFIER TOK_LBRACKET argument TOK_RBRACKET {
-	//$$ = new Node(ptEmpty, 0, 0, "arrayaccess placeholder");
 	$$ = new Node(ptArrayAccess, 0, 0, $1);
 	$$->attach_child(*$3);
 }
@@ -1000,7 +1003,6 @@ declarator TOK_ASSIGN initializer {
 	Node* _is = new Node(ptInitializationStatement);
 	_is->attach_child(*$1);
 	_is->attach_child(*$3);
-	//_is->attach_child(*(new Node(ptEmpty, 0, 0, "initializer placeholder")));
 	$$->attach_child(*_is);
 }
 ;
@@ -1305,12 +1307,8 @@ TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER {
 
 %%
 
-//Node* root;
-
 int main ()
 {
-	//root = new Node(0, 0, 0, "k");
-	//printf("%s\n", root->get_tree_string(0).data());
 	yyparse();
 	root->print();
 	return 0;
