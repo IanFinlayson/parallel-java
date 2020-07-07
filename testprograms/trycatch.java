@@ -6,7 +6,7 @@ public class trycatch{
 		try{
 			File file = new File(args[0]);
 			Scanner scanner = new Scanner(file);
-		}catch(FileNotFoundException e){
+		}catch(FileNotFoundException | NullPointerException e){
 			
 		}
 

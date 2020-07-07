@@ -64,7 +64,10 @@
 		ptSwitchState,
 		ptSwitchLabel,	
 		ptCase,
-		ptThrowState
+		ptThrowState,
+		ptYield,
+		ptAnonymousClass,
+		ptParallelBlock
 	};
 
 	extern int yylex();
@@ -156,6 +159,7 @@
 %token TOK_NATIVE 247
 %token TOK_SUPER 248
 %token TOK_WHILE 249
+%token TOK_YIELD 341
 
 //punctuation
 %token TOK_LBRACKET 300
@@ -217,6 +221,7 @@
 %type <node> whileloop dowhileloop forloop enhancedfor forinit forupdate ifstatement ifelsestatement
 %type <node> throwsclause switchstatement switchblock switchrules switchrule switchblockstates switchblockstate 
 %type <node> switchlabel case throwstate
+%type <node> parallelblock
 
 %%
 
@@ -533,6 +538,13 @@ mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause 
 }
 ;
 
+parallelblock:
+TOK_IDENTIFIER TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptParallelBlock);
+	$$->attach_child(*$3);
+}
+;
+
 throwsclause:
 %empty {
 	$$ = new Node(ptEmpty);
@@ -609,6 +621,10 @@ block:
 	$$ = new Node(ptEmpty);
 }
 |statement block {
+	$$ = $1;
+	$$->attach_child(*$2);
+}
+|parallelblock block {
 	$$ = $1;
 	$$->attach_child(*$2);
 }
@@ -860,9 +876,13 @@ whileloop {
 |TOK_CONTINUE TOK_SEMI {
 	$$ = new Node(TOK_CONTINUE);
 }
-|TOK_RETURN TOK_IDENTIFIER TOK_SEMI {
+|TOK_RETURN expression TOK_SEMI {
 	$$ = new Node(ptReturn);
-	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $2)));
+	$$->attach_child(*$2);
+}
+|TOK_YIELD expression TOK_SEMI {
+	$$ = new Node(ptYield);
+	$$->attach_child(*$2);
 }
 ;
 
@@ -955,6 +975,11 @@ expression {
 	$$ = new Node(ptInstanceInitializer);
 	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $2)));
 	$$->attach_child(*$4);
+}
+|TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_LBRACE classbody TOK_RBRACE {
+	$$ = new Node(ptAnonymousClass, 0, 0, $2);
+	$$->attach_child(*$4);
+	$$->attach_child(*$7);
 }
 |methodcall {
 	$$ = $1;
@@ -1123,6 +1148,11 @@ switchlabel TOK_LAMBDA expressionstatement TOK_SEMI {
 	$$->attach_child(*$1);
 	$$->attach_child(*$3);
 }
+|switchlabel TOK_LAMBDA expression TOK_SEMI {
+	$$ = new Node(ptSwitchRule);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
 |switchlabel TOK_LAMBDA TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptSwitchRule);
 	$$->attach_child(*$1);
@@ -1146,6 +1176,7 @@ switchblockstate {
 	$$->attach_child(*$2);
 }
 ;
+
 switchblockstate:
 switchlabel TOK_COLON TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptSwitchState);
@@ -1184,10 +1215,16 @@ expression {
 
 /*fix to catch multiple*/
 trycatchblock:
-TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN 
+TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN 
 TOK_LBRACE block TOK_RBRACE
-|TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+|TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 ;
+
+exceptionname:
+TOK_IDENTIFIER 
+|TOK_IDENTIFIER TOK_BITOR exceptionname
+;
+
 
 throwstate:
 TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN {

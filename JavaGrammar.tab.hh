@@ -44,7 +44,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 76 "JavaGrammar.yy"
+#line 79 "JavaGrammar.yy"
 
 	#include <string>
 	#include <iostream> 
@@ -116,6 +116,7 @@ extern int yydebug;
     TOK_NATIVE = 247,
     TOK_SUPER = 248,
     TOK_WHILE = 249,
+    TOK_YIELD = 341,
     TOK_LBRACKET = 300,
     TOK_RBRACKET = 301,
     TOK_LPAREN = 302,
@@ -164,7 +165,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 81 "JavaGrammar.yy"
+#line 84 "JavaGrammar.yy"
 
 	int iVal;
 	double dVal;
@@ -178,7 +179,7 @@ union YYSTYPE
 	struct Node* node;
 
 
-#line 182 "JavaGrammar.tab.hh"
+#line 183 "JavaGrammar.tab.hh"
 
 };
 typedef union YYSTYPE YYSTYPE;

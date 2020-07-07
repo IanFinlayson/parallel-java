@@ -17,7 +17,7 @@ public class Switch{
 			case 3:
 			case 12:
 				System.out.println("]");
-				break;
+				yield 3;
 			default:
 				{
 					System.out.println("[");
