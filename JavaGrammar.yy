@@ -89,6 +89,7 @@
 %token TOK_NATIVE 247
 %token TOK_SUPER 248
 %token TOK_WHILE 249
+%token TOK_YIELD 341
 
 //punctuation
 %token TOK_LBRACKET 300
@@ -254,6 +255,10 @@ mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause 
 |mod abstractmethod
 ;
 
+parallelblock:
+TOK_IDENTIFIER TOK_LBRACE block TOK_RBRACE
+;
+
 throwsclause:
 %empty
 |TOK_THROWS basicidentifier
@@ -288,6 +293,7 @@ TOK_INT
 block:
 %empty
 |statement block
+|parallelblock block
 ;
 
 statement:
@@ -359,7 +365,8 @@ whileloop
 |switchstatement
 |TOK_BREAK TOK_SEMI
 |TOK_CONTINUE TOK_SEMI
-|TOK_RETURN TOK_IDENTIFIER TOK_SEMI
+|TOK_RETURN expression TOK_SEMI
+|TOK_YIELD expression TOK_SEMI
 ;
 
 identifier:
@@ -390,6 +397,7 @@ expression
 |TOK_LBRACE argument TOK_RBRACE
 |TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE
 |TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN
+|TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_LBRACE classbody TOK_RBRACE
 |methodcall
 |instancemethodcall
 |TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN
@@ -458,6 +466,7 @@ switchrule
 
 switchrule:
 switchlabel TOK_LAMBDA expressionstatement TOK_SEMI
+|switchlabel TOK_LAMBDA expression TOK_SEMI
 |switchlabel TOK_LAMBDA TOK_LBRACE block TOK_RBRACE
 |switchlabel TOK_LAMBDA throwstate TOK_SEMI
 ;
@@ -466,6 +475,7 @@ switchblockstates:
 switchblockstate
 |switchblockstate switchblockstates
 ;
+
 switchblockstate:
 switchlabel TOK_COLON TOK_LBRACE block TOK_RBRACE
 |switchlabel TOK_COLON block
@@ -483,10 +493,16 @@ expression
 
 /*fix to catch multiple*/
 trycatchblock:
-TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN 
+TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN 
 TOK_LBRACE block TOK_RBRACE
-|TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN declarationstatement TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+|TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
 ;
+
+exceptionname:
+TOK_IDENTIFIER 
+|TOK_IDENTIFIER TOK_BITOR exceptionname
+;
+
 
 throwstate:
 TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN 

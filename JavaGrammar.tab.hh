@@ -112,6 +112,7 @@ extern int yydebug;
     TOK_NATIVE = 247,
     TOK_SUPER = 248,
     TOK_WHILE = 249,
+    TOK_YIELD = 341,
     TOK_LBRACKET = 300,
     TOK_RBRACKET = 301,
     TOK_LPAREN = 302,
@@ -175,7 +176,7 @@ union YYSTYPE
 	struct Node* node;
 
 
-#line 179 "JavaGrammar.tab.hh" /* yacc.c:1909  */
+#line 180 "JavaGrammar.tab.hh" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
