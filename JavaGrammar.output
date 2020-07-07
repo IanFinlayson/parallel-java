@@ -507,34 +507,34 @@ Nonterminals, with rules where they appear
     ifelsestatement <node> (144)
         on left: 163 164
         on right: 123
-    switchstatement (145)
+    switchstatement <node> (145)
         on left: 165
         on right: 124
-    switchblock (146)
+    switchblock <node> (146)
         on left: 166 167
         on right: 165
-    switchrules (147)
+    switchrules <node> (147)
         on left: 168 169
         on right: 166 169
-    switchrule (148)
+    switchrule <node> (148)
         on left: 170 171 172
         on right: 168 169
-    switchblockstates (149)
+    switchblockstates <node> (149)
         on left: 173 174
         on right: 167 174
-    switchblockstate (150)
+    switchblockstate <node> (150)
         on left: 175 176
         on right: 173 174
-    switchlabel (151)
+    switchlabel <node> (151)
         on left: 177 178
         on right: 170 171 172 175 176
-    case (152)
+    case <node> (152)
         on left: 179 180
         on right: 177 180
     trycatchblock (153)
         on left: 181 182
         on right: 75
-    throwstate (154)
+    throwstate <node> (154)
         on left: 183
         on right: 76 172
     postdecrement <node> (155)

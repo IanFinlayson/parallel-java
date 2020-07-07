@@ -55,7 +55,14 @@
 		ptIf,
 		ptIfElse,
 		ptReturn,
-		ptThrows
+		ptThrows,
+		ptSwitch,
+		ptSwitchBlock,
+		ptSwitchRule,
+		ptSwitchState,
+		ptSwitchLabel,	
+		ptCase,
+		ptThrowState
 	};
 
 	extern int yylex();
@@ -206,7 +213,8 @@
 %type <node> datastructure assignmentstatement 
 %type <node> controlflowstatement
 %type <node> whileloop dowhileloop forloop enhancedfor forinit forupdate ifstatement ifelsestatement
-%type <node> throwsclause
+%type <node> throwsclause switchstatement switchblock switchrules switchrule switchblockstates switchblockstate 
+%type <node> switchlabel case throwstate
 
 %%
 
@@ -463,17 +471,21 @@ abstractmethod:
 datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI {
 	$$ = new Node(ptAbstractMethod, 0, 0, $2);
 	$$->attach_child(*$1);
+	$1->attach_child(*$6);
 	$$->attach_child(*$4);
 }
 |TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI {
 	$$ = new Node(ptAbstractMethod, 0, 0, $2);
-	$$->attach_child(*(new Node(TOK_VOID)));
+	Node* _ret = new Node(TOK_VOID);
+	_ret->attach_child(*$6);
+	$$->attach_child(*_ret);
 	$$->attach_child(*$4);
 }
 ;
 
 method:
 mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
+	//have to include the throwsclause later
 	$$ = new Node(ptMethod, 0, 0, $3);
 	$$->attach_child(*$2);
 	$2->attach_child(*$5);
@@ -822,7 +834,7 @@ whileloop {
 	$$ = $1;
 }
 |switchstatement {
-	$$ = new Node(ptEmpty, 0, 0, "placeholder switch");
+	$$ = $1;
 }
 |TOK_BREAK TOK_SEMI {
 	$$ = new Node(TOK_BREAK);
@@ -1060,42 +1072,96 @@ ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE {
 
 /*lambda help?*/
 switchstatement:
-TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchblock TOK_RBRACE
+TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchblock TOK_RBRACE {
+	$$ = new Node(ptSwitch);
+	$$->attach_child(*$3);
+	$$->attach_child(*$6);
+}
 ;
 
 switchblock:
-switchrules 
-|switchblockstates
+switchrules {
+	$$ = $1;
+}
+|switchblockstates {
+	$$ = $1;
+}
 ;
 
 switchrules:
-switchrule
-|switchrule switchrules
+switchrule {
+	$$ = new Node(ptSwitchBlock);
+}
+|switchrule switchrules {
+	$$ = new Node(ptSwitchBlock);
+	$$->attach_child(*$1);
+	$$->attach_child(*$2);
+}
 ;
 
 switchrule:
-switchlabel TOK_LAMBDA expressionstatement TOK_SEMI
-|switchlabel TOK_LAMBDA TOK_LBRACE block TOK_RBRACE
-|switchlabel TOK_LAMBDA throwstate TOK_SEMI
+switchlabel TOK_LAMBDA expressionstatement TOK_SEMI {
+	$$ = new Node(ptSwitchRule);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
+|switchlabel TOK_LAMBDA TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptSwitchRule);
+	$$->attach_child(*$1);
+	$$->attach_child(*$4);
+}
+|switchlabel TOK_LAMBDA throwstate TOK_SEMI {
+	$$ = new Node(ptSwitchRule);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
 ;
 
 switchblockstates:
-switchblockstate
-|switchblockstate switchblockstates
+switchblockstate {
+	$$ = new Node(ptSwitchBlock);
+	$$->attach_child(*$1);
+}
+|switchblockstate switchblockstates {
+	$$ = new Node(ptSwitchBlock);
+	$$->attach_child(*$1);
+	$$->attach_child(*$2);
+}
 ;
 switchblockstate:
-switchlabel TOK_COLON TOK_LBRACE block TOK_RBRACE
-|switchlabel TOK_COLON block
+switchlabel TOK_COLON TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptSwitchState);
+	$$->attach_child(*$1);
+	$$->attach_child(*$4);
+}
+|switchlabel TOK_COLON block {
+	$$ = new Node(ptSwitchState);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
 ;
 
 switchlabel:
-TOK_CASE case
-|TOK_DEFAULT 
+TOK_CASE case {
+	$$ = new Node(ptSwitchLabel);
+	$$->attach_child(*$2);
+}
+|TOK_DEFAULT {
+	$$ = new Node(ptSwitchLabel);
+	$$->attach_child(*(new Node(TOK_DEFAULT)));
+}
 ;
 
 case:
-expression 
-|expression TOK_COMMA case
+expression {
+	$$ = new Node(ptCase);
+	$$->attach_child(*$1);
+}
+|expression TOK_COMMA case {
+	$$ = new Node(ptCase);
+	$$->attach_child(*$1);
+	$$->attach_child(*$3);
+}
 ;
 
 /*fix to catch multiple*/
@@ -1106,7 +1172,11 @@ TOK_LBRACE block TOK_RBRACE
 ;
 
 throwstate:
-TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN 
+TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN {
+	$$ = new Node(ptThrowState);
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $3)));
+	$$->attach_child(*$5);
+}
 ;
 
 postdecrement:
