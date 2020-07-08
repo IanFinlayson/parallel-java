@@ -1240,17 +1240,19 @@ int main (int argc, char* argv[])
 {	
 	char* filename;
 	if(argc == 2){
-		filename = argv[0];
+		filename = argv[1];
 	}else{
+		printf("Requires exactly one argument.\n");
 		return 1;
 	}
-	//std::streambuf* buf = std::cin.rdbuf();
-	//std::ifstream file(filename);
-	//std::cin.rdbuf(file.rdbuf());
+	stdin = fopen(filename, "r");
 	yyparse();
 	root->print();
-	dump_tree(*root, filename);
-	//std::cin.rdbuf(buf);
+	std::string new_filename = filename;
+	new_filename = (new_filename.substr(0, new_filename.rfind(".java"))) + "_refactored.java";
+	FILE* file = fopen(new_filename.data(), "w");
+	dump_tree(*root, file);
+	fclose(file);
 	return 0;
 }
 
