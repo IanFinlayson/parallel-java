@@ -32,5 +32,8 @@ class Node{
 		void print();						//prints the string created from get_tree_string()
 
 		void attach_child(Node&);			//attach a new child (from left to right)
+		Node& remove_child(int);			//remove a child and return a reference to it.
+											//If it is the left child that is removed then the right child
+											//becomes the left child.
 
 };

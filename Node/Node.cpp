@@ -79,8 +79,15 @@ void Node::attach_child(Node& child){
 	children.push_back(&child);
 }
 
+Node& Node::remove_child(int index){
+	if(index >= 0 || index < this->get_num_children()){
+		Node& _n = this->get_child(index);
+		children.erase(children.begin() + index);
+		return _n;
+	}
+}
 
-/* left over main from testing
+/*/ left over main from testing
 int main(){
 	Node n1 = Node(3, 3, 54.2, "cool dude");
 	Node n2 = Node(4, 5, 34.3, "not cool dude");
@@ -89,6 +96,7 @@ int main(){
 	n1.attach_child(n2);
 	n1.attach_child(n3);
 	n2.attach_child(n4);
+	n2.attach_child(n2.remove_child(0));
 	printf("%s\n", n1.get_tree_string(0).data());
 	//printf("%d\n", n.get_type());
 	//printf("%f\n", n.get_value());
