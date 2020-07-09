@@ -214,8 +214,10 @@ TOK_IDENTIFIER {
 	$$ = new Node(ptPackage, 0, 0, $1);
 }
 |packagename TOK_DOT TOK_IDENTIFIER {
-	$$ = new Node(ptPackage, 0, 0, $3);
-	$$->attach_child(*$1);
+	//$$ = new Node(ptPackage, 0, 0, $3);
+	//$$->attach_child(*$1);
+	$$ = $1;
+	$$->attach_child(*(new Node(ptPackage, 0, 0, $3)));
 }
 ;
 
