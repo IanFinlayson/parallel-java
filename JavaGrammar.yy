@@ -2,6 +2,7 @@
 	#include <cstdlib>
 	//#include "Node/Node.cpp"
 	//#include "nodeTypes.h"
+	//#include <fstream>
 	#include "Dump/JavaDumper.cpp"
 
 	extern int yylex();
@@ -1250,9 +1251,10 @@ int main (int argc, char* argv[])
 	root->print();
 	std::string new_filename = filename;
 	new_filename = (new_filename.substr(0, new_filename.rfind(".java"))) + "_refactored.java";
-	FILE* file = fopen(new_filename.data(), "w");
-	dump_tree(*root, file);
-	fclose(file);
+	std::ofstream dump_file;
+	dump_file.open(new_filename);
+	dump_tree(*root, &dump_file);
+	dump_file.close();
 	return 0;
 }
 
