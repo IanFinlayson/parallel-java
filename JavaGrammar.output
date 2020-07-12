@@ -544,10 +544,10 @@ Nonterminals, with rules where they appear
     case <node> (154)
         on left: 184 185
         on right: 182 185
-    trycatchblock (155)
+    trycatchblock <node> (155)
         on left: 186 187
         on right: 77
-    exceptionname (156)
+    exceptionname <node> (156)
         on left: 188 189
         on right: 186 187 189
     throwstate <node> (157)
