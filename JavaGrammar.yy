@@ -1,8 +1,8 @@
 %{
-	#include <cstdlib>
 	#include "Node/Node.cpp"
 	#include "nodeTypes.h"
-
+	#include "expandParallel.cpp"
+	#include <cstdlib> 
 	extern int yylex();
 	void yyerror(char const *error);
 
@@ -11,7 +11,8 @@
 
 %code requires{
 	#include <string>
-	#include <iostream> 
+	#include <iostream>	
+	
 }
 
 %union {
@@ -19,7 +20,6 @@
 	double dVal;
 	char stVal[100];
 	bool bVal;
-	//still return float for everything?
 	float fVal;
 	long lVal;
 	short shVal;
@@ -1238,7 +1238,8 @@ TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER {
 int main ()
 {
 	yyparse();
-	root->print();
+	root -> print();
+	expandParallel(*root);
 	return 0;
 }
 
