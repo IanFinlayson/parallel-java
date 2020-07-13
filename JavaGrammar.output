@@ -403,6 +403,7 @@ TOK_YIELD (341) 130
 
 Nonterminals, with rules where they appear
 
+<<<<<<< HEAD
 $accept (105)
     on left: 0
 program (106)
@@ -528,6 +529,181 @@ methodcall (161)
     on left: 197 198, on right: 80 150 195 196 198
 fieldreference (162)
     on left: 199 200, on right: 90 143 195 200
+=======
+    $accept (105)
+        on left: 0
+    program (106)
+        on left: 1
+        on right: 0
+    packagedec <node> (107)
+        on left: 2 3
+        on right: 1
+    importstatements <node> (108)
+        on left: 4 5
+        on right: 1 5
+    importstatement <node> (109)
+        on left: 6 7
+        on right: 5
+    packagename <node> (110)
+        on left: 8 9
+        on right: 3 6 7 9
+    typedec <node> (111)
+        on left: 10 11 12 13
+        on right: 1 12 13
+    interfacedec <node> (112)
+        on left: 14 15
+        on right: 10 13 41 46
+    classdec <node> (113)
+        on left: 16 17
+        on right: 11 12 40 45
+    extendsorimplements <node> (114)
+        on left: 18 19 20
+        on right: 17
+    basicidentifier <node> (115)
+        on left: 21 22
+        on right: 19 20 22 55
+    mod <node> (116)
+        on left: 23 24 25 26 27 28 29 30 31 32 33 34 35
+        on right: 14 15 16 17 24 25 26 27 28 29 30 31 32 33 34 35 37 38 43 49 50 51 52
+    classbody <node> (117)
+        on left: 36 37 38 39 40 41
+        on right: 16 17 37 38 39 40 41 149
+    interfacebody <node> (118)
+        on left: 42 43 44 45 46
+        on right: 14 15 43 44 45 46
+    abstractmethod <node> (119)
+        on left: 47 48
+        on right: 52
+    method <node> (120)
+        on left: 49 50 51 52
+        on right: 39 44
+    parallelblock <node> (121)
+        on left: 53
+        on right: 72
+    throwsclause <node> (122)
+        on left: 54 55
+        on right: 47 48 49 50 51
+    formalparameters <node> (123)
+        on left: 56 57
+        on right: 47 48 49 50 51 57
+    formalparameter <node> (124)
+        on left: 58 59
+        on right: 56 57
+    argument <node> (125)
+        on left: 60 61 62 63 64
+        on right: 63 64 91 146 147 148 149 152 190 197 198
+    datatype <node> (126)
+        on left: 65 66 67 68 69
+        on right: 47 49 137 138 139 140 141 142 145 147 154 159
+    block <node> (127)
+        on left: 70 71 72
+        on right: 49 50 51 53 71 72 156 157 158 159 165 167 176 180 181 186 187
+    statement <node> (128)
+        on left: 73 74 75 76 77 78
+        on right: 71 166 168
+    expressionstatement <node> (129)
+        on left: 79 80 81 82 83
+        on right: 62 64 73 161 163 164 174
+    expression <node> (130)
+        on left: 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112
+        on right: 61 63 84 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 129 130 144 156 157 158 165 166 169 175 184 185
+    assignmentstatement <node> (131)
+        on left: 113 114 115 116 117 118 119
+        on right: 83 119
+    controlflowstatement <node> (132)
+        on left: 120 121 122 123 124 125 126 127 128 129 130
+        on right: 74
+    identifier <node> (133)
+        on left: 131 132 133 134 135 136
+        on right: 134 135 136 137 138
+    declarationstatement <node> (134)
+        on left: 137 138
+        on right: 37 75 160
+    declarator <node> (135)
+        on left: 139 140 141 142 143
+        on right: 59 153
+    initializer <node> (136)
+        on left: 144 145 146 147 148 149 150 151 152
+        on right: 118 153
+    initializationstatement <node> (137)
+        on left: 153
+        on right: 38 43 76 162
+    datastructure <node> (138)
+        on left: 154 155
+        on right: 152
+    whileloop <node> (139)
+        on left: 156
+        on right: 120
+    dowhileloop <node> (140)
+        on left: 157
+        on right: 121
+    forloop <node> (141)
+        on left: 158
+        on right: 122
+    enhancedfor <node> (142)
+        on left: 159
+        on right: 123
+    forinit <node> (143)
+        on left: 160 161 162
+        on right: 158
+    forupdate <node> (144)
+        on left: 163 164
+        on right: 158 164
+    ifstatement <node> (145)
+        on left: 165 166
+        on right: 124 167 168
+    ifelsestatement <node> (146)
+        on left: 167 168
+        on right: 125
+    switchstatement <node> (147)
+        on left: 169
+        on right: 126
+    switchblock <node> (148)
+        on left: 170 171
+        on right: 169
+    switchrules <node> (149)
+        on left: 172 173
+        on right: 170 173
+    switchrule <node> (150)
+        on left: 174 175 176 177
+        on right: 172 173
+    switchblockstates <node> (151)
+        on left: 178 179
+        on right: 171 179
+    switchblockstate <node> (152)
+        on left: 180 181
+        on right: 178 179
+    switchlabel <node> (153)
+        on left: 182 183
+        on right: 174 175 176 177 180 181
+    case <node> (154)
+        on left: 184 185
+        on right: 182 185
+    trycatchblock <node> (155)
+        on left: 186 187
+        on right: 77
+    exceptionname <node> (156)
+        on left: 188 189
+        on right: 186 187 189
+    throwstate <node> (157)
+        on left: 190
+        on right: 78 177
+    postdecrement <node> (158)
+        on left: 191 192
+        on right: 81
+    predecrement <node> (159)
+        on left: 193 194
+        on right: 82
+    instancemethodcall <node> (160)
+        on left: 195 196
+        on right: 79 151
+    methodcall <node> (161)
+        on left: 197 198
+        on right: 80 150 195 196 198
+    fieldreference <node> (162)
+        on left: 199 200
+        on right: 90 143 195 200
+>>>>>>> master
 
 
 State 0

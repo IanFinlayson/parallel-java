@@ -1241,6 +1241,7 @@ int main ()
 	root -> print();
 	expandParallel(*root);
 	return 0;
+	root -> print();
 }
 
 #include <stdio.h>

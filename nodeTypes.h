@@ -71,5 +71,37 @@ enum ParseTreeNode {
 	ptThrowState,
 	ptYield,
 	ptAnonymousClass,
-	ptParallelBlock
+	ptParallelBlock,
+	ptTryCatch,
+	ptTry,
+	ptCatch,
+	ptExceptionContainer,
+	ptException,
+	ptFinally
+
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

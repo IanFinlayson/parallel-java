@@ -79,8 +79,22 @@ void Node::attach_child(Node& child){
 	children.push_back(&child);
 }
 
+Node& Node::remove_child(int index){
+	if(index >= 0 && index < this->get_num_children()){
+		Node& _n = this->get_child(index);
+		children.erase(children.begin() + index);
+		return _n;
+	}
+}
 
-/* left over main from testing
+void Node::replace_child(int index, Node& node){
+	if(index >= 0 && index < this->get_num_children()){
+		children.insert(children.begin() + index, &node);
+		this->remove_child(index + 1);
+	}
+}
+
+/*/ left over main from testing
 int main(){
 	Node n1 = Node(3, 3, 54.2, "cool dude");
 	Node n2 = Node(4, 5, 34.3, "not cool dude");
@@ -88,8 +102,10 @@ int main(){
 	Node n4 = Node(7, 1, 48.2, "so cool dude");
 	n1.attach_child(n2);
 	n1.attach_child(n3);
-	n2.attach_child(n4);
+	//n2.attach_child(n4);
 	printf("%s\n", n1.get_tree_string(0).data());
+	n1.replace_child(0, n4);
+	n1.print();
 	//printf("%d\n", n.get_type());
 	//printf("%f\n", n.get_value());
 	//printf("%s\n", n.get_id().data());
