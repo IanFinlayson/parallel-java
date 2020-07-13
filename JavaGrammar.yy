@@ -1288,7 +1288,7 @@ int main (int argc, char* argv[])
 	new_filename = (new_filename.substr(0, new_filename.rfind(".java"))) + "_refactored.java";
 	std::ofstream dump_file;
 	dump_file.open(new_filename);
-	dump_tree(*root, &dump_file);
+	dump_tree(*root, &dump_file, 0);
 	dump_file.close();
 	return 0;
 }
