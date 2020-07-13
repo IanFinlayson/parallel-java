@@ -5,6 +5,9 @@
 	in some special cases, a token value like TOK_IDENTIFIER.
 */
 
+#ifndef NODETYPES_H
+#define NODETYPES_H
+
 enum ParseTreeNode {
 	ptEmpty,
 	ptPackageContainer,
@@ -81,7 +84,7 @@ enum ParseTreeNode {
 };
 
 
-
+#endif
 
 
 

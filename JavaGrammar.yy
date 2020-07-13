@@ -1,8 +1,8 @@
 %{
 	#include <cstdlib>
-	//#include "Node/Node.cpp"
-	//#include "nodeTypes.h"
-	//#include <fstream>
+	#include <fstream>
+	#include "Node/Node.hpp"
+	#include "nodeTypes.h"
 	#include "Dump/JavaDumper.cpp"
 
 	extern int yylex();

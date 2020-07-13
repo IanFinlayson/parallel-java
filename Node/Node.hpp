@@ -1,3 +1,6 @@
+#ifndef NODE_HPP
+#define NODE_HPP
+
 #include <string>
 #include <vector>
 
@@ -38,3 +41,6 @@ class Node{
 		void replace_child(int, Node&);		//replace a child with a new node if that child exists.
 
 };
+
+
+#endif
