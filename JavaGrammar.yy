@@ -1240,8 +1240,8 @@ int main ()
 	yyparse();
 	root -> print();
 	expandParallel(*root);
-	return 0;
 	root -> print();
+	return 0;
 }
 
 #include <stdio.h>

@@ -40,11 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-<<<<<<< HEAD
 #line 12 "JavaGrammar.yy" /* yacc.c:1909  */
-=======
-#line 12 "JavaGrammar.yy"
->>>>>>> master
 
 	#include <string>
 	#include <iostream>	
@@ -167,11 +163,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-<<<<<<< HEAD
 #line 18 "JavaGrammar.yy" /* yacc.c:1909  */
-=======
-#line 17 "JavaGrammar.yy"
->>>>>>> master
 
 	int iVal;
 	double dVal;
