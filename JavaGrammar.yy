@@ -845,6 +845,7 @@ TOK_IDENTIFIER {
 |TOK_IDENTIFIER TOK_COMMA identifier {
 	$$ = new Node(ptIdentifierContainer);
 	$$->attach_child(*(new Node(ptIdentifier, 0, 0, $1)));
+	$$->attach_child(*$3);
 }
 ;
 
