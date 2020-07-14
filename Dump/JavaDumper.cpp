@@ -1,12 +1,8 @@
 #include <string>
 #include <fstream>
 #include "JavaDumper.hpp"
-//#include "../Node/Node.cpp"
 #include "../nodeTypes.h"
 
-//void dump_tree(Node& root, std::ofstream* dump_file, int indent);
-//void recurse(Node& root, std::ofstream* dump_file, int indent);
-//void add_indent(std::ofstream* dump_file, int indent);
 
 void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 	int type = root.get_type();
@@ -54,6 +50,19 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 				*dump_file << "}\n";
 				break;
 			}
+		case ptInterface:
+			{
+				add_indent(dump_file, indent);
+				dump_tree(root.get_child(0), dump_file, indent);
+				*dump_file << "interface " << root.get_id().data() << " ";
+				if(root.get_child(0).get_num_children() > 1){
+					dump_tree(root.get_child(0).get_child(1), dump_file, indent);
+				}
+				*dump_file << "{\n";
+				dump_tree(root.get_child(1), dump_file, indent + 1);
+				*dump_file << "}\n";
+				break;
+			}
 		case ptMod:
 			{
 				*dump_file << root.get_id().data() << " ";
@@ -82,6 +91,66 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 					*dump_file << ", ";
 					dump_tree(root.get_child(0), dump_file, indent);
 				}
+				break;
+			}
+		case ptClassBody:
+			{
+				add_indent(indent);
+				switch(root.get_child(0).get_type()){
+					case ptDeclaration:
+					case ptInitializationContainer:
+						{
+							dump_tree(root.get_child(0).get_child(1), dump_file, indent);
+							dump_tree(root.get_child(0), dump_file, indent);
+							*dump_file << ";\n";
+							dump_tree(root.get_child(1), dump_file, indent);
+							break;
+						}
+					default:
+						{
+							recurse(root, dump_file, indent);
+							break;
+						}
+				}
+				break;
+			}
+		case ptInstanceGeneric:
+			{
+				*dump_file << root.get_id().data() << "<";
+				dump_tree(root.get_child(1), dump_file, indent);
+				*dump_file << "> ";
+				dump_tree(root.get_child(0), dump_file, indent);
+				break;
+			}
+		case ptDataType:
+			{
+				*dump_file << root.get_id().data() << " ";
+				break;
+			}
+		case pIdentifierContainer:
+			{
+				switch(root.get_child(0).get_type()){
+					case ptIdentifier:
+						{
+							*dump_file << root.get_child(0).get_id().data() << " ";
+							break;
+						}
+					case ptArrayIdentifier:
+						{
+							*dump_file << root.get_child(0).get_id().data() << "[]";
+							break;
+						}
+				}
+				break;
+			}
+		case ptInitializationContainer:
+			{
+
+				break;
+			}
+		case ptMethod:
+			{
+				
 				break;
 			}
 		case ptEmpty:
