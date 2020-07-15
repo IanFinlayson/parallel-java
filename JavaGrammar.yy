@@ -583,7 +583,6 @@ expressionstatement TOK_SEMI {
 }
 |trycatchblock {
 	$$ = new Node(ptStatement);
-//	$$->attach_child(*(new Node(ptEmpty, 0, 0, "placeholder trycatch")));
 }
 |throwstate TOK_SEMI {
 	$$ = new Node(ptStatement);
