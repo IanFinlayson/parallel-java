@@ -79,7 +79,8 @@ enum ParseTreeNode {
 	ptCatch,
 	ptExceptionContainer,
 	ptException,
-	ptFinally
+	ptFinally,
+	ptDeclarationStatement
 
 };
 

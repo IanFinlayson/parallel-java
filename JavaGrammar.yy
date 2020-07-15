@@ -855,12 +855,12 @@ TOK_IDENTIFIER {
 
 declarationstatement:
 datatype identifier {
-	$$ = new Node(ptDeclaration);
+	$$ = new Node(ptDeclarationStatement);
 	$$->attach_child(*$1);
 	$1->attach_child(*$2);
 }
 |TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER identifier {
-	$$ = new Node(ptDeclaration);
+	$$ = new Node(ptDeclarationStatement);
 	Node* _it = new Node(ptInstanceGeneric, 0, 0, $1);
 	_it->attach_child(*$5);
 	_it->attach_child(*$3);

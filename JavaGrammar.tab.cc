@@ -3229,7 +3229,7 @@ yyreduce:
   case 138:
 #line 857 "JavaGrammar.yy"
                     {
-	(yyval.node) = new Node(ptDeclaration);
+	(yyval.node) = new Node(ptDeclarationStatement);
 	(yyval.node)->attach_child(*(yyvsp[-1].node));
 	(yyvsp[-1].node)->attach_child(*(yyvsp[0].node));
 }
@@ -3239,7 +3239,7 @@ yyreduce:
   case 139:
 #line 862 "JavaGrammar.yy"
                                                          {
-	(yyval.node) = new Node(ptDeclaration);
+	(yyval.node) = new Node(ptDeclarationStatement);
 	Node* _it = new Node(ptInstanceGeneric, 0, 0, (yyvsp[-4].stVal));
 	_it->attach_child(*(yyvsp[0].node));
 	_it->attach_child(*(yyvsp[-2].node));
