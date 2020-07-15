@@ -3952,7 +3952,7 @@ int main ()
 {
 	yyparse();
 	root -> print();
-	expandParallel(*root);
+	expandParallel(root);
 	root -> print();
 	return 0;
 }

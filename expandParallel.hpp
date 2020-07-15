@@ -1,3 +1,3 @@
 #include "Node/Node.hpp"
 
-void expandParallel (Node &root);
+void expandParallel (Node *root);
