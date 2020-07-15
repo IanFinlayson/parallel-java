@@ -43,10 +43,9 @@ extern int yydebug;
 #line 12 "JavaGrammar.yy" /* yacc.c:1909  */
 
 	#include <string>
-	#include <iostream>	
-	
+	#include <iostream> 
 
-#line 50 "JavaGrammar.tab.hh" /* yacc.c:1909  */
+#line 49 "JavaGrammar.tab.hh" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -163,12 +162,13 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 18 "JavaGrammar.yy" /* yacc.c:1909  */
+#line 17 "JavaGrammar.yy" /* yacc.c:1909  */
 
 	int iVal;
 	double dVal;
 	char stVal[100];
 	bool bVal;
+	//still return float for everything?
 	float fVal;
 	long lVal;
 	short shVal;

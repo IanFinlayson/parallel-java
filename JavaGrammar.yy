@@ -1,8 +1,8 @@
 %{
+	#include <cstdlib>
 	#include "Node/Node.cpp"
 	#include "nodeTypes.h"
-	#include "expandParallel.cpp"
-	#include <cstdlib> 
+
 	extern int yylex();
 	void yyerror(char const *error);
 
@@ -11,8 +11,7 @@
 
 %code requires{
 	#include <string>
-	#include <iostream>	
-	
+	#include <iostream> 
 }
 
 %union {
@@ -20,6 +19,7 @@
 	double dVal;
 	char stVal[100];
 	bool bVal;
+	//still return float for everything?
 	float fVal;
 	long lVal;
 	short shVal;
@@ -155,6 +155,7 @@
 %type <node> throwsclause switchstatement switchblock switchrules switchrule switchblockstates switchblockstate 
 %type <node> switchlabel case throwstate
 %type <node> parallelblock
+%type <node> trycatchblock exceptionname
 
 %%
 
@@ -583,6 +584,8 @@ expressionstatement TOK_SEMI {
 }
 |trycatchblock {
 	$$ = new Node(ptStatement);
+	//$$->attach_child(*(new Node(ptEmpty, 0, 0, "placeholder trycatch")));
+	$$->attach_child(*$1);
 }
 |throwstate TOK_SEMI {
 	$$ = new Node(ptStatement);
@@ -1145,14 +1148,45 @@ expression {
 
 /*fix to catch multiple*/
 trycatchblock:
-TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN 
-TOK_LBRACE block TOK_RBRACE
-|TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE
+TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptTryCatch);
+	Node* _try = new Node(ptTry);
+	Node* _exc = new Node(ptExceptionContainer);
+	Node* _cat = new Node(ptCatch);
+	_try->attach_child(*$3);
+	_try->attach_child(*_exc);
+	_exc->attach_child(*$7);
+	_exc->attach_child(*_cat);
+	_cat->attach_child(*$11);
+	$$->attach_child(*_try);
+}
+|TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE {
+	$$ = new Node(ptTryCatch);
+	Node* _try = new Node(ptTry);
+	Node* _exc = new Node(ptExceptionContainer);
+	Node* _cat = new Node(ptCatch);
+	Node* _fin = new Node(ptFinally);
+	_try->attach_child(*$3);
+	_try->attach_child(*_exc);
+	_exc->attach_child(*$7);
+	_exc->attach_child(*_cat);
+	_cat->attach_child(*$11);
+	_cat->attach_child(*_fin);
+	_fin->attach_child(*$15);
+	$$->attach_child(*_try);
+}
 ;
 
 exceptionname:
-TOK_IDENTIFIER 
-|TOK_IDENTIFIER TOK_BITOR exceptionname
+TOK_IDENTIFIER {
+	$$ = new Node(ptException);
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+}
+|TOK_IDENTIFIER TOK_BITOR exceptionname {
+	$$ = new Node(ptException);
+	$$->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $1)));
+	$$->attach_child(*$3);
+}
 ;
 
 
@@ -1238,9 +1272,7 @@ TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER {
 int main ()
 {
 	yyparse();
-	root -> print();
-	expandParallel(root);
-	root -> print();
+	root->print();
 	return 0;
 }
 
