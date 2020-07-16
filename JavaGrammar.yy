@@ -2,6 +2,7 @@
 	#include <cstdlib>
 	#include "Node/Node.cpp"
 	#include "nodeTypes.h"
+	#include "expandParallel.cpp"
 
 	extern int yylex();
 	void yyerror(char const *error);
@@ -1272,6 +1273,8 @@ TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER {
 int main ()
 {
 	yyparse();
+	root->print();
+	expandParallel(root);
 	root->print();
 	return 0;
 }
