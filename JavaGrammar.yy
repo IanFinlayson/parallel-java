@@ -988,11 +988,11 @@ TOK_FOR TOK_LPAREN forinit TOK_SEMI expression TOK_SEMI forupdate TOK_RPAREN TOK
 enhancedfor:
 TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptForEach);
-	Node* _dec = new Node(ptDeclaration);
+	Node* _dec = new Node(ptDeclaration, 0, 0, $4);
 	_dec->attach_child(*$3);
-	Node* _id_con = new Node(ptIdentifierContainer);
-	_id_con->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $4)));
-	_dec->attach_child(*_id_con);
+	//Node* _id_con = new Node(ptIdentifierContainer);
+	//_dec->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $4)));
+	//_dec->attach_child(*_id_con);
 	Node* _f_inf = new Node(ptForEachDec);
 	_f_inf->attach_child(*_dec);
 	_f_inf->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $6)));

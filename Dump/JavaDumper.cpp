@@ -483,6 +483,55 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 				*dump_file << "}";
 				break;
 			}
+		case ptForEach:
+			{
+				*dump_file << "for(";
+				dump_tree(root.get_child(0).get_child(0), dump_file, indent);
+				*dump_file << ": ";
+				dump_tree(root.get_child(0).get_child(1), dump_file, indent);
+				*dump_file << ") {\n";
+				dump_tree(root.get_child(1), dump_file, indent+1);
+				add_indent(dump_file, indent);
+				*dump_file << "}";
+				break;
+			}
+		case ptIf:
+			{
+				*dump_file << "if(";
+				dump_tree(root.get_child(0), dump_file, indent);
+				*dump_file << ") {\n";
+				dump_tree(root.get_child(1), dump_file, indent+1);
+				add_indent(dump_file, indent);
+				*dump_file << "}";
+				break;
+			}
+		case ptIfElse:
+			{
+				dump_tree(root.get_child(0), dump_file, indent);
+				*dump_file << " else ";
+				//printf("hmmmm");
+				if(root.get_child(1).get_type() != ptEmpty){
+					switch(root.get_child(1).get_child(0).get_type()){
+						case ptIf:
+						case ptIfElse:
+							{
+								dump_tree(root.get_child(1).get_child(0), dump_file, indent);
+								break;
+							}
+						default:
+							{
+								*dump_file << "{\n";
+								dump_tree(root.get_child(1), dump_file, indent+1);
+								add_indent(dump_file, indent);
+								*dump_file << "}";
+								break;
+							}
+					}
+				}else{
+					*dump_file << "{}";
+				}
+				break;
+			}
 		case ptEmpty:
 			{
 				break;

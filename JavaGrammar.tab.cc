@@ -3448,11 +3448,11 @@ yyreduce:
 #line 989 "JavaGrammar.yy"
                                                                                                            {
 	(yyval.node) = new Node(ptForEach);
-	Node* _dec = new Node(ptDeclaration);
+	Node* _dec = new Node(ptDeclaration, 0, 0, (yyvsp[-6].stVal));
 	_dec->attach_child(*(yyvsp[-7].node));
-	Node* _id_con = new Node(ptIdentifierContainer);
-	_id_con->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, (yyvsp[-6].stVal))));
-	_dec->attach_child(*_id_con);
+	//Node* _id_con = new Node(ptIdentifierContainer);
+	//_dec->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $4)));
+	//_dec->attach_child(*_id_con);
 	Node* _f_inf = new Node(ptForEachDec);
 	_f_inf->attach_child(*_dec);
 	_f_inf->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, (yyvsp[-4].stVal))));
