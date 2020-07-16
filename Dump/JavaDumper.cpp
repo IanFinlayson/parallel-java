@@ -103,10 +103,11 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 				switch(root.get_child(0).get_type()){
 					case ptDeclarationStatement:
 						{
-							dump_tree(root.get_child(0).get_child(1), dump_file, indent);
+							//if(root.get_child(0).get_child(1).get_type() != ptEmpty){
+								dump_tree(root.get_child(0).get_child(1), dump_file, indent);
+								//*dump_file << " ";
+							//}
 							dump_tree(root.get_child(0), dump_file, indent);
-							//dump_tree(root.get_child(0).get_child(0), dump_file, indent);
-							//dump_tree(root.get_child(0).get_child(0).get_child(0), dump_file, indent);
 							*dump_file << ";\n";
 							dump_tree(root.get_child(1), dump_file, indent);
 							break;
@@ -122,16 +123,14 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 						}
 					default:
 						{
-							recurse(root, dump_file, indent);
-							//*dump_file << "\n";
-							/*if(root.get_num_children() > 0){
+							//recurse(root, dump_file, indent);
+							if(root.get_num_children() > 0){
 								dump_tree(root.get_child(0), dump_file, indent);
 								*dump_file << "\n";
 							}
 							if(root.get_num_children() > 1){
 								dump_tree(root.get_child(1), dump_file, indent);
-								*dump_file << "\n";
-							}*/
+							}
 							break;
 						}
 				}
@@ -140,9 +139,8 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 		case ptInstanceGeneric:
 			{
 				*dump_file << root.get_id().data() << "<";
-				dump_tree(root.get_child(1), dump_file, indent);
-				*dump_file << "> ";
 				dump_tree(root.get_child(0), dump_file, indent);
+				*dump_file << "> ";
 				break;
 			}
 		case ptDataType:
@@ -173,24 +171,28 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 		case ptInitializationStatement:
 			{
 				dump_tree(root.get_child(0), dump_file, indent);
-				*dump_file << "= ";
+				*dump_file << " = ";
 				dump_tree(root.get_child(1), dump_file, indent);
 				break;
 			}
 		case ptAssignment:
 			{
 				dump_tree(root.get_child(0), dump_file, indent);
-				*dump_file << root.get_id().data() << " ";
+				*dump_file << "" << root.get_id().data() << " ";
 				dump_tree(root.get_child(1), dump_file, indent);
 				break;
 			}
 		case ptDeclarationStatement:
 			{
 				if(root.get_child(0).get_type() == ptInstanceGeneric){
-					dump_tree(root.get_child(0), dump_file, indent);
+					//dump_tree(root.get_child(0), dump_file, indent);
+					*dump_file << root.get_child(0).get_id().data() << "<";
+					dump_tree(root.get_child(0).get_child(1), dump_file, indent);
+					*dump_file << "> ";
+					dump_tree(root.get_child(0).get_child(0), dump_file, indent);
 				}else{
 					dump_tree(root.get_child(0), dump_file, indent);
-					//*dump_file << root.get_id().data() << " ";
+					*dump_file << " ";
 					dump_tree(root.get_child(0).get_child(0), dump_file, indent);
 				}
 				break;
@@ -199,7 +201,7 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 			{
 				dump_tree(root.get_child(0), dump_file, indent);
 				*dump_file << root.get_id().data();
-				if(root.get_num_children() > 1){ //this is also gonna have to go after fieldreference
+				if(root.get_num_children() > 1){
 					*dump_file << ", ";
 					dump_tree(root.get_child(1), dump_file, indent);
 				}
@@ -219,7 +221,7 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 			{
 				*dump_file << "new ";
 				dump_tree(root.get_child(0), dump_file, indent);
-				*dump_file << "[ ";
+				*dump_file << "[";
 				dump_tree(root.get_child(1), dump_file, indent);
 				*dump_file << "] ";
 				break;
@@ -294,7 +296,7 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 			}
 		case ptArrayExplicitInitializer:
 			{
-				*dump_file << "{ ";
+				*dump_file << "{";
 				dump_tree(root.get_child(0), dump_file, indent);
 				*dump_file << "} ";
 				break;
@@ -307,6 +309,25 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 				*dump_file << "(";
 				dump_tree(root.get_child(1), dump_file, indent);
 				*dump_file << ") ";
+				break;
+			}
+		case ptDataStructureInitializer:
+			{
+				*dump_file << "new ";
+				dump_tree(root.get_child(0), dump_file, indent);
+				*dump_file << "(";
+				dump_tree(root.get_child(1), dump_file, indent);
+				*dump_file << ") ";
+				break;
+			}
+		case ptDataStructure:
+			{
+				dump_tree(root.get_child(0), dump_file, indent);
+				*dump_file << "<";
+				if(root.get_num_children() > 1){
+					dump_tree(root.get_child(1), dump_file, indent);
+				}
+				*dump_file << "> ";
 				break;
 			}
 		case ptAnonymousClass:
@@ -340,11 +361,10 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 		case ptMethod:
 			{
 				dump_tree(root.get_child(0).get_child(0).get_child(0), dump_file, indent); //mod datatype
-				*dump_file << root.get_id().data() << "( "; //identifier
-				//printf("%d\n",root.get_child(0).get_child(0).get_child(1).get_type());
+				*dump_file << root.get_id().data() << "("; //identifier
 				dump_tree(root.get_child(0).get_child(0).get_child(1), dump_file, indent); //formalparameters
 				*dump_file << ") ";
-				dump_tree(root.get_child(0).get_child(1), dump_file, indent); //throwsclause
+				dump_tree(root.get_child(0).get_child(1), dump_file, indent); //throwsclause (needs work)
 				*dump_file << "{\n";
 				dump_tree(root.get_child(1), dump_file, indent+1);
 				add_indent(dump_file, indent);
@@ -360,11 +380,21 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 		case ptAbstractMethodLabel:
 			{
 				dump_tree(root.get_child(0), dump_file, indent);
-				*dump_file << root.get_id().data() << "( ";
+				*dump_file << root.get_id().data() << "(";
 				dump_tree(root.get_child(1), dump_file, indent);
 				*dump_file << ") ";
 				//dump_tree(root.get_child(0).get_child(0), dump_file, indent);
 				*dump_file << ";\n";
+				break;
+			}
+		case ptFieldReference:
+			{
+				if(root.get_child(0).get_type() == ptFieldReference){
+					dump_tree(root.get_child(0), dump_file, indent);
+				}else{
+					*dump_file << root.get_child(0).get_id().data() << ".";
+				}
+				*dump_file << root.get_child(1).get_id().data();
 				break;
 			}
 		case ptEmpty:
