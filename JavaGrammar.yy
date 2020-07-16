@@ -389,12 +389,13 @@ classbody:
 
 interfacebody:
 %empty {
-	$$ = new Node(ptEmpty);
+	$$ = new Node(ptClassBody);
+	$$->attach_child(*(new Node(ptEmpty)));
 }
 |mod initializationstatement TOK_SEMI interfacebody {
 	$$ = new Node(ptClassBody);
 	$$->attach_child(*$2);
-	$$->attach_child(*$1);
+	$2->attach_child(*$1);
 	$$->attach_child(*$4);
 }
 |method interfacebody {
@@ -1014,11 +1015,10 @@ declarationstatement {
 
 forupdate:
 expressionstatement {
-	$$ = new Node(ptStatement);
-	$$->attach_child(*$1);
+	$$ = $1;
 }
 |expressionstatement TOK_COMMA forupdate {
-	$$ = new Node(ptStatement);
+	$$ = new Node(ptArgument);
 	$$->attach_child(*$1);
 	$$->attach_child(*$3);
 }

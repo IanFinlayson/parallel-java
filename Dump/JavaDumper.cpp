@@ -7,6 +7,7 @@
 
 void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 	int type = root.get_type();
+	//printf("function called");
 	switch(type){
 		case ptPackageContainer:
 			{
@@ -61,6 +62,7 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 				}
 				*dump_file << "{\n";
 				dump_tree(root.get_child(1), dump_file, indent + 1);
+				add_indent(dump_file, indent);
 				*dump_file << "}\n";
 				break;
 			}
@@ -294,6 +296,26 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 				dump_tree(root.get_child(1), dump_file, indent);
 				break;
 			}
+		case ptPostDecrement:
+			{
+				*dump_file << root.get_child(0).get_id().data();
+				if(root.get_child(1).get_type() == 338){
+					*dump_file << "-- ";
+				}else{
+					*dump_file << "++ ";
+				}
+				break;
+			}
+		case ptPreDecrement:
+			{
+				if(root.get_child(0).get_type() == 338){
+					*dump_file << "--";
+				}else{
+					*dump_file << "++";
+				}
+				*dump_file << root.get_child(1).get_id().data() << " ";
+				break;
+			}
 		case ptArrayExplicitInitializer:
 			{
 				*dump_file << "{";
@@ -387,6 +409,12 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 				*dump_file << ";\n";
 				break;
 			}
+		case ptThrows:
+			{
+				*dump_file << "throws ";
+				dump_tree(root.get_child(0), dump_file, indent);
+				break;
+			}
 		case ptFieldReference:
 			{
 				if(root.get_child(0).get_type() == ptFieldReference){
@@ -395,6 +423,64 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 					*dump_file << root.get_child(0).get_id().data() << ".";
 				}
 				*dump_file << root.get_child(1).get_id().data();
+				break;
+			}
+		case ptInstanceMethodCall:
+			{
+				if(root.get_child(0).get_type() == ptFieldReference){
+					dump_tree(root.get_child(0), dump_file, indent);
+				}else{
+					*dump_file << root.get_child(0).get_id().data();
+				}
+				*dump_file << ".";
+				dump_tree(root.get_child(1), dump_file, indent);
+				break;
+			}
+		case ptMethodCall:
+			{
+				*dump_file << root.get_child(0).get_id().data() << "(";
+				dump_tree(root.get_child(0).get_child(0), dump_file, indent);
+				if(root.get_num_children() > 1){
+					*dump_file << ").";
+					dump_tree(root.get_child(1), dump_file, indent);
+				}else{
+					*dump_file << ") ";
+				}
+
+				break;
+			}
+		case ptWhile:
+			{
+				*dump_file << "while(";
+				dump_tree(root.get_child(0), dump_file, indent);
+				*dump_file << ") {\n";
+				dump_tree(root.get_child(1), dump_file, indent+1);
+				add_indent(dump_file, indent);
+				*dump_file << "}";
+				break;
+			}
+		case ptDoWhile:
+			{
+				*dump_file << "do{\n";
+				dump_tree(root.get_child(1), dump_file, indent+1);
+				add_indent(dump_file, indent);
+				*dump_file << "} while(";
+				dump_tree(root.get_child(0), dump_file, indent);
+				*dump_file << ")";
+				break;
+			}
+		case ptFor:
+			{
+				*dump_file << "for(";
+				dump_tree(root.get_child(0).get_child(0), dump_file, indent);
+				*dump_file << "; ";
+				dump_tree(root.get_child(0).get_child(1).get_child(0), dump_file, indent);
+				*dump_file << "; ";
+				dump_tree(root.get_child(0).get_child(1).get_child(1), dump_file, indent);
+				*dump_file << ") {\n";
+				dump_tree(root.get_child(1), dump_file, indent+1);
+				add_indent(dump_file, indent);
+				*dump_file << "}";
 				break;
 			}
 		case ptEmpty:
