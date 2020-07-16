@@ -1071,6 +1071,7 @@ switchrules {
 switchrules:
 switchrule {
 	$$ = new Node(ptSwitchBlock);
+	$$->attach_child(*$1);
 }
 |switchrule switchrules {
 	$$ = new Node(ptSwitchBlock);

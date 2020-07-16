@@ -509,7 +509,6 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 			{
 				dump_tree(root.get_child(0), dump_file, indent);
 				*dump_file << " else ";
-				//printf("hmmmm");
 				if(root.get_child(1).get_type() != ptEmpty){
 					switch(root.get_child(1).get_child(0).get_type()){
 						case ptIf:
@@ -529,6 +528,61 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 					}
 				}else{
 					*dump_file << "{}";
+				}
+				break;
+			}
+		case ptSwitch:
+			{
+				*dump_file << "switch(";
+				dump_tree(root.get_child(0), dump_file, indent);
+				*dump_file << ") {\n";
+				dump_tree(root.get_child(1), dump_file, indent+1);
+				add_indent(dump_file, indent);
+				*dump_file << "}";
+				break;
+			}
+		case ptSwitchRule:
+			{
+				add_indent(dump_file, indent);
+				dump_tree(root.get_child(0), dump_file, indent);
+				*dump_file << "-> ";
+				if(root.get_child(1).get_type() == ptStatement){
+					*dump_file << "{\n";
+					dump_tree(root.get_child(1), dump_file, indent+1);
+					add_indent(dump_file, indent);
+					*dump_file << "}\n";
+				}else{
+					dump_tree(root.get_child(1), dump_file, indent);
+					*dump_file << ";\n";
+				}
+				break;
+			}
+		case ptSwitchState:
+			{
+				add_indent(dump_file, indent);
+				dump_tree(root.get_child(0), dump_file, indent);
+				*dump_file << ":{\n";
+				dump_tree(root.get_child(1), dump_file, indent+1);
+				add_indent(dump_file, indent);
+				*dump_file << "}\n";
+				break;
+			}
+		case ptSwitchLabel:
+			{
+				if(root.get_child(0).get_type() == ptCase){
+					*dump_file << "case ";
+					dump_tree(root.get_child(0), dump_file, indent);
+				}else{
+					*dump_file << "default ";
+				}
+				break;
+			}
+		case ptCase:
+			{
+				dump_tree(root.get_child(0), dump_file, indent);
+				if(root.get_num_children() > 1){
+					*dump_file << ", ";
+					dump_tree(root.get_child(1), dump_file, indent);
 				}
 				break;
 			}
