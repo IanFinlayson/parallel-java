@@ -1,6 +1,6 @@
 #include <string>
 #include <vector>
-
+#pragma once
 class Node{
 	private:
 		int type;				//token val
