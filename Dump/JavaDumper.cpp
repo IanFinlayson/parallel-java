@@ -241,6 +241,16 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 				*dump_file << "void ";
 				break;
 			}
+		case 215: //break
+			{
+				*dump_file << "break ";
+				break;
+			}
+		case 201: //continue
+			{
+				*dump_file <<"continue ";
+				break;
+			}
 		case 101: //TOK_INTVAL
 			{
 				*dump_file << root.get_value_int() << " ";
@@ -584,6 +594,18 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 					*dump_file << ", ";
 					dump_tree(root.get_child(1), dump_file, indent);
 				}
+				break;
+			}
+		case ptReturn:
+			{
+				*dump_file << "return ";
+				dump_tree(root.get_child(0), dump_file, indent);
+				break;
+			}
+		case ptYield:
+			{
+				*dump_file << "yield ";
+				dump_tree(root.get_child(0), dump_file, indent);
 				break;
 			}
 		case ptEmpty:
