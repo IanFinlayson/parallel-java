@@ -15,6 +15,8 @@ public class trycatch{
 			Scanner scanner = new Scanner(file);
 		}catch(FileNotFoundException e){
 			System.out.println("File not found");	
+		}finally{
+
 		}
 
 	}

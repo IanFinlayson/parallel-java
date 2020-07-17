@@ -608,6 +608,34 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 				dump_tree(root.get_child(0), dump_file, indent);
 				break;
 			}
+		case ptTryCatch:
+			{
+				*dump_file << "try {\n";
+				dump_tree(root.get_child(0).get_child(0), dump_file, indent+1);
+				add_indent(dump_file, indent);
+				*dump_file << "} catch (";
+				dump_tree(root.get_child(0).get_child(1).get_child(0), dump_file, indent); //expception???
+				*dump_file << root.get_child(0).get_child(1).get_id().data() << ") {\n";
+				dump_tree(root.get_child(0).get_child(1).get_child(1).get_child(0), dump_file, indent+1);
+				add_indent(dump_file, indent);
+				*dump_file << "}";
+				if(root.get_child(0).get_child(1).get_child(1).get_num_children() > 1){
+					*dump_file << " finally {\n";
+					dump_tree(root.get_child(0).get_child(1).get_child(1).get_child(1), dump_file, indent+1);
+					add_indent(dump_file, indent);
+					*dump_file << "}";
+				}
+				break;
+			}
+		case ptException:
+			{
+				dump_tree(root.get_child(0), dump_file, indent);
+				if(root.get_num_children() > 1){
+					*dump_file << "| ";
+					dump_tree(root.get_child(1), dump_file, indent);
+				}
+				break;
+			}
 		case ptEmpty:
 			{
 				break;

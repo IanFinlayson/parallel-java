@@ -3710,7 +3710,7 @@ yyreduce:
                                                                                                                              {
 	(yyval.node) = new Node(ptTryCatch);
 	Node* _try = new Node(ptTry);
-	Node* _exc = new Node(ptExceptionContainer);
+	Node* _exc = new Node(ptExceptionContainer, 0, 0, (yyvsp[-4].stVal));
 	Node* _cat = new Node(ptCatch);
 	_try->attach_child(*(yyvsp[-9].node));
 	_try->attach_child(*_exc);
@@ -3727,7 +3727,7 @@ yyreduce:
                                                                                                                                                                        {
 	(yyval.node) = new Node(ptTryCatch);
 	Node* _try = new Node(ptTry);
-	Node* _exc = new Node(ptExceptionContainer);
+	Node* _exc = new Node(ptExceptionContainer, 0, 0, (yyvsp[-8].stVal));
 	Node* _cat = new Node(ptCatch);
 	Node* _fin = new Node(ptFinally);
 	_try->attach_child(*(yyvsp[-13].node));

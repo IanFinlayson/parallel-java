@@ -1156,7 +1156,7 @@ trycatchblock:
 TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptTryCatch);
 	Node* _try = new Node(ptTry);
-	Node* _exc = new Node(ptExceptionContainer);
+	Node* _exc = new Node(ptExceptionContainer, 0, 0, $8);
 	Node* _cat = new Node(ptCatch);
 	_try->attach_child(*$3);
 	_try->attach_child(*_exc);
@@ -1168,7 +1168,7 @@ TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENT
 |TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptTryCatch);
 	Node* _try = new Node(ptTry);
-	Node* _exc = new Node(ptExceptionContainer);
+	Node* _exc = new Node(ptExceptionContainer, 0, 0, $8);
 	Node* _cat = new Node(ptCatch);
 	Node* _fin = new Node(ptFinally);
 	_try->attach_child(*$3);
