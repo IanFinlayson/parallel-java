@@ -4,7 +4,7 @@
 	Each node is denoted by a value from this enumerator or, 
 	in some special cases, a token value like TOK_IDENTIFIER.
 */
-#pragma once
+
 enum ParseTreeNode {
 	ptEmpty,
 	ptPackageContainer,
