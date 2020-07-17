@@ -8,5 +8,5 @@ for file in $FILES
 	do 
 	echo "****************************************************"
 	echo $file
-	./parser < $file
+	./parser $file
 done

@@ -1,8 +1,10 @@
 %{
 	#include <cstdlib>
-	#include "Node/Node.cpp"
+	#include <fstream>
+	#include "Node/Node.hpp"
 	#include "nodeTypes.h"
 	#include "expandParallel.cpp"
+	#include "Dump/JavaDumper.cpp"
 
 	extern int yylex();
 	void yyerror(char const *error);
@@ -214,8 +216,10 @@ TOK_IDENTIFIER {
 	$$ = new Node(ptPackage, 0, 0, $1);
 }
 |packagename TOK_DOT TOK_IDENTIFIER {
-	$$ = new Node(ptPackage, 0, 0, $3);
-	$$->attach_child(*$1);
+	//$$ = new Node(ptPackage, 0, 0, $3);
+	//$$->attach_child(*$1);
+	$$ = $1;
+	$$->attach_child(*(new Node(ptPackage, 0, 0, $3)));
 }
 ;
 
@@ -386,12 +390,13 @@ classbody:
 
 interfacebody:
 %empty {
-	$$ = new Node(ptEmpty);
+	$$ = new Node(ptClassBody);
+	$$->attach_child(*(new Node(ptEmpty)));
 }
 |mod initializationstatement TOK_SEMI interfacebody {
 	$$ = new Node(ptClassBody);
 	$$->attach_child(*$2);
-	$$->attach_child(*$1);
+	$2->attach_child(*$1);
 	$$->attach_child(*$4);
 }
 |method interfacebody {
@@ -852,12 +857,12 @@ TOK_IDENTIFIER {
 
 declarationstatement:
 datatype identifier {
-	$$ = new Node(ptDeclaration);
+	$$ = new Node(ptDeclarationStatement);
 	$$->attach_child(*$1);
 	$1->attach_child(*$2);
 }
 |TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER identifier {
-	$$ = new Node(ptDeclaration);
+	$$ = new Node(ptDeclarationStatement);
 	Node* _it = new Node(ptInstanceGeneric, 0, 0, $1);
 	_it->attach_child(*$5);
 	_it->attach_child(*$3);
@@ -984,11 +989,11 @@ TOK_FOR TOK_LPAREN forinit TOK_SEMI expression TOK_SEMI forupdate TOK_RPAREN TOK
 enhancedfor:
 TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptForEach);
-	Node* _dec = new Node(ptDeclaration);
+	Node* _dec = new Node(ptDeclaration, 0, 0, $4);
 	_dec->attach_child(*$3);
-	Node* _id_con = new Node(ptIdentifierContainer);
-	_id_con->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $4)));
-	_dec->attach_child(*_id_con);
+	//Node* _id_con = new Node(ptIdentifierContainer);
+	//_dec->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $4)));
+	//_dec->attach_child(*_id_con);
 	Node* _f_inf = new Node(ptForEachDec);
 	_f_inf->attach_child(*_dec);
 	_f_inf->attach_child(*(new Node(TOK_IDENTIFIER, 0, 0, $6)));
@@ -1011,11 +1016,10 @@ declarationstatement {
 
 forupdate:
 expressionstatement {
-	$$ = new Node(ptStatement);
-	$$->attach_child(*$1);
+	$$ = $1;
 }
 |expressionstatement TOK_COMMA forupdate {
-	$$ = new Node(ptStatement);
+	$$ = new Node(ptArgument);
 	$$->attach_child(*$1);
 	$$->attach_child(*$3);
 }
@@ -1068,6 +1072,7 @@ switchrules {
 switchrules:
 switchrule {
 	$$ = new Node(ptSwitchBlock);
+	$$->attach_child(*$1);
 }
 |switchrule switchrules {
 	$$ = new Node(ptSwitchBlock);
@@ -1152,7 +1157,7 @@ trycatchblock:
 TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptTryCatch);
 	Node* _try = new Node(ptTry);
-	Node* _exc = new Node(ptExceptionContainer);
+	Node* _exc = new Node(ptExceptionContainer, 0, 0, $8);
 	Node* _cat = new Node(ptCatch);
 	_try->attach_child(*$3);
 	_try->attach_child(*_exc);
@@ -1164,7 +1169,7 @@ TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENT
 |TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE {
 	$$ = new Node(ptTryCatch);
 	Node* _try = new Node(ptTry);
-	Node* _exc = new Node(ptExceptionContainer);
+	Node* _exc = new Node(ptExceptionContainer, 0, 0, $8);
 	Node* _cat = new Node(ptCatch);
 	Node* _fin = new Node(ptFinally);
 	_try->attach_child(*$3);
@@ -1270,12 +1275,26 @@ TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER {
 
 %%
 
-int main ()
-{
+int main (int argc, char* argv[])
+{	
+	char* filename;
+	if(argc == 2){
+		filename = argv[1];
+	}else{
+		printf("Requires exactly one argument.\n");
+		return 1;
+	}
+	stdin = fopen(filename, "r");
 	yyparse();
 	root->print();
 	expandParallel(root);
 	root->print();
+	std::string new_filename = filename;
+	new_filename = (new_filename.substr(0, new_filename.rfind(".java"))) + "_refactored.java";
+	std::ofstream dump_file;
+	dump_file.open(new_filename);
+	dump_tree(*root, &dump_file, 0);
+	dump_file.close();
 	return 0;
 }
 

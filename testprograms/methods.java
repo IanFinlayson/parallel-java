@@ -7,11 +7,11 @@ public abstract class methods{
 	public methods(){
 	
 	}
-
+	
 	public methods(String a, int b, boolean c) throws IOException, ClassNotFoundException{
 	
 	}
-
+	
 	public static void test(int a){
 	}
 

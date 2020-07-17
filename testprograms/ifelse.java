@@ -15,7 +15,7 @@ public class ifelse{
 			if ((c == true)){
 				System.out.println("!");
 			}
-		}		
+		}
 		else{
 		}
 	}

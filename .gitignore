@@ -7,3 +7,4 @@ parser
 *.tab.yy
 a.out
 *.class
+*_refactored.java

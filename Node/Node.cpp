@@ -17,6 +17,9 @@ Node::Node(int type, int value_int, double value_double, std::string id){
 
 //Destructor
 Node::~Node(){
+	for(int _a = 0; _a < this->get_num_children(); _a++){
+		delete[] &(this->get_child(_a));
+	}
 	printf("node gone\n");
 }
 

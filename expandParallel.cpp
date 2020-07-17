@@ -133,12 +133,12 @@ void expandParallel (Node *root){
 				threadInitiStatement -> attach_child(*threadInitializer);
 
 				//threadInitializer left child
-				Node *threadDT2 = new Node (ptIdentifier, 0, 0, "Thread");
+				Node *threadDT2 = new Node (100, 0, 0, "Thread");
 				threadInitializer -> attach_child(*threadDT2);
 
 				//threadInitializer right child
 				Node *threadArgument = new Node (ptArgument, 0, 0, "");
-				threadArgument -> attach_child(*(new Node(ptIdentifier, 0, 0 , anonclass)));
+				threadArgument -> attach_child(*(new Node(100, 0, 0 , anonclass)));
 				threadInitializer -> attach_child(*threadArgument);
 
 				/*call to start the thread*/
@@ -216,12 +216,12 @@ void expandParallel (Node *root){
 
 			/*catch block */
 			//tryBlock right child
-			Node *exceptionContainer = new Node(ptExceptionContainer, 0, 0, "");
+			Node *exceptionContainer = new Node(ptExceptionContainer, 0, 0, "ie");
 			tryBlock -> attach_child(*exceptionContainer);
 
 			//ExceptionContainer left child
 			Node *exception = new Node(ptException, 0, 0, "");
-			exception -> attach_child(*(new Node(ptIdentifier, 0, 0, "InterruptedException")));
+			exception -> attach_child(*(new Node(100, 0, 0, "InterruptedException")));
 			exceptionContainer -> attach_child(*exception);
 
 			//exceptionContainer right child
