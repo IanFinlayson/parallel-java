@@ -368,9 +368,9 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 				dump_tree(root.get_child(0), dump_file, indent);
 				*dump_file << ") {\n";
 				//add_indent(dump_file, indent+1);
-				dump_tree(root.get_child(1), dump_file, indent);
+				dump_tree(root.get_child(1), dump_file, indent+1);
 				add_indent(dump_file, indent);
-				*dump_file << "}\n";
+				*dump_file << "}";
 				break;
 			}
 		case ptArgument:
@@ -634,6 +634,15 @@ void dump_tree(Node& root, std::ofstream* dump_file, int indent){
 					*dump_file << "| ";
 					dump_tree(root.get_child(1), dump_file, indent);
 				}
+				break;
+			}
+		case ptThrowState:
+			{
+				*dump_file << "throw new ";
+				dump_tree(root.get_child(0), dump_file, indent);
+				*dump_file << "(";
+				dump_tree(root.get_child(1), dump_file, indent);
+				*dump_file << ")";
 				break;
 			}
 		case ptEmpty:
