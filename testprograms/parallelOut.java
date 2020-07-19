@@ -1,11 +1,13 @@
 public class parallelOut {
     public static void main(String args[]) {
       	// statement 1
+	    //anonymous class
 	  	Runnable parallelJavaR1 = new Runnable() {
             public void run() {
                 System.out.println("Print 1");
             }
         };
+	    //thread
         Thread parallelJavaT1 = new Thread(parallelJavaR1);
         parallelJavaT1.start(); 
         
