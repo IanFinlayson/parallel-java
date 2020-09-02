@@ -1287,14 +1287,16 @@ int main (int argc, char* argv[])
 	stdin = fopen(filename, "r");
 	yyparse();
 	root->print();
+	std::cin.get();
 	expandParallel(root);
 	root->print();
 	std::string new_filename = filename;
-	new_filename = (new_filename.substr(0, new_filename.rfind(".java"))) + "_refactored.java";
+	new_filename = (new_filename.substr(0, new_filename.rfind(".javap"))) + ".java";
 	std::ofstream dump_file;
 	dump_file.open(new_filename);
 	dump_tree(*root, &dump_file, 0);
 	dump_file.close();
+	printf("New file created.\n");
 	return 0;
 }
 
