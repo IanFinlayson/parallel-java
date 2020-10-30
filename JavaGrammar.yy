@@ -1287,7 +1287,7 @@ int main (int argc, char* argv[])
 	stdin = fopen(filename, "r");
 	yyparse();
 	root->print();
-	std::cin.get();
+	/*std::cin.get();
 	expandParallel(root);
 	root->print();
 	std::string new_filename = filename;
@@ -1296,7 +1296,7 @@ int main (int argc, char* argv[])
 	dump_file.open(new_filename);
 	dump_tree(*root, &dump_file, 0);
 	dump_file.close();
-	printf("New file created.\n");
+	printf("New file created.\n");*/
 	return 0;
 }
 
