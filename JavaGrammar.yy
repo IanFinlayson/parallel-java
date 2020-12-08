@@ -140,613 +140,600 @@
 %token TOK_ADDADD 339
 %token TOK_LAMBDA 340
 
-
-%type <node> packagedec importstatements typedec packagename importstatement
-%type <node> classdec interfacedec
-%type <node> mod extendsorimplements classbody basicidentifier interfacebody
-%type <node> declarationstatement initializationstatement method
-%type <node> declarator initializer
-%type <node> datatype identifier
-%type <node> expression
-%type <node> abstractmethod formalparameter formalparameters block
-%type <node> statement
-%type <node> argument expressionstatement instancemethodcall methodcall fieldreference
-%type <node> predecrement postdecrement
-%type <node> datastructure assignmentstatement 
-%type <node> controlflowstatement
-%type <node> whileloop dowhileloop forloop enhancedfor forinit forupdate ifstatement ifelsestatement
-%type <node> throwsclause switchstatement switchblock switchrules switchrule switchblockstates switchblockstate 
-%type <node> switchlabel case throwstate
-%type <node> parallelblock
+%type <node> package imports import typedecs typedec mods mod
+%type <node> inheritstyle extends implements classbody
+%type <node> accessorchain basicidentifiers identifiers identifier
+%type <node> initializationstatement initializers initializer
+%type <node> init datastructure method returntype formalparameters formalparameter
+%type <node> throwsclause block statement parallelblock expressionstatement throwstate
+%type <node> controlflowstatement whileloop dowhileloop forloop forinit
+%type <node> forupdate foreachloop ifstatement ifelsestatement
+%type <node> switchstatement switchblock switchrules switchrule 
+%type <node> switchblockstates switchblockstate switchlabel case
 %type <node> trycatchblock exceptionname
+%type <node> datatype expression arguments argument
+%type <node> instancemethodcall methodcall fieldreference
+%type <node> postdecrement predecrement assignmentstatement
+
 
 %%
 
-
 program:
-packagedec importstatements typedec {
-	
+	package imports typedecs {
+	}
+	;
 
-	/*// root is always a package (but the package can be no package)
-	root = $1;
-	Node* _im = new Node(ptImports); //import section node
-	_im->attach_child(*$2);
-	//right child of root is the import section
-	root->attach_child(*_im);
-	//right child of import section is the rest of the program starting with a class definition
-	_im->attach_child(*$3);*/
-}
-;
+package:
+	%empty {
+	}
+	|TOK_PACKAGE accessorchain TOK_SEMI {
+	}
+	;
 
-packagedec:
-%empty {
-}
-|TOK_PACKAGE packagename TOK_SEMI {
-}
-;
+imports:
+	import {
+	}
+	|import imports {
+	}
+	;
 
-importstatements:
-%empty {
-}
-|importstatement importstatements {
-}
-;
+import:
+	%empty {
+	}
+	|TOK_IMPORT accessorchain TOK_SEMI {
+	}
+	;
 
-importstatement:
-TOK_IMPORT packagename TOK_SEMI {
-}
-|TOK_IMPORT packagename TOK_DOT TOK_MUL TOK_SEMI {
-}
-;
+typedecs: //classes or interfaces
+	typedec {
+	}
+	|typedec typedecs {
+	}
+	;
 
-packagename:
-TOK_IDENTIFIER {
-}
-|packagename TOK_DOT TOK_IDENTIFIER {
-}
-;
+typedec: //class or interface
+	mods TOK_CLASS TOK_IDENTIFIER inheritstyle TOK_LBRACE classbody TOK_RBRACE {
+	}
+	|mods TOK_INTERFACE TOK_IDENTIFIER extends TOK_LBRACE classbody TOK_RBRACE {
+	}
+	;
 
-typedec:
-interfacedec {
-}
-|classdec {
-}
-|classdec typedec {
-}
-|interfacedec typedec {
-}
-;
-
-interfacedec:
-mod TOK_INTERFACE TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE {
-}
-|mod TOK_INTERFACE TOK_IDENTIFIER TOK_EXTENDS TOK_IDENTIFIER TOK_LBRACE interfacebody TOK_RBRACE {
-}
-;
-
-classdec:
-mod TOK_CLASS TOK_IDENTIFIER TOK_LBRACE classbody TOK_RBRACE {
-}
-|mod TOK_CLASS TOK_IDENTIFIER extendsorimplements TOK_LBRACE classbody TOK_RBRACE {
-}
-;
-
-extendsorimplements:
-TOK_EXTENDS TOK_IDENTIFIER {
-}
-|TOK_IMPLEMENTS basicidentifier {
-}
-|TOK_EXTENDS TOK_IDENTIFIER TOK_IMPLEMENTS basicidentifier {
-}
-;
-
-basicidentifier:
-TOK_IDENTIFIER {
-}
-|TOK_IDENTIFIER TOK_COMMA basicidentifier {
-}
-;
-
+mods:
+	%empty {
+	}
+	|mod mods {
+	}
+	;
 
 mod:
-%empty {
-}
-|TOK_FINAL mod {
-}
-|TOK_ABSTRACT mod {
-}
-|TOK_STRICTFP mod {
-}
-|TOK_STATIC mod {
-}
-|TOK_NATIVE mod {
-}
-|TOK_SYNCHRONIZED mod {
-}
-|TOK_TRANSIENT mod {
-}
-|TOK_VOLATILE mod {
-}
-|TOK_PUBLIC mod {
-}
-|TOK_PRIVATE mod {
-}
-|TOK_PROTECTED mod {
-}
-|TOK_DEFAULT mod {
-}
-;
+	TOK_FINAL {
+	}
+	|TOK_ABSTRACT {
+	}
+	|TOK_STRICTFP {
+	}
+	|TOK_STATIC {
+	}
+	|TOK_NATIVE {
+	}
+	|TOK_SYNCHRONIZED {
+	}
+	|TOK_TRANSIENT {
+	}
+	|TOK_VOLATILE {
+	}
+	|TOK_PUBLIC {
+	}
+	|TOK_PRIVATE {
+	}
+	|TOK_PROTECTED {
+	}
+	|TOK_DEFAULT {
+	}
+	;
+
+inheritstyle:
+	%empty {
+	}
+	|extends {
+	}
+	|implements {
+	}
+	|extends implements {
+	}
+	;
+
+extends:
+	TOK_EXTENDS TOK_IDENTIFIER {
+	}
+	;
+
+implements:
+	TOK_IMPLEMENTS basicidentifiers {
+	}
+	;
 
 classbody:
-%empty {
-}
-|mod declarationstatement TOK_SEMI classbody {
-}
-|mod initializationstatement TOK_SEMI classbody {
-}
-|method classbody {
-}
-|classdec classbody {
-}
-|interfacedec classbody {
-}
-;
+	%empty {
+	}
+	|mods initializationstatement TOK_SEMI classbody {
+	}
+	|method classbody {
+	}
+	|typedec classbody {
+	}
+	;
 
-interfacebody:
-%empty {
-}
-|mod initializationstatement TOK_SEMI interfacebody {
-}
-|method interfacebody {
-}
-|classdec interfacebody {
-}
-|interfacedec interfacebody {
-}
-;
+accessorchain:
+	TOK_IDENTIFIER {
+	}
+	|TOK_MUL{
+	}
+	|TOK_IDENTIFIER TOK_DOT accessorchain {
+	}
+	;
 
-abstractmethod:
-datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI {
-}
-|TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI {
-}
-;
+basicidentifiers:
+	/*
+		basic comma seperated identifiers like:
+			implements dog, bark, cow
+			throws someexception, someotherexception
+		was basicidentifier
+	*/
+	TOK_IDENTIFIER {
+	}
+	|TOK_IDENTIFIER TOK_COMMA basicidentifiers {
+	}
+	;
 
-method:
-mod datatype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
-}
-|mod TOK_VOID TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
-}
-|mod TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
-}
-|mod abstractmethod {
-}
-;
-
-parallelblock:
-TOK_IDENTIFIER TOK_LBRACE block TOK_RBRACE {
-}
-;
-
-throwsclause:
-%empty {
-}
-|TOK_THROWS basicidentifier {
-}
-;
-
-formalparameters:
-formalparameter {
-}
-|formalparameter TOK_COMMA formalparameters{
-}
-;
-
-formalparameter:
-%empty {
-}
-|declarator {
-}
-;
-
-argument:
-%empty {
-}
-|expression {
-}
-|expressionstatement {
-}
-|expression TOK_COMMA argument {
-}
-|expressionstatement TOK_COMMA argument {
-}
-;
-
-datatype:
-TOK_INT {
-}
-|TOK_BOOLEAN {
-}
-|TOK_FLOAT {
-}
-|TOK_IDENTIFIER {
-}
-|TOK_DOUBLE {
-}
-;
-
-block:
-%empty {
-}
-|statement block {
-}
-|parallelblock block {
-}
-;
-
-statement:
-expressionstatement TOK_SEMI {
-}
-|controlflowstatement {
-}
-|declarationstatement TOK_SEMI {
-}
-|initializationstatement TOK_SEMI {
-}
-|trycatchblock {
-}
-|throwstate TOK_SEMI {
-}
-;
-
-expressionstatement:
-instancemethodcall {
-}
-|methodcall {
-}
-|postdecrement {
-}
-|predecrement {
-}
-|assignmentstatement {
-}
-;
-
-expression:
-TOK_LPAREN expression TOK_RPAREN {
-}
-|TOK_INTVAL {
-}
-|TOK_FLOATVAL {
-}
-|TOK_BOOLVAL {
-}
-|TOK_STRINGVAL {
-}
-|TOK_IDENTIFIER {
-}
-|fieldreference {
-}
-|TOK_IDENTIFIER TOK_LBRACKET argument TOK_RBRACKET {
-}
-|TOK_SUB expression {
-}
-|TOK_BITNEG expression {
-}
-|expression TOK_ADD expression {
-}
-|expression TOK_SUB expression {
-}
-|expression TOK_MOD expression {
-}
-|expression TOK_DIV expression {
-}
-|expression TOK_MUL expression {
-}
-|expression TOK_EQUAL expression {
-}
-|expression TOK_NEQUAL expression {
-}
-|expression TOK_GREATER expression {
-}
-|expression TOK_LESS expression {
-}
-|expression TOK_GEQUAL expression {
-}
-|expression TOK_LEQUAL expression {
-}
-|expression TOK_AND expression {
-}
-|expression TOK_OR expression {
-}
-|expression TOK_BITOR expression {
-}
-|expression TOK_BITAND expression {
-}
-|expression TOK_BITXOR expression {
-}
-|expression TOK_LSHIFT expression {
-}
-|expression TOK_RSHIFT expression {
-}
-|expression TOK_RSHIFTZ expression {
-}
-;
-
-assignmentstatement:
-TOK_IDENTIFIER TOK_MODASSIGN expression {
-}
-|TOK_IDENTIFIER TOK_DIVASSIGN expression {
-}
-|TOK_IDENTIFIER TOK_MULASSIGN expression {
-}
-|TOK_IDENTIFIER TOK_ADDASSIGN expression {
-}
-|TOK_IDENTIFIER TOK_SUBASSIGN expression {
-}
-|TOK_IDENTIFIER TOK_ASSIGN initializer {
-}
-|TOK_IDENTIFIER TOK_ASSIGN assignmentstatement {
-}
-;
-
-controlflowstatement:
-whileloop {
-}
-|dowhileloop {
-}
-|forloop {
-}
-|enhancedfor {
-}
-|ifstatement {
-}
-|ifelsestatement {
-}
-|switchstatement {
-}
-|TOK_BREAK TOK_SEMI {
-}
-|TOK_CONTINUE TOK_SEMI {
-}
-|TOK_RETURN expression TOK_SEMI {
-}
-|TOK_YIELD expression TOK_SEMI {
-}
-;
+identifiers:
+	/*
+		more advanced identifiers
+	*/
+	identifier {
+	}
+	|identifier TOK_COMMA identifiers {
+	}
+	;
 
 identifier:
-TOK_IDENTIFIER {
-}
-|TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET {
-}
-|TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER {
-}
-|TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET TOK_COMMA identifier {
-}
-|TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER TOK_COMMA identifier {
-}
-|TOK_IDENTIFIER TOK_COMMA identifier {
-}
-;
-
-declarationstatement:
-datatype identifier {
-}
-|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER identifier {
-}
-;
-
-declarator:
-datatype TOK_IDENTIFIER {
-}
-|datatype TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER {
-}
-|datatype TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET {
-}
-|TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER TOK_IDENTIFIER {
-}
-|fieldreference {
-}
-;
-
-initializer:
-expression {
-}
-|TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET {
-}
-|TOK_LBRACE argument TOK_RBRACE {
-}
-|TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE argument TOK_RBRACE {
-}
-|TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN {
-}
-|TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN TOK_LBRACE classbody TOK_RBRACE {
-}
-|methodcall {
-}
-|instancemethodcall {
-}
-|TOK_NEW datastructure TOK_LPAREN argument TOK_RPAREN {
-}
-;
+	%empty{
+	}
+	|TOK_IDENTIFIER {
+	}
+	|TOK_IDENTIFIER TOK_LBRACKET TOK_RBRACKET {
+	}
+	|TOK_LBRACKET TOK_RBRACKET TOK_IDENTIFIER {
+	}
+	;
 
 initializationstatement:
-declarator TOK_ASSIGN initializer {
-}
-;
+	datatype initializers {
+	}
+	|datastructure initializers {
+	}
+	;
+
+initializers:
+	initializer {
+	}
+	|initializer TOK_COMMA initializers {
+	}
+	;
+
+initializer:
+	expression{
+	}
+	|identifier {
+	}
+	|identifier TOK_ASSIGN init {
+	}
+	;
+
+init:
+	expression {
+	}
+		//arrays
+	|TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET {
+	}
+	|TOK_LBRACE arguments TOK_RBRACE {
+	}
+	|TOK_NEW datatype TOK_LBRACKET TOK_RBRACKET TOK_LBRACE arguments TOK_RBRACE {
+	}
+		//objects
+	|TOK_NEW TOK_IDENTIFIER TOK_LPAREN arguments TOK_RPAREN {
+	}
+	|TOK_NEW TOK_IDENTIFIER TOK_LPAREN arguments TOK_RPAREN TOK_LBRACE classbody TOK_RBRACE {
+	}
+		//generics
+	|TOK_NEW TOK_IDENTIFIER TOK_LESS TOK_GREATER TOK_LPAREN TOK_RPAREN{
+	}
+		//methods
+	|methodcall {
+	}
+	|instancemethodcall {
+	}
+	;
 
 datastructure:
-TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER {
-}
-|TOK_IDENTIFIER TOK_LESS TOK_GREATER {
-}
-;
+	TOK_IDENTIFIER TOK_LESS datatype TOK_GREATER {
+	}
+	|TOK_IDENTIFIER TOK_LESS TOK_GREATER {
+	}
+	;
+
+method:
+	mods returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
+	}
+	|mods returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI {
+	}
+	|mods returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI {
+	}
+	;
+
+returntype:
+	datatype {
+	}
+	|TOK_VOID {
+	}
+	;
+
+formalparameters:
+	formalparameter {
+	}
+	|formalparameter TOK_COMMA formalparameters {
+	}
+	;
+
+formalparameter:
+	%empty {
+	}
+	|datatype identifier {
+	}
+	|datastructure TOK_IDENTIFIER {
+	}
+	|fieldreference {
+	}
+	;
+
+throwsclause:
+	%empty {
+	}
+	|TOK_THROWS basicidentifiers {
+	}
+	;
+
+block: /* incomplete */
+	%empty {
+	}
+	|statement block {
+	}
+	|parallelblock block {
+	}
+	;
+
+statement: /* THIS IS WHERE WE STOPPED */
+	expressionstatement TOK_SEMI {
+	}
+	|initializationstatement TOK_SEMI {
+	}
+	|throwstate TOK_SEMI {
+	}
+	|controlflowstatement {
+	}
+	|trycatchblock {
+	}
+	;
+
+parallelblock:
+	TOK_IDENTIFIER TOK_LBRACE block TOK_RBRACE {
+	}
+	;
+
+expressionstatement:
+	instancemethodcall {
+	}
+	|methodcall {
+	}
+	|postdecrement {
+	}
+	|predecrement {
+	}
+	|assignmentstatement {
+	}
+	;
+
+controlflowstatement:
+	whileloop {
+	}
+	|dowhileloop {
+	}
+	|forloop {
+	}
+	|foreachloop {
+	}
+	|ifstatement {
+	}
+	|ifelsestatement {
+	}
+	|switchstatement {
+	}
+	|TOK_BREAK TOK_SEMI {
+	}
+	|TOK_CONTINUE TOK_SEMI {
+	}
+	|TOK_RETURN expression TOK_SEMI {
+	}
+	|TOK_YIELD expression TOK_SEMI {
+	}
+	;
 
 whileloop:
-TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
-}
-;
+	TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	}
+	;
 
 dowhileloop:
-TOK_DO TOK_LBRACE block TOK_RBRACE TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_SEMI {
-}
-;
+	TOK_DO TOK_LBRACE block TOK_RBRACE TOK_WHILE TOK_LPAREN expression TOK_RPAREN TOK_SEMI {
+	}
+	;
 
 forloop:
-TOK_FOR TOK_LPAREN forinit TOK_SEMI expression TOK_SEMI forupdate TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
-}
-;
-
-enhancedfor:
-TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
-}
-;
+	TOK_FOR TOK_LPAREN forinit TOK_SEMI expression TOK_SEMI forupdate TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	}
+	;
 
 forinit:
-declarationstatement {
-}
-|expressionstatement {
-}
-|initializationstatement {
-}
-;
+	initializationstatement {
+	}
+	|expressionstatement {
+	}
+	;
 
 forupdate:
-expressionstatement {
-}
-|expressionstatement TOK_COMMA forupdate {
-}
-;
+	expressionstatement {
+	}
+	|expressionstatement TOK_COMMA forupdate {
+	}
+	;
+
+foreachloop:
+	TOK_FOR TOK_LPAREN datatype TOK_IDENTIFIER TOK_COLON TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	}
+	;
 
 ifstatement:
-TOK_IF TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
-}
-|TOK_IF TOK_LPAREN expression TOK_RPAREN statement {
-}
-;
+	TOK_IF TOK_LPAREN expression TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	}
+	|TOK_IF TOK_LPAREN expression TOK_RPAREN statement {
+	}
+	;
 
 ifelsestatement:
-ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE {
-}
-|ifstatement TOK_ELSE statement {
-}
-;
+	ifstatement TOK_ELSE TOK_LBRACE block TOK_RBRACE {
+	}
+	|ifstatement TOK_ELSE statement {
+	}
+	;
 
-/*lambda help?*/
 switchstatement:
-TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchblock TOK_RBRACE {
-}
-;
+	TOK_SWITCH TOK_LPAREN expression TOK_RPAREN TOK_LBRACE switchblock TOK_RBRACE {
+	}
+	;
 
 switchblock:
-switchrules {
-}
-|switchblockstates {
-}
-;
+	switchrules {
+	}
+	|switchblockstates {
+	}
+	;
 
 switchrules:
-switchrule {
-}
-|switchrule switchrules {
-}
-;
+	switchrule {
+	}
+	|switchrule switchrules {
+	}
+	;
 
 switchrule:
-switchlabel TOK_LAMBDA expressionstatement TOK_SEMI {
-}
-|switchlabel TOK_LAMBDA expression TOK_SEMI {
-}
-|switchlabel TOK_LAMBDA TOK_LBRACE block TOK_RBRACE {
-}
-|switchlabel TOK_LAMBDA throwstate TOK_SEMI {
-}
-;
+	switchlabel TOK_LAMBDA expressionstatement TOK_SEMI {
+	}
+	|switchlabel TOK_LAMBDA expression TOK_SEMI {
+	}
+	|switchlabel TOK_LAMBDA TOK_LBRACE block TOK_RBRACE {
+	}
+	|switchlabel TOK_LAMBDA throwstate TOK_SEMI {
+	}
+	;
 
 switchblockstates:
-switchblockstate {
-}
-|switchblockstate switchblockstates {
-}
-;
+	switchblockstate {
+	}
+	|switchblockstate switchblockstates {
+	}
+	;
 
 switchblockstate:
-switchlabel TOK_COLON TOK_LBRACE block TOK_RBRACE {
-}
-|switchlabel TOK_COLON block {
-}
-;
+	switchlabel TOK_COLON TOK_LBRACE block TOK_RBRACE {
+	}
+	|switchlabel TOK_COLON block {
+	}
+	;
 
 switchlabel:
-TOK_CASE case {
-}
-|TOK_DEFAULT {
-}
-;
+	TOK_CASE case {
+	}
+	|TOK_DEFAULT {
+	}
+	;
 
 case:
-expression {
-}
-|expression TOK_COMMA case {
-}
-;
+	expression {
+	}
+	|expression TOK_COMMA case {
+	}
+	;
 
-/*fix to catch multiple*/
 trycatchblock:
-TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
-}
-|TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE {
-}
-;
+	TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER TOK_RPAREN TOK_LBRACE block TOK_RBRACE {
+	}
+	|TOK_TRY TOK_LBRACE block TOK_RBRACE TOK_CATCH TOK_LPAREN exceptionname TOK_IDENTIFIER  TOK_RPAREN TOK_LBRACE block TOK_RBRACE TOK_FINALLY TOK_LBRACE block TOK_RBRACE {
+	}
+	;
 
 exceptionname:
-TOK_IDENTIFIER {
-}
-|TOK_IDENTIFIER TOK_BITOR exceptionname {
-}
-;
-
+	TOK_IDENTIFIER {
+	}
+	|TOK_IDENTIFIER TOK_BITOR exceptionname {
+	}
+	;
 
 throwstate:
-TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN {
-}
-;
+	TOK_THROW TOK_NEW TOK_IDENTIFIER TOK_LPAREN arguments TOK_RPAREN {
+	}
+	;
 
-postdecrement:
-TOK_IDENTIFIER TOK_ADDADD {
-}
-|TOK_IDENTIFIER TOK_SUBSUB {
-}
-;
+datatype:
+	TOK_INT {
+	}
+	|TOK_BOOLEAN {
+	}
+	|TOK_FLOAT {
+	}
+	|TOK_IDENTIFIER {
+	}
+	|TOK_DOUBLE {
+	}
+	;
 
-predecrement:
-TOK_ADDADD TOK_IDENTIFIER {
-}
-|TOK_SUBSUB TOK_IDENTIFIER {
-}
-;
+expression:
+	TOK_LPAREN expression TOK_RPAREN {
+	}
+	|TOK_INTVAL {
+	}
+	|TOK_FLOATVAL {
+	}
+	|TOK_BOOLVAL {
+	}
+	|TOK_STRINGVAL {
+	}
+	|TOK_IDENTIFIER {
+	}
+	|fieldreference {
+	}
+	|TOK_IDENTIFIER TOK_LBRACKET arguments TOK_RBRACKET {
+	}
+	|TOK_SUB expression {
+	}
+	|TOK_BITNEG expression {
+	}
+	|expression TOK_ADD expression {
+	}
+	|expression TOK_SUB expression {
+	}
+	|expression TOK_MOD expression {
+	}
+	|expression TOK_DIV expression {
+	}
+	|expression TOK_MUL expression {
+	}
+	|expression TOK_EQUAL expression {
+	}
+	|expression TOK_NEQUAL expression {
+	}
+	|expression TOK_GREATER expression {
+	}
+	|expression TOK_LESS expression {
+	}
+	|expression TOK_GEQUAL expression {
+	}
+	|expression TOK_LEQUAL expression {
+	}
+	|expression TOK_AND expression {
+	}
+	|expression TOK_OR expression {
+	}
+	|expression TOK_BITOR expression {
+	}
+	|expression TOK_BITAND expression {
+	}
+	|expression TOK_BITXOR expression {
+	}
+	|expression TOK_LSHIFT expression {
+	}
+	|expression TOK_RSHIFT expression {
+	}
+	|expression TOK_RSHIFTZ expression {
+	}
+	;
+
+arguments:
+	%empty {
+	}
+	|argument {
+	}
+	|argument TOK_COMMA arguments {
+	}
+	;
+
+argument:
+	expression {
+	}
+	|expressionstatement {
+	}
+	;
 
 instancemethodcall:
-fieldreference TOK_DOT methodcall {
-}
-|TOK_IDENTIFIER TOK_DOT methodcall {
-}
-;
+	fieldreference TOK_DOT methodcall {
+	}
+	|TOK_IDENTIFIER TOK_DOT methodcall {
+	}
+	;
 
 methodcall:
-TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN {
-}
-|methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN argument TOK_RPAREN {
-}
-;
+	TOK_IDENTIFIER TOK_LPAREN arguments TOK_RPAREN {
+	}
+	|methodcall TOK_DOT TOK_IDENTIFIER TOK_LPAREN arguments TOK_RPAREN {
+	}
+	;
 
 fieldreference:
-TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER {
-}
-|fieldreference TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/{
-}
-;
+	TOK_IDENTIFIER TOK_DOT TOK_IDENTIFIER {
+	}
+	|fieldreference TOK_DOT TOK_IDENTIFIER /*supposed to be field access??*/{
+	}
+	;
+
+postdecrement:
+	TOK_IDENTIFIER TOK_ADDADD {
+	}
+	|TOK_IDENTIFIER TOK_SUBSUB {
+	}
+	;
+
+predecrement:
+	TOK_ADDADD TOK_IDENTIFIER {
+	}
+	|TOK_SUBSUB TOK_IDENTIFIER {
+	}
+	;
+
+assignmentstatement:
+	TOK_IDENTIFIER TOK_MODASSIGN expression {
+	}
+	|TOK_IDENTIFIER TOK_DIVASSIGN expression {
+	}
+	|TOK_IDENTIFIER TOK_MULASSIGN expression {
+	}
+	|TOK_IDENTIFIER TOK_ADDASSIGN expression {
+	}
+	|TOK_IDENTIFIER TOK_SUBASSIGN expression {
+	}
+	|TOK_IDENTIFIER TOK_ASSIGN initializer {
+	}
+	|TOK_IDENTIFIER TOK_ASSIGN assignmentstatement {
+	}
+	;
 
 %%
 

@@ -4,9 +4,9 @@ public interface interfaces extends Identifier{
 	double c = 4.3;
 
 
-	boolean test1 (int a, int b, int c);
+	boolean test1(int a, int b, int c);
 	
-	default int test1(){
+	/*default int test1(){
 		return b;
 	}
 
@@ -14,5 +14,5 @@ public interface interfaces extends Identifier{
 		
 	}
 
-	String test3(int a, int b);
+	String test3(int a, int b);*/
 }

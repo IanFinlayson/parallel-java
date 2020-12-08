@@ -21,6 +21,6 @@ public class expressions{
 		String i;
 		i = "Hello";
 		Boolean j;
-		j = true;	
+		j = true;
 	}
 }
