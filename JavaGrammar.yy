@@ -140,9 +140,9 @@
 %token TOK_ADDADD 339
 %token TOK_LAMBDA 340
 
-%type <node> package imports import typedecs typedec mods mod
+%type <node> package imports /*import*/ typedecs typedec mods mod
 %type <node> inheritstyle extends implements classbody
-%type <node> accessorchain basicidentifiers identifiers identifier
+%type <node> accessorchain basicidentifiers identifier
 %type <node> initializationstatement initializers initializer
 %type <node> init datastructure method returntype formalparameters formalparameter
 %type <node> throwsclause block statement parallelblock expressionstatement throwstate
@@ -171,23 +171,23 @@ package:
 	;
 
 imports:
-	import {
+	TOK_IMPORT accessorchain TOK_SEMI {
 	}
-	|import imports {
+	|TOK_IMPORT accessorchain TOK_SEMI imports {
 	}
 	;
 
-import:
+/*import:
 	%empty {
 	}
 	|TOK_IMPORT accessorchain TOK_SEMI {
 	}
-	;
+	;*/
 
 typedecs: //classes or interfaces
-	typedec {
+	typedec{
 	}
-	|typedec typedecs {
+	|typedec typedecs{
 	}
 	;
 
@@ -286,15 +286,12 @@ basicidentifiers:
 	}
 	;
 
-identifiers:
-	/*
-		more advanced identifiers
-	*/
+/*identifiers:
 	identifier {
 	}
 	|identifier TOK_COMMA identifiers {
 	}
-	;
+	;*/
 
 identifier:
 	%empty{
@@ -326,15 +323,13 @@ initializer:
 	}
 	|identifier {
 	}
-	|identifier TOK_ASSIGN init {
+	|assignmentstatement {
 	}
 	;
 
 init:
-	expression {
-	}
 		//arrays
-	|TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET {
+	TOK_NEW datatype TOK_LBRACKET TOK_INTVAL TOK_RBRACKET {
 	}
 	|TOK_LBRACE arguments TOK_RBRACE {
 	}
@@ -364,10 +359,13 @@ datastructure:
 
 method:
 	mods returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_LBRACE block TOK_RBRACE {
+		//normal
 	}
 	|mods returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI {
+		//abstract
 	}
-	|mods returntype TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI {
+	|mods TOK_IDENTIFIER TOK_LPAREN formalparameters TOK_RPAREN throwsclause TOK_SEMI TOK_LBRACE block TOK_RBRACE{
+		//constructor
 	}
 	;
 
@@ -731,7 +729,7 @@ assignmentstatement:
 	}
 	|TOK_IDENTIFIER TOK_ASSIGN initializer {
 	}
-	|TOK_IDENTIFIER TOK_ASSIGN assignmentstatement {
+	|TOK_IDENTIFIER TOK_ASSIGN init{
 	}
 	;
 
