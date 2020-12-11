@@ -31,7 +31,7 @@
 
 }
 
-%define parse.error verbose 
+%error-verbose 
 %token <stVal> TOK_IDENTIFIER 100
 %token <iVal> TOK_INTVAL 101
 %token <fVal> TOK_FLOATVAL 102
@@ -171,7 +171,7 @@ package:
 	;
 
 imports:
-	%empty{
+	TOK_IMPORT accessorchain TOK_SEMI {
 	}
 	|TOK_IMPORT accessorchain TOK_SEMI imports {
 	}
